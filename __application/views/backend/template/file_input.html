@@ -1,0 +1,57 @@
+{if $multiple|default:'' eq 'true'}
+<div class="row-fluid">
+	<div class="span6">
+		<div class="widget-body">
+			<div class="widget-main">
+				<input multiple type="file" id="{$id}" name="{$id}[]" max='6' />
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	$('#{$id}').ace_file_input({
+		style:'well',
+			btn_choose:'Drop files here or click to choose',
+			btn_change:null,
+			no_icon:'icon-cloud-upload',
+			droppable:false,
+			thumbnail:'medium',
+			//,icon_remove:null//set null, to hide remove/reset button
+			/**,before_change:function(files, dropped) {
+				//Check an example below
+				//or examples/file-upload.html
+				return true;
+			}*/
+			/**,before_remove : function() {
+				return true;
+			}*/
+			//maxSize: 100000, //~100 KB
+			allowExt:  ['jpg', 'jpeg'],
+			allowMime: ['image/jpg', 'image/jpeg'], //html5 browsers only
+			denyExt:  ['exe', 'php'],
+			//,
+			preview_error : function(filename, error_code) {
+				//name of the file that failed
+				//error_code values
+				//1 = 'FILE_LOAD_FAILED',
+				//2 = 'IMAGE_LOAD_FAILED',
+				//3 = 'THUMBNAIL_FAILED'
+				//alert(error_code);
+			}
+		
+	}).on('change', function(){
+		console.log($(this).data('ace_input_files'));
+		console.log($(this).data('ace_input_method'));
+	});
+</script>
+{elseif $multiple|default:'' eq 'false'}
+<div class="row-fluid">
+	<div class="span6">
+		<div class="widget-body">
+			<div class="widget-main">
+				<input type="file" id="{$id}" name="{$id}" />
+			</div>
+		</div>
+	</div>
+</div>
+{/if}

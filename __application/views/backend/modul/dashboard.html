@@ -1,0 +1,31 @@
+
+<div class="row">
+    <div class="col-md-6">
+       <div id='charttable_{$acak}'></div>
+    </div>
+    <div class="col-md-6">
+        <div id='charttable2_{$acak}'></div>
+    </div>
+</div>
+<br>
+<br>
+<div class="row">
+    <div class="col-md-6">
+       <div id='charttable3_{$acak}'></div>
+    </div>
+    <div class="col-md-6">
+        <div id='charttable4_{$acak}'></div>
+    </div>
+</div>
+
+<script>
+	$.post(host+'backoffice-GetDataChart',{ mod:'produk_laris' },function(r){
+		console.log(r);
+		var x=JSON.parse(r);
+		console.log(x);
+		chart_na('charttable_{$acak}',"column","Jumlah Buku Terlaris",'',"",x.x,x.y,"");
+		chart_na('charttable2_{$acak}',"column","Jumlah Buku Terlaris",'',"",x.x,x.y,"");
+		chart_na('charttable3_{$acak}',"column","Jumlah Buku Terlaris",'',"",x.x,x.y,"");
+		chart_na('charttable4_{$acak}',"column","Jumlah Buku Terlaris",'',"",x.x,x.y,"");
+	});
+</script>

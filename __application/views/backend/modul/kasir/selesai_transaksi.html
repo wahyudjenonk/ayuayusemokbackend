@@ -1,0 +1,200 @@
+<div class="easyui-layout" style='width:100%;height:100%;background-color:#fffff;'>
+	<div data-options="region:'center',border:true" style="height:490px;overflow:auto;padding:3px;background:#ffff;">
+		<form id="form_pembayaran_transaksi" url="{$host}tutup-transaksi" method="post" enctype="multipart/form-data">
+			<input type='hidden' name='editstatus' value='add' />
+			<input type='hidden' name='tbl_meja_id' value='{$id_meja}' />
+			<input type='hidden' name='kode_transaksi' value='{$kode_trx}' />
+			<table width='100%'>
+				<tr>
+					<td width='30%'>Nomor Meja</td>
+					<td width='5%'>:</td>
+					<td width='60%'>{$nomor_meja} &nbsp;&nbsp; - &nbsp;&nbsp; <b>#{$kode_trx}</b></td>
+				</tr>
+				<tr>
+					<td>Total Pesanan</td>
+					<td>:</td>
+					<td>{$tot_qty} Item</td>
+				</tr>		
+				<tr>
+					<td colspan='3'>&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan='3'>
+						<table width='100%'>
+							<tr>
+								<td width='50%' style='border-top:1px solid #000 !important;border-bottom:1px solid #000 !important;' align='center' >Nama Produk</td>
+								<td width='20%' style='border-top:1px solid #000 !important;border-bottom:1px solid #000 !important;' align='center' >Harga</td>
+								<td width='10%' style='border-top:1px solid #000 !important;border-bottom:1px solid #000 !important;' align='center' >Qty</td>
+								<td width='20%' style='border-top:1px solid #000 !important;border-bottom:1px solid #000 !important;' align='center'>Total</td>
+							</tr>
+							{foreach from=$data_pesanan item=row}
+								<tr>
+									<td>{$row.nama_produk}</td>
+									<td align='center'>{$row.harga_satuan}</td>
+									<td align='center'>{$row.qty}</td>
+									<td align='right'>{$row.total_harga}</td>
+								</tr>
+							{/foreach}
+							<tr>
+								<td style='border-top:1px solid #000 !important;border-bottom:1px solid #000 !important;' align='center'><b>TOTAL</b></td>
+								<td style='border-top:1px solid #000 !important;border-bottom:1px solid #000 !important;'>&nbsp;</td>
+								<td style='border-top:1px solid #000 !important;border-bottom:1px solid #000 !important;' align='center'><b>{$tot_qty}</b></td>
+								<td style='border-top:1px solid #000 !important;border-bottom:1px solid #000 !important;' align='right'><b>{$tot_hrg}</b></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td colspan='3'>&nbsp;</td>
+				</tr>
+				<tr>
+				<tr>
+					<td>Pajak 10%</td>
+					<td>:</td>
+					<td>
+						<input type='hidden' id='pajak_bnr' name='pajak' value='{$pajak_bnr}' />
+						Rp. {$pajak}
+					</td>
+				</tr>
+				<tr>
+					<td>Total Bayar</td>
+					<td>:</td>
+					<td>
+						<input type='hidden' id='tot_byr_bnr' name='jumlah_bayar_pesanan' value='{$tot_byr_bnr}' />
+						Rp. {$tot_byr}
+					</td>
+				</tr>
+				<tr>
+					<td>Jenis Pembayaran</td>
+					<td>:</td>
+					<td>
+						<select id='jenis_pembayaran_{$acak}' name='jenis_pembayaran' style='width:150px;'>
+							{$combo_jenis_pembayaran}
+						</select>
+					</td>
+				</tr>
+					<td colspan='3'>&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan='3'>
+						<button type="button" class='tombol-menu-awal' href='javascript:void(0);' onClick="kumpulAction('kalkulasi','1000', '{$acak}');return false;" >1.000</button>
+						<button type="button" class='tombol-menu-awal' href='javascript:void(0);' onClick="kumpulAction('kalkulasi','2000', '{$acak}');return false;" >2.000</button>
+						<button type="button" class='tombol-menu-awal' href='javascript:void(0);' onClick="kumpulAction('kalkulasi','5000', '{$acak}');return false;" >5.000</button>
+						<button type="button" class='tombol-menu-awal' href='javascript:void(0);' onClick="kumpulAction('kalkulasi','10000', '{$acak}');" >10.000</button>
+						<button type="button" class='tombol-menu-awal' href='javascript:void(0);' onClick="kumpulAction('kalkulasi','20000', '{$acak}');" >20.000</button>
+						<button type="button" class='tombol-menu-awal' href='javascript:void(0);' onClick="kumpulAction('kalkulasi','50000', '{$acak}');" >50.000</button>
+						<button type="button" class='tombol-menu-awal' href='javascript:void(0);' onClick="kumpulAction('kalkulasi','100000', '{$acak}');" >100.000</button>
+					</td>
+				</tr>
+				<tr>
+					<td colspan='3'>&nbsp;</td>
+				</tr>		
+				<tr>
+					<td>Jumlah Uang</td>
+					<td>:</td>
+					<td>
+						<div style='width:50%;float:left;'>
+						<input type='hidden' name='jumlah_uang_diterima' id='jumlah_uang_{$acak}' />
+						{include file='backend/template/input_form.html' size='kecil' type='text' tampilan='tidaklabel' id="jml_uang_{$acak}" readonly='readonly'}
+						</div>
+						<div style='width:50%;float:left;padding-left:5px;'>
+							<button type="button" href='javascript:void(0);' onClick="kumpulAction('reset_jmluang_kembalian', '{$acak}')" >Reset</button>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>Uang Kembalian</td>
+					<td>:</td>
+					<td>
+						<input type='hidden' name='jumlah_uang_kembalian' id='jumlah_kembalian_{$acak}' />
+						{include file='backend/template/input_form.html' size='kecil' type='text' tampilan='tidaklabel' id="uang_kembalian_{$acak}" readonly='readonly'}			
+					</td>
+				</tr>
+				<tr>
+					<td>Vendor Kredit/Debit</td>
+					<td>:</td>
+					<td>
+						{include file='backend/template/input_form.html' size='kecil' type='text' tampilan='tidaklabel' id="vendor_{$acak}" name='vendor_debit_kredit'}			
+					</td>
+				</tr>
+				<tr>
+					<td>Kode Generate</td>
+					<td>:</td>
+					<td>
+						{include file='backend/template/input_form.html' size='kecil' type='text' tampilan='tidaklabel' id="kode_gen_{$acak}" name='kode_transaksi_debit_kredit'}			
+					</td>
+				</tr>
+				<tr>
+					<td>Jumlah Tamu Pria</td>
+					<td>:</td>
+					<td>
+						{include file='backend/template/input_form.html' size='kecil' type='text' tampilan='tidaklabel' id='jml_tamu_pria' name='jumlah_tamu_pria'}			
+					</td>
+				</tr>
+				<tr>
+					<td>Jumlah Tamu Wanita</td>
+					<td>:</td>
+					<td>
+						{include file='backend/template/input_form.html' size='kecil' type='text' tampilan='tidaklabel' id='jml_tamu_wanita' name='jumlah_tamu_wanita' }			
+					</td>
+				</tr>
+				<tr>
+					<td colspan='3'>&nbsp;</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<div data-options="region:'south',border:true" style="text-align:right;padding:5px 0;">
+		<hr/>
+		<button class='tombol-menu-awal' href='javascript:void(0);' onClick="kumpulAction('tutup-transaksi');" >
+			<img src='{$host}__assets/images/yes.png' width='30px' height='30px'> Tutup Transaksi
+		</button>
+		<button class='tombol-menu-awal' href='javascript:void(0);' onClick="kumpulAction('hapus-item', '{$id_meja}');" >
+			<img src='{$host}__assets/images/printer.png' width='30px' height='30px'>Cetak Bill
+		</button>
+	</div>
+</div>
+
+<script>
+	$('#jumlah_kembalian_{$acak}').attr('disabled', 'disabled');
+	$('#uang_kembalian_{$acak}').attr('disabled', 'disabled');
+	$('#jumlah_uang_{$acak}').attr('disabled', 'disabled');
+	$('#jml_uang_{$acak}').attr('disabled', 'disabled');
+	$('#vendor_{$acak}').attr('disabled', 'disabled');
+	$('#kode_gen_{$acak}').attr('disabled', 'disabled');			
+
+	$('#jenis_pembayaran_{$acak}').on('change', function(){
+		if($(this).val() == 'CASH' ){
+			$('#vendor_{$acak}').attr('disabled', 'disabled');
+			$('#kode_gen_{$acak}').attr('disabled', 'disabled');
+			
+			$('#jumlah_kembalian_{$acak}').removeAttr("disabled");
+			$('#uang_kembalian_{$acak}').removeAttr("disabled");
+			$('#jumlah_uang_{$acak}').removeAttr("disabled");
+			$('#jml_uang_{$acak}').removeAttr("disabled");
+		}else if($(this).val() == 'DEBIT' ){
+			$('#jumlah_kembalian_{$acak}').attr('disabled', 'disabled');
+			$('#uang_kembalian_{$acak}').attr('disabled', 'disabled');
+			$('#jumlah_uang_{$acak}').attr('disabled', 'disabled');
+			$('#jml_uang_{$acak}').attr('disabled', 'disabled');
+			
+			$('#vendor_{$acak}').removeAttr("disabled");
+			$('#kode_gen_{$acak}').removeAttr("disabled");		
+		}else if($(this).val() == 'KREDIT' ){ 
+			$('#jumlah_kembalian_{$acak}').attr('disabled', 'disabled');
+			$('#uang_kembalian_{$acak}').attr('disabled', 'disabled');
+			$('#jumlah_uang_{$acak}').attr('disabled', 'disabled');
+			$('#jml_uang_{$acak}').attr('disabled', 'disabled');
+			
+			$('#vendor_{$acak}').removeAttr("disabled");
+			$('#kode_gen_{$acak}').removeAttr("disabled");
+		}else{
+			$('#jumlah_kembalian_{$acak}').attr('disabled', 'disabled');
+			$('#uang_kembalian_{$acak}').attr('disabled', 'disabled');
+			$('#jumlah_uang_{$acak}').attr('disabled', 'disabled');
+			$('#jml_uang_{$acak}').attr('disabled', 'disabled');
+			$('#vendor_{$acak}').attr('disabled', 'disabled');
+			$('#kode_gen_{$acak}').attr('disabled', 'disabled');			
+		}
+	});
+</script>

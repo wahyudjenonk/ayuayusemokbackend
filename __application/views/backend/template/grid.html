@@ -1,0 +1,129 @@
+<style type="text/css">
+	.datagrid-row-over td{
+		background:#D0E5F5;
+	}
+	.datagrid-row-selected td{
+		background:#FBEC88;
+		color:#000;
+	}
+</style>
+
+<div id="grid_nya_{$main}" style="width:100%">
+	<div id='grid_{$main}'></div>
+	<div id='tb_{$main}' style="padding:5px;height:{$tinggi_toolbar|default:'28px'};">
+		{if $filter_core|default:'' eq 'true'}
+			<div style="float:{$align|default:'left'};">
+				{if $filter_kategori|default:'' eq 'true'}
+					<label style='width:100px !important;'>Filter Kategori</label> :
+					<select id='{$main}_filter_kategori' style='width:150px;padding:5px;'>
+						{$optkategori}
+					</select>
+				{/if}
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				{if $input_cari|default:'' eq 'true'}
+					<label style='width:80px !important;'>{$label_cari}</label> :
+					<input type='text' id='{$main}_cari' style='padding:5px;width:150px;' />
+				{/if}
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				{if $button_refresh|default:'' eq 'true'}
+				<a href="javascript:void(0)" style='margin-top:-10px !important;' class="l-btn l-btn-small l-btn-plain" group="" id="{$main}_button_refresh" >
+					<span class="l-btn-left">
+						<span class="l-btn-text icon-reload l-btn-icon-left">&nbsp;</span>
+					</span>
+				</a>
+				{/if}
+			</div>
+		{/if}
+		{if $button|default:'' eq 'true'}
+			<div id='tombol'>
+				<a href="javascript:void(0)" style='float:right;' class="l-btn l-btn-small l-btn-plain" group="" id="" onClick="genform('delete', '{$mod}','{$main}');">
+					<span class="l-btn-left l-btn-icon-left">
+						<span class="l-btn-text">Hapus</span><span class="l-btn-icon icon-remove">&nbsp;</span>
+					</span>
+				</a>	
+				&nbsp;			
+				<a href="javascript:void(0)" style='float:right;' class="l-btn l-btn-small l-btn-plain" group="" id="" onClick="genform('edit', '{$mod}','{$main}');">
+					<span class="l-btn-left l-btn-icon-left">
+						<span class="l-btn-text">Edit</span><span class="l-btn-icon icon-edit">&nbsp;</span>
+					</span>
+				</a>
+				&nbsp;
+				<a href="javascript:void(0)" style='float:right;' class="l-btn l-btn-small l-btn-plain" group="" id="" onClick="genform('add', '{$mod}','{$main}');">
+					<span class="l-btn-left l-btn-icon-left">
+						<span class="l-btn-text">Tambah</span><span class="l-btn-icon icon-add">&nbsp;</span>
+					</span>
+				</a>
+				&nbsp;
+			</div>
+		{/if}
+		{if $button_2|default:'' eq 'true'}
+			<div id='tombol'>
+				<a href="javascript:void(0)" style='float:right;' class="l-btn l-btn-small l-btn-plain" group="" id="" onClick="genform('delete', '{$mod}','{$main}','','tbl_{$main}');">
+					<span class="l-btn-left l-btn-icon-left">
+						<span class="l-btn-text">Hapus</span><span class="l-btn-icon icon-remove">&nbsp;</span>
+					</span>
+				</a>	
+				&nbsp;
+				<a href="javascript:void(0)" style='float:right;' class="l-btn l-btn-small l-btn-plain" group="" id="" onClick="genform('add', '{$mod}','{$main}');">
+					<span class="l-btn-left l-btn-icon-left">
+						<span class="l-btn-text">Tambah</span><span class="l-btn-icon icon-add">&nbsp;</span>
+					</span>
+				</a>
+			</div>
+		{/if}
+		{if $button_reservation|default:'' eq 'true'} 
+			<div id='tombol'>
+				<a href="javascript:void(0)" style='float:right;' class="l-btn l-btn-small l-btn-plain" group="" id="" onClick="kumpulAction('reservation', 'notok');">
+					<span class="l-btn-left l-btn-icon-left">
+						<span class="l-btn-text">Set Cancel</span><span class="l-btn-icon icon-cancel">&nbsp;</span>
+					</span>
+				</a>	
+				&nbsp;	
+				<a href="javascript:void(0)" style='float:right;' class="l-btn l-btn-small l-btn-plain" group="" id="" onClick="kumpulAction('reservation', 'ok');">
+					<span class="l-btn-left l-btn-icon-left">
+						<span class="l-btn-text">Set OK</span><span class="l-btn-icon icon-ok">&nbsp;</span>
+					</span>
+				</a>
+
+			</div>
+		{/if}
+		{if $buton_banner|default:'' eq 'true'} 
+			<div id='tombol'>
+				<a href="javascript:void(0)" style='float:right;' class="l-btn l-btn-small l-btn-plain" group="" id="" onClick="kumpulAction('banner', 'notok');">
+					<span class="l-btn-left l-btn-icon-left">
+						<span class="l-btn-text">Set Tidak Aktif</span><span class="l-btn-icon icon-cancel">&nbsp;</span>
+					</span>
+				</a>	
+				&nbsp;	
+				<a href="javascript:void(0)" style='float:right;' class="l-btn l-btn-small l-btn-plain" group="" id="" onClick="kumpulAction('banner', 'ok');">
+					<span class="l-btn-left l-btn-icon-left">
+						<span class="l-btn-text">Set Aktif</span><span class="l-btn-icon icon-ok">&nbsp;</span>
+					</span>
+				</a>
+				&nbsp;
+				<a href="javascript:void(0)" style='float:right;' class="l-btn l-btn-small l-btn-plain" group="" id="" onClick="genform('delete', '{$mod}','{$main}','','tbl_{$main}');">
+					<span class="l-btn-left l-btn-icon-left">
+						<span class="l-btn-text">Hapus</span><span class="l-btn-icon icon-remove">&nbsp;</span>
+					</span>
+				</a>	
+				&nbsp;
+				<a href="javascript:void(0)" style='float:right;' class="l-btn l-btn-small l-btn-plain" group="" id="" onClick="genform('add', '{$mod}','{$main}');">
+					<span class="l-btn-left l-btn-icon-left">
+						<span class="l-btn-text">Tambah</span><span class="l-btn-icon icon-add">&nbsp;</span>
+					</span>
+				</a>
+			</div>
+		{/if}
+		
+		
+	</div>
+</div>
+<div id='detil_nya_{$main}' width='100%'></div>
+
+<script>
+$(function(){
+	var height_grid = {$tinggi_grid|default:''};
+	$('#grid_nya_{$main}').css('height', (height_grid != "" ? height_grid : (getClientHeight()-105) ) );
+	genGrid('{$main}','grid_{$main}', '', '', "{$id_meja|default:''}");
+});
+</script>

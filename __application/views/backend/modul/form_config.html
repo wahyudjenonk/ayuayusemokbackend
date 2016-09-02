@@ -1,0 +1,108 @@
+<fieldset>
+	<legend>FORM {$legend|default:'Config'}</legend>
+	<div class="span10" style='margin-top:10px !important;'>
+		<form class="form-horizontal" id="form_{$table}" url="{$host}backend/simpandata/{$table}" method="post" enctype="multipart/form-data">
+			<input type="hidden" name="editstatus" value="{$sts_crud|default:''}" />
+			{foreach from=$arrayform item=rows}
+				{if $rows.tipe eq 'hidden'}
+					<input type="hidden" name="id" value="{$data.id|default:''}" />
+				{elseif $rows.tipe eq 'combo'}
+					{include file="backend/template/input_form.html" type='select' class="{$rows.ukuran_class}" label="{$rows.label}" id="{$rows.name}" name="{$rows.name}" option={$rows.isi_combo|default:''} }
+				{elseif $rows.tipe eq 'text'}
+					{include file="backend/template/input_form.html" type='text' class="{$rows.ukuran_class}" label="{$rows.label}" id="{$rows.name}" name="{$rows.name}" value="{$data.{$rows.name}|default:''}" }
+				{elseif $rows.tipe eq 'file'}
+					{include file="backend/template/input_form.html" type='file' class="{$rows.ukuran_class}" label="{$rows.label}" id="{$rows.name}" name="{$rows.name}" value="{$data.{$rows.name}|default:''}" }
+				{elseif $rows.tipe eq 'textarea'}
+					{include file="backend/template/input_form.html" type="textarea" class="{$rows.ukuran_class}" label="{$rows.label}"  id="{$rows.name}_{$acak}" name="{$rows.name}" value=$data.{$rows.name}|default:''}
+				{/if}
+			{/foreach}
+		<div class="control-group">
+			<label class="control-label" for="form-field-1"></label>
+			<div class="controls">
+				{include file="backend/template/button_save.html" id_simpan="simpan_{$table}" id_batal="batal_{$table}" }
+			</div>
+		</div>	
+		</form>
+	</div>
+</fieldset>
+
+<script>
+var tipeform = "{$table}";
+
+switch(tipeform){
+	case "warkom":
+		gen_editor('#isi_warta_{$acak}');
+		$('#tgl_warta').datebox({
+			formatter : formatDate,
+			parser : parserDate,
+			//value : tanggal_terima
+		});
+			
+	break;
+	case "kebming":
+		$('#tgl_kebaktian').datebox({
+			formatter : formatDate,
+			parser : parserDate,
+			//value : tanggal_terima
+		});
+	break;
+	case "renwar":
+		gen_editor('#isi_renunganwarta_{$acak}');
+		$('#tgl_renungan').datebox({
+			formatter : formatDate,
+			parser : parserDate,
+			//value : tanggal_terima
+		});
+	break;
+	case "rema":
+		gen_editor('#isi_renungan_harian_{$acak}');
+		$('#tgl_renungan').datebox({
+			formatter : formatDate,
+			parser : parserDate,
+			//value : tanggal_terima
+		});
+	break;
+	case "artiro":
+		gen_editor('#isi_artikel_{$acak}');
+	break;
+}
+
+$('#batal_{$table}').click(function(){
+	if(tipeform == 'warkom'){
+		tinyMCE.get("isi_warta_{$acak}").save();
+	}else if(tipeform == 'rema'){
+		tinyMCE.get("isi_renungan_harian_{$acak}").save();
+	}else if(tipeform == 'artiro'){
+		tinyMCE.get("isi_artikel_{$acak}").save();
+	}
+	
+	$('#grid_nya_{$main}').show();
+	$('#detil_nya_{$main}').html('').hide();
+});	
+
+$('#simpan_{$table}').click(function(){
+	if(tipeform == 'warkom'){
+		tinyMCE.get("isi_warta_{$acak}").save();
+	}else if(tipeform == 'rema'){
+		tinyMCE.get("isi_renungan_harian_{$acak}").save();
+	}else if(tipeform == 'artiro'){
+		tinyMCE.get("isi_artikel_{$acak}").save();
+	}
+	
+	submit_form('form_{$table}',function(r){
+		if(r==1){
+			$.messager.alert('GKI Ampera',"Data Tersimpan",'info');
+			$('#grid_{$main}').datagrid('reload');
+			$('#grid_nya_{$main}').show();
+			$('#detil_nya_{$main}').html('').hide();
+			$('.info-empty').remove();
+			//var $panel = $('#grid_{$main}').datagrid('getPanel');
+			//$($panel).find(".datagrid-view").append('');
+			
+		}else{
+			$.messager.alert('GKI Ampera',"Data Gagal Tersimpan",'error');
+			console.log(r);
+		}
+	});
+});
+</script>

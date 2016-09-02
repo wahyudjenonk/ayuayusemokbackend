@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Homtel Backend App</title>
+  <link rel="stylesheet" href="{$host}__assets/css/style-login.css" media="screen" type="text/css" />
+</head>
+<body>
+	<br/>
+	<div class="login-card">
+		<form name='frmLogin' action="{$host}backoffice-masuk" method="post">
+			<input type="text" name="user" placeholder="Username">
+			<input type="password" name="pwd" placeholder="Password">
+			<input type="submit" id="login" class="login login-submit" value="Login">
+		</form>
+		<div class="login-help">
+			Homtel Backend App &copy; Margahayu Land
+		</div>
+		{if isset($error)}
+            <div style="text-align:center;margin-top:30px">
+				<span style="color:red;"><b><i>{$error}</i></b></span>
+			</div>
+		{/if}	
+	</div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{foreach from=$meja item=rows}
+	{if $rows.status_meja eq 'Y'}
+		{assign var=background value='#00FF6A'}
+	{elseif $rows.status_meja eq 'N'}
+		{assign var=background value='#71B7E0'}
+	{elseif $rows.status_meja eq 'R'}
+		{assign var=background value='#FF7373'}
+	{/if}
+	
+	<button class='tombol-meja' style='background:{$background}' href='javascript:void(0);' onClick="kumpulAction('detail-meja', '{$rows.id}', '{$rows.status_meja}', '{$rows.nomor_meja}');">
+		<img src='{$host}__assets/img/meja.png'> 
+		{if $rows.status_meja eq 'R'}
+			<strike>Meja No. {$rows.nomor_meja}</strike>
+		{else}
+			Meja No. {$rows.nomor_meja}
+		{/if}
+	</button>
+{/foreach}

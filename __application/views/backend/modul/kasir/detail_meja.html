@@ -1,0 +1,76 @@
+<div style='background:#F5F5F5;'>
+{if $status_meja eq 'Y'}
+	<div id='menu-utama' style='height:78% !important;'>
+		<center>
+		<br/>
+		<h3>Meja No. {$nomor_meja}, Masih Tersedia</h3>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<button class='tombol-menu-awal' href='javascript:void(0);' onClick="kumpulAction('set_aktif_meja', '{$id_meja}', '{$nomor_meja}');" >
+			<img src='{$host}__assets/img/yes.png'> Aktif
+		</button>
+		<button class='tombol-menu-awal' href='javascript:void(0);' onClick="kumpulAction('set_tidak_aktif_meja', '{$id_meja}', '{$nomor_meja}');" >
+			<img src='{$host}__assets/img/cancel.png'> Tidak Aktif
+		</button>
+		</center>
+	</div>
+{elseif $status_meja eq 'N'}
+	<table width='100%'>
+		<tr>
+			<td style='padding:5px;' width='45%'>
+				{include file="backend/template/grid.html" main='list_pesanan_kasir' tinggi_grid='(getClientHeight()-245)' tinggi_toolbar='40px'}
+			</td>
+			<td style='padding:5px;' width='55%'>
+				{include file="backend/template/grid.html" main='list_produk_kasir' tinggi_grid='(getClientHeight()-245)' tinggi_toolbar='40px' filter_core='true' filter_kategori='true' optkategori="$option_kategori_produk" input_cari='true' label_cari='Cari Produk' button_refresh='true' }
+			</td>
+		</tr>
+		<tr>
+			<td style='padding:5px;'>
+				<font style='font-weight:bold;font-size:13px;'>TOTAL QTY</font> : <input type='text' value="{$tot_qty|default:'0'}" id='total_qty' style='width:100px;padding:5px;background:#fffff !important;' readonly />
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<font style='font-weight:bold;font-size:13px;'>TOTAL HARGA</font> : <input type='text' value="{$tot_harga|default:'0'}" id='total_hrg' style='width:140px;padding:5px;background:#fffff !important;' readonly />
+				<br/>
+				<hr/>
+				<button class='tombol-menu-awal' href='javascript:void(0);' onClick="kumpulAction('selesai-transaksi', '{$id_meja}', '{$nomor_meja}');" >
+					<img src='{$host}__assets/img/cash_register.png' width='30px' height='30px'> Bayar
+				</button>
+				<button class='tombol-menu-awal' href='javascript:void(0);' onClick="loadUrl('{$host}kasir');" >
+					<img src='{$host}__assets/img/undo.png' width='30px' height='30px'> Kembali
+				</button>
+				<button class='tombol-menu-awal' href='javascript:void(0);' onClick="kumpulAction('hapus-item', '{$id_meja}');" >
+					<img src='{$host}__assets/img/cancel.png' width='30px' height='30px'> Hapus Item
+				</button>
+			</td>
+			<td style='padding:5px;'>
+				<div class="infobox infobox-red  " style='width:100px !important;'>
+					<div class="infobox-data">
+						<div class="infobox-content">MEJA NO.</div>
+						<span class="infobox-data-number">{$nomor_meja}</span>
+					</div>				
+				</div>
+			</td>
+		</tr>
+	</table>
+{/if}
+</div>
+
+<script>
+	var id_meja = "{$id_meja}";
+	/*
+	$('#list_produk_kasir_cari').autocomplete({
+		source: host+'cari-produk-autocomplete',
+		minLength: 2,
+		select: function( event, ui ){
+			$('#prod_kasir').datagrid('reload', {
+				'nama_produk' : $(this).val()
+			})
+		}
+	});
+	*/
+</script>					

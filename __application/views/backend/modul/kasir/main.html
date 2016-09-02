@@ -1,0 +1,25 @@
+<div style='width:70%;height:25px;'>
+	<span style="margin-right: 5px; float: left; width: 20px; height: 13px; background: #00FF6A; border: 1px solid silver;"></span>
+	<span style='float:left;margin-right:5px'>
+		Tersedia
+	</span>
+	<span style="margin-right: 5px; float: left; width: 20px; height: 13px; background: #71B7E0; border: 1px solid silver;"></span>
+	<span style='float:left;margin-right:5px'>
+		Terpakai
+	</span>
+	<span style="margin-right: 5px; float: left; width: 20px; height: 13px; background: #FF7373; border: 1px solid silver;"></span>
+	<span style='float:left;margin-right:5px'>
+		Tidak Tersedia
+	</span>
+</div>
+<div id='tabsss' style='width:100%;'>
+	<div id='tab-lantai'></div>
+</div>
+
+<script>
+	$(function(){
+		var tab_array = [{$jml_lt}];
+		$('#tabsss').css( { 'height' : getClientHeight()-133 } );
+		genTab( '#tab-lantai', 'kasir', '', tab_array, 'undefined', '', '', getClientHeight()-100, getClientHeight()-140 );
+	});
+</script>
