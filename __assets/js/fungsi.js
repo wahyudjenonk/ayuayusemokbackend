@@ -126,63 +126,41 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 	var footer=false;
 	
 	switch(modnya){
-		case "wartakomisi":
+		case "registration":
 			judulnya = "";
-			urlnya = "warkom";
+			urlnya = "registration";
 			fitnya = true;
-			urlglobal = host+'backend/getdata/'+urlnya;
+			urlglobal = host+'backoffice-Data/'+urlnya;
 			frozen[modnya] = [	
-				{field:'tp_warta',title:'Tipe Warta',width:200, halign:'center',align:'left'},
-			]
-			kolom[modnya] = [	
-				{field:'nama_komisi',title:'Nama Komisi',width:200, halign:'center',align:'left'},
-				{field:'tgl_warta',title:'Tanggal',width:150, halign:'center',align:'center'},
-				{field:'judul_warta',title:'Judul',width:300, halign:'center',align:'left'},
-			]
-		break;
-		case "list_pesanan_kasir":
-			judulnya = "";
-			tingginya = getClientHeight-450;
-			urlglobal = host+'backend/getdata/'+modnya;
-			fitnya = true;
-			pagesizeboy = 50;
-			param['id_meja'] = par1;
-			kolom[modnya] = [	
-				{field:'nama_produk',title:'Nama Produk',width:200, halign:'center',align:'left'},
-				{field:'qty',title:'Qty',width:90, halign:'center',align:'right'},
-				{field:'total_harga',title:'Total Harga',width:120, halign:'center',align:'right',
-					formatter: function(value,row,index){
-						if (row.total_harga){
-							return NumberFormat(row.total_harga);
-						} else {
-							return '-';
-						}
+				{field:'flag',title:'Status',width:150, halign:'center',align:'left',
+					formatter:function(value,rowData,rowIndex){
+						if(value=='P'){return 'Waiting Konfirmation';}
+						else{return 'Member';}
+					},
+					styler:function(value,rowData,rowIndex){
+						if(value=='P'){return 'background:red;color:#ffffff;'}
 					}
 				},
-			];
-		break;
-		case "list_produk_kasir":
-			judulnya = "";
-			tingginya = getClientHeight-450;
-			urlglobal = host+'backend/getdata/'+modnya;
-			fitnya = true;
-			pagesizeboy = 50;
-			paging = true;
-			doble_klik = true;
+				{field:'name',title:'Name',width:200, halign:'center',align:'left'},
+				{field:'email',title:'Email',width:200, halign:'center',align:'left'},
+				{field:'id_number',title:'Number ID',width:150, halign:'center',align:'left'},
+				
+			]
 			kolom[modnya] = [	
-				{field:'nama_kategori',title:'Kategori',width:130, halign:'center',align:'left'},
-				{field:'nama_produk',title:'Nama Produk',width:240, halign:'center',align:'left'},
-				{field:'harga_jual',title:'Harga Satuan',width:150, halign:'center',align:'right',
-					formatter: function(value,row,index){
-						if (row.harga_jual){
-							return NumberFormat(row.harga_jual);
-						} else {
-							return '-';
-						}
-					}
-				},
-			];
-		break;	
+				{field:'place_of_birth',title:'Place Birth',width:120, halign:'center',align:'left'},
+				{field:'date_of_birth',title:'Date Birth',width:100, halign:'center',align:'left'},
+				{field:'address',title:'Address',width:200, halign:'center',align:'left'},
+				{field:'city',title:'City',width:150, halign:'center',align:'left'},
+				{field:'state',title:'State',width:200, halign:'center',align:'left'},
+				{field:'zip_code',title:'Zip Code',width:100, halign:'center',align:'left'},
+				{field:'phone_home',title:'Phn. Home',width:100, halign:'center',align:'left'},
+				{field:'phone_mobile',title:'Phn. Mobile',width:100, halign:'center',align:'left'},
+				{field:'company_name',title:'Company',width:150, halign:'center',align:'left'},
+				{field:'company_address',title:'Company Addr',width:200, halign:'center',align:'left'},
+				{field:'company_phone',title:'Company Phn',width:100, halign:'center',align:'left'},
+			]
+		break;
+		
 	}
 	
 	grid_nya=$("#"+divnya).datagrid({
@@ -677,5 +655,16 @@ function gen_editor(id){
 		tinyMCE.execCommand('mceRemoveControl', true, id);
 		tinyMCE.execCommand('mceAddControl', true, id);
 	
+}
+function cariData(acak){
+	var post_search = {};
+	post_search['kat'] = $('#kat_'+acak).val();
+	post_search['key'] = $('#key_'+acak).val();
+	if($('#kat_'+acak).val()!=''){
+		grid_nya.datagrid('reload',post_search);
+	}else{
+		$.messager.alert('Aldeaz Back-Office',"Pilih Kategori Pencarian",'error');
+	}
+	//$('#grid_'+typecari).datagrid('reload', post_search);
 }
 
