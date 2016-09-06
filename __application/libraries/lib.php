@@ -393,7 +393,12 @@ class lib {
 		return $arrayform;
 	}
 	//End Generate Form Via Field Table
-	
+	function uniq_id(){
+		$s = strtoupper(md5(uniqid(rand(),true))); 
+		//echo $s;
+		$guidText = substr($s,0,6);
+		return $guidText;
+	}
 	
 	
 }

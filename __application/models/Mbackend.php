@@ -3,7 +3,7 @@
 class Mbackend extends CI_Model{
 	function __construct(){
 		parent::__construct();
-		$this->auth = unserialize(base64_decode($this->session->userdata('44mpp3R4')));
+		//$this->auth = unserialize(base64_decode($this->session->userdata('44mpp3R4')));
 	}
 	
 	function getdata($type="", $balikan="", $p1="", $p2="",$p3="",$p4=""){
@@ -104,7 +104,7 @@ class Mbackend extends CI_Model{
 	}
 	
 	function simpandata($table,$data,$sts_crud){ //$sts_crud --> STATUS NYEE INSERT, UPDATE, DELETE
-		$this->db->trans_begin();
+		/*$this->db->trans_begin();
 		if(isset($data['id'])){
 			$id = $data['id'];
 			unset($data['id']);
@@ -116,83 +116,17 @@ class Mbackend extends CI_Model{
 				if($sts_crud=='add')$data['password']=$this->encrypt->encode($data['password']);
 				if(!isset($data['status'])){$data['status']=0;}
 			break;
-			case "transaksi_penjualan":
-				$table = "tbl_transaksi_penjualan";
-				$id_meja = $data['cl_meja_id'];
-				$tbl_produk_id = $data['tbl_produk_id'];
-				unset($data['cl_meja_id']);
-				unset($data['tbl_produk_id']);
-				
-				$cek_data_produk = $this->db->get_where('tbl_produk', array('id'=>$tbl_produk_id) )->row_array();
-				$cek_data = $this->db->get_where('tbl_transaksi_penjualan', array('cl_meja_id'=>$id_meja, 'tbl_produk_id'=>$tbl_produk_id) )->row_array();
-				
-				if($cek_data){
-					$sts_crud = 'edit';
-					$qty_update = ($cek_data['qty']+1);
-					
-					$id = $cek_data['id'];
-					$data['qty'] = $qty_update;
-					$data['total_harga'] = ($qty_update*$cek_data_produk['harga_jual']);
-				}else{
-					$sts_crud = 'add';
-					
-					$data['cl_meja_id'] = $id_meja;
-					$data['tbl_produk_id'] = $tbl_produk_id;
-					$data['qty'] = 1;
-					$data['harga_satuan'] = $cek_data_produk['harga_jual'];
-					$data['total_harga'] = $cek_data_produk['harga_jual'];
-				}
-			break;
-			case "hapus_item_kasir":
-				$table = "tbl_transaksi_penjualan";
-				$id_meja = $data['id_meja'];
-				$tbl_produk_id = $data['tbl_produk_id'];
-				unset($data['id_meja']);
-				unset($data['tbl_produk_id']);				
-				
-				$cek_data = $this->db->get_where('tbl_transaksi_penjualan', array('id'=>$id, 'cl_meja_id'=>$id_meja, 'tbl_produk_id'=>$tbl_produk_id) )->row_array();
-				if($cek_data['qty'] > 1){
-					$sts_crud = 'edit';
-					$qty = ($cek_data['qty']-1);
-					$data['qty'] = $qty;
-					$data['total_harga'] = ($qty * $cek_data['harga_satuan']);
-				}else{
-					$sts_crud = 'delete';
-				}
-			break;
-			case "tutup_transaksi":
-				$table = "tbl_h_penjualan_outlet";
-				$get_data_transaksi_temp = $this->db->get_where('tbl_transaksi_penjualan', array('cl_meja_id'=>$data['tbl_meja_id']))->result_array();
-				$array_batch_insert = array();
-				foreach($get_data_transaksi_temp as $k => $v){
-					$array_insert = array(
-						'kode_transaksi' => $data['kode_transaksi'],
-						'tbl_produk_id' => $v['tbl_produk_id'],
-						'qty' => $v['qty'],
-						'harga_satuan' => $v['harga_satuan'],
-						'total_harga' => $v['total_harga'],
-						'create_date' => date('Y-m-d H:i:s'),
-						'create_by' => $this->auth['nama_lengkap'],
-					);
-					array_push($array_batch_insert, $array_insert);
-				}
-				
-				$insert_rame = $this->db->insert_batch('tbl_d_penjualan_outlet', $array_batch_insert);
-				if($insert_rame){
-					$this->db->delete('tbl_transaksi_penjualan', array('cl_meja_id'=>$data['tbl_meja_id']));
-					$this->db->update('tbl_meja', array('status_meja'=>'Y'), array('id'=>$data['tbl_meja_id']));
-				}
-				
-				$data['jumlah_uang_dibayar'] = ($data['jumlah_bayar_pesanan'] + $data['pajak']);
-				//$data['create_date'] = date('Y-m-d H:i:s');
-				//$data['create_by'] = $this->auth['nama_lengkap'];
+			case "registrasi":
+				$table='tbl_registration';
 			break;
 		}
 		
 		switch ($sts_crud){
 			case "add":
-				$data['create_date'] = date('Y-m-d H:i:s');
-				$data['create_by'] = $this->auth['nama_lengkap'];
+				if($table!='tbl_registration'){
+					$data['create_date'] = date('Y-m-d H:i:s');
+					$data['create_by'] = $this->auth['nama_lengkap'];
+				}
 				$this->db->insert($table,$data);
 			break;
 			case "edit":
@@ -205,10 +139,13 @@ class Mbackend extends CI_Model{
 		
 		if($this->db->trans_status() == false){
 			$this->db->trans_rollback();
-			return 0;
+			return 'gagal';
 		}else{
-			return $this->db->trans_commit();
-		}
+			 $this->db->trans_commit();
+			 return 'sukses';
+		}*/
+		
+		return "sukses";
 	
 	}
 	
