@@ -8,8 +8,9 @@ $route['translate_uri_dashes'] = FALSE;
 $route['backoffice'] = 'backend';
 $route['backoffice-masuk'] = 'login';
 $route['backoffice-keluar'] = 'login/logout';
-$route['backoffice-grid/(:any)'] = 'backend/get_grid/$1';
+$route['Backoffice-Grid/(:any)'] = 'backend/get_grid/$1';
 $route['backoffice-form/(:any)'] = 'backend/get_form/$1';
+$route['backoffice-Data/(:any)'] = 'backend/getdata/$1';
 
 // Modul Kasir
 $route['beranda'] = 'backend/modul/beranda/main';

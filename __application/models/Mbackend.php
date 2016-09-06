@@ -19,63 +19,11 @@ class Mbackend extends CI_Model{
 					WHERE nama_user = '".$p1."'
 				";
 			break;
+			case "registration":
+				$sql="SELECT A.*,CONCAT(A.title,' ',A.owner_name_first,' ',A.owner_name_last) as name
+					  FROM tbl_registration A ".$where;
+			break;
 			
-			//Modul Kasir
-			case "get_setting":
-				$sql = "
-					SELECT value
-					FROM tbl_setting
-					WHERE param = '".$p1."'
-				";
-			break;
-			case "get_meja_perlantai":
-				$sql = "
-					SELECT *
-					FROM tbl_meja
-					WHERE lantai_id = '".$p1."'
-				";
-			break;
-
-			case "list_pesanan_kasir":
-				$id_meja = $this->input->post('id_meja');
-				$sql = "
-					SELECT A.*, B.nama_produk
-					FROM tbl_transaksi_penjualan A
-					LEFT JOIN tbl_produk B ON B.id = A.tbl_produk_id
-					WHERE A.cl_meja_id = '".$id_meja."'
-				";
-			break;
-			case "list_produk_kasir":
-				$where = "";
-				$kategori = $this->input->post('kategori');
-				if($kategori){
-					$where .= "
-						AND A.cl_kategori_id = '".$kategori."'
-					";
-				}
-				$nama_produk = $this->input->post('nama_produk');
-				if($nama_produk){
-					$where .= "
-						AND A.nama_produk = '".$nama_produk."'
-					";
-				}
-				
-				$sql = "
-					SELECT A.*, B.nama_kategori
-					FROM tbl_produk A
-					LEFT JOIN cl_kategori B ON B.id = A.cl_kategori_id
-					WHERE 1=1 $where
-				";
-			break;
-			case "total_pesanan":
-				$id_meja = $this->input->post('id_meja');
-				$sql = "
-					SELECT SUM(qty) as tot_qty, SUM(total_harga) as tot_harga
-					FROM tbl_transaksi_penjualan
-					WHERE cl_meja_id = '".$id_meja."'
-				";
-			break;			
-			//End Modul Kasir
 		}
 		
 		if($balikan == 'json'){

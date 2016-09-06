@@ -12,8 +12,21 @@
 	<div id='grid_{$main}'></div>
 	<div id='tb_{$main}' style="padding:5px;height:{$tinggi_toolbar|default:'28px'};">
 		{if $filter_core|default:'' eq 'true'}
-			<div style="float:{$align|default:'left'};">
-				{if $filter_kategori|default:'' eq 'true'}
+			<div style="float:{$align|default:'left'}; width:50%;">
+					<label style='width:120px;'>Filter By </label>:
+					<select id='kat_{$acak}' style='width:150px;padding:3px;'>
+						<option value=''>-- Pilih --</option>
+						{$data_select|default:''}
+					</select>				
+					&nbsp;&nbsp;
+					<input type="text" name="key_{$acak}" id="key_{$acak}" style="width:30%;">
+					&nbsp;&nbsp;&nbsp;
+					<a href="javascript:void(0)" style='margin-top:-10px' class="l-btn l-btn-small l-btn-plain" group="" id="" onClick="cariData('{$acak}');">
+						<span class="l-btn-left l-btn-icon-left">
+							<span class="l-btn-text">Find</span><span class="l-btn-icon icon-search">&nbsp;</span>
+						</span>
+					</a>	
+				{* {if $filter_kategori|default:'' eq 'true'}
 					<label style='width:100px !important;'>Filter Kategori</label> :
 					<select id='{$main}_filter_kategori' style='width:150px;padding:5px;'>
 						{$optkategori}
@@ -31,9 +44,11 @@
 						<span class="l-btn-text icon-reload l-btn-icon-left">&nbsp;</span>
 					</span>
 				</a>
-				{/if}
+				{/if} *}
 			</div>
 		{/if}
+		
+		
 		{if $button|default:'' eq 'true'}
 			<div id='tombol'>
 				<a href="javascript:void(0)" style='float:right;' class="l-btn l-btn-small l-btn-plain" group="" id="" onClick="genform('delete', '{$mod}','{$main}');">
@@ -122,8 +137,8 @@
 
 <script>
 $(function(){
-	var height_grid = {$tinggi_grid|default:''};
-	$('#grid_nya_{$main}').css('height', (height_grid != "" ? height_grid : (getClientHeight()-105) ) );
+	var height_grid = {$tinggi_grid|default:0};
+	$('#grid_nya_{$main}').css('height', (height_grid != 0 ? height_grid : (getClientHeight()-105) ) );
 	genGrid('{$main}','grid_{$main}', '', '', "{$id_meja|default:''}");
 });
 </script>

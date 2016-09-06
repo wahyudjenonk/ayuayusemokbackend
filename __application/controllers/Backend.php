@@ -40,6 +40,8 @@ class Backend extends JINGGA_Controller {
 	
 	function get_grid($mod){
 		$temp = 'backend/modul/grid_config.html';
+		$filter=$this->combo_option($mod);
+		$this->nsmarty->assign('data_select',$filter);
 		$this->nsmarty->assign('mod',$mod);
 		if(!file_exists($this->config->item('appl').APPPATH.'views/'.$temp)){$this->nsmarty->display('konstruksi.html');}
 		else{$this->nsmarty->display($temp);}
@@ -162,5 +164,18 @@ class Backend extends JINGGA_Controller {
 			echo 'true';
 		}
 	}
-	
+	function combo_option($mod){
+		$opt="";
+		switch($mod){
+			case "registration":
+				$opt .="<option value='A.email'>Email</option>";
+				$opt .="<option value='A.owner_name_last'>Last Name</option>";
+				$opt .="<option value='A.owner_name_first'>First Name</option>";
+				$opt .="<option value='A.id_number'>ID Number</option>";
+				$opt .="<option value='A.company_name'>Company Name</option>";
+			break;
+			
+		}
+		return $opt;
+	}
 }

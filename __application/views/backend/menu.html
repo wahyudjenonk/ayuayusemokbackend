@@ -9,7 +9,70 @@
 		<li>
 			<a href="javascript:void(0);" onclick="">
 				<i class="icon-laptop"></i>
-				<span class="menu-text">Dashboard 2</span>
+				<span class="menu-text">Profile</span>
+			</a>
+		</li>
+		<li>
+			<a href="javascript:void(0);" onclick="">
+				<i class="icon-laptop"></i>
+				<span class="menu-text">Property</span>
+			</a>
+		</li>
+		<li>
+			<a href="javascript:void(0);"  class="dropdown-toggle" >
+				<i class="icon-cogs"></i>
+				<span class="menu-text">Services</span>
+				<b class="arrow icon-angle-down"></b>
+			</a>
+			<ul class="submenu">
+				<li>
+					<a href="javascript:void(0);" onclick="">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Housekeeping Service</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Linen Service</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Check-in & Check out Service</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Hosting Service</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Full Host Service</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+		<li>
+			<a href="javascript:void(0);" onclick="">
+				<i class="icon-laptop"></i>
+				<span class="menu-text">Transaction </span>
+			</a>
+		</li>
+		<li>
+			<a href="javascript:void(0);" onclick="">
+				<i class="icon-laptop"></i>
+				<span class="menu-text">Invoice</span>
+			</a>
+		</li>
+		<li>
+			<a href="javascript:void(0);" onclick="">
+				<i class="icon-laptop"></i>
+				<span class="menu-text">Payment</span>
 			</a>
 		</li>
 		<li>
@@ -21,18 +84,76 @@
 		<li>
 			<a href="javascript:void(0);"  class="dropdown-toggle" >
 				<i class="icon-cogs"></i>
-				<span class="menu-text"> Konfigurasi </span>
+				<span class="menu-text">Reference</span>
 				<b class="arrow icon-angle-down"></b>
 			</a>
 			<ul class="submenu">
 				<li>
 					<a href="javascript:void(0);" onclick="">
 						<i class="icon-double-angle-right"></i>
-						<span class="menu-text">Konfigurasi Umum</span>
+						<span class="menu-text">Facility Unit</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Compulsary Payment</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Listing List</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Listing Third Party</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Owner Type</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Room Type</span>
 					</a>
 				</li>
 			</ul>
 		</li>
+		<li>
+			<a href="javascript:void(0);"  class="dropdown-toggle" >
+				<i class="icon-cogs"></i>
+				<span class="menu-text">User Management</span>
+				<b class="arrow icon-angle-down"></b>
+			</a>
+			<ul class="submenu">
+				<li>
+					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Grid/registration');$('#judul_kecil').html('Registration List')">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Registration</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Grid/member');$('#judul_kecil').html('Member List')">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Member</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Member Access Control</span>
+					</a>
+				</li>
+			</ul>
+		</li>
+		
 	</ul><!--/.nav-list-->
 
 	<div class="sidebar-collapse" id="sidebar-collapse">
