@@ -134,11 +134,7 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 			frozen[modnya] = [	
 				{field:'id',title:'Activation',width:150, halign:'center',align:'center',
 					formatter:function(value,rowData,rowIndex){
-						if(rowData.flag=='P'){
-							
-							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">SetMember</a>';
-						}
-						else{return 'Was Activate';}
+						return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Detail</a>';
 					},
 					styler:function(value,rowData,rowIndex){
 						if(value=='P'){return 'background:red;color:#ffffff;'}
@@ -170,6 +166,35 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 				{field:'company_name',title:'Company',width:150, halign:'center',align:'left'},
 				{field:'company_address',title:'Company Addr',width:200, halign:'center',align:'left'},
 				{field:'company_phone',title:'Company Phn',width:100, halign:'center',align:'left'},
+			]
+		break;
+		case "member":
+			judulnya = "";
+			urlnya = "member";
+			fitnya = true;
+			urlglobal = host+'backoffice-Data/'+urlnya;
+			kolom[modnya] = [	
+				{field:'pwd',title:'View',width:150, halign:'center',align:'center',
+					formatter:function(value,rowData,rowIndex){
+							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\',\''+rowData.member_user+'\')">Detail</a>';
+					},
+					styler:function(value,rowData,rowIndex){
+						if(value=='P'){return 'background:red;color:#ffffff;'}
+					}
+				},
+				{field:'flag_member',title:'Status',width:150, halign:'center',align:'left',
+					formatter:function(value,rowData,rowIndex){
+						if(value==1){return 'Member Active';}
+						else{return 'Member Not Active';}
+					},
+					styler:function(value,rowData,rowIndex){
+						if(value!=1){return 'background:red;color:#ffffff;'}
+					}
+				},
+				{field:'member_user',title:'Member User',width:200, halign:'center',align:'left'},
+				{field:'name',title:'Name',width:200, halign:'center',align:'left'},
+				{field:'email_address',title:'Email',width:200, halign:'center',align:'left'},
+				{field:'id_number',title:'Number ID',width:150, halign:'center',align:'left'}
 			]
 		break;
 		

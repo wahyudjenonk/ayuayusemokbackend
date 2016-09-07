@@ -148,6 +148,10 @@ class Backend extends JINGGA_Controller {
 				$data=$this->mbackend->getdata('registration','get');
 				$this->nsmarty->assign('data',$data);
 			break;
+			case "member":
+				$data=$this->mbackend->getdata('member','get');
+				$this->nsmarty->assign('data',$data);
+			break;
 			
 		}
 		$this->nsmarty->assign('temp',$temp);
@@ -190,7 +194,13 @@ class Backend extends JINGGA_Controller {
 				$opt .="<option value='A.id_number'>ID Number</option>";
 				$opt .="<option value='A.company_name'>Company Name</option>";
 			break;
-			
+			case "registration":
+				$opt .="<option value='A.email_address'>Email</option>";
+				$opt .="<option value='B.owner_name_last'>Last Name</option>";
+				$opt .="<option value='B.owner_name_first'>First Name</option>";
+				$opt .="<option value='B.id_number'>ID Number</option>";
+				$opt .="<option value='B.company_name'>Company Name</option>";
+			break;
 		}
 		return $opt;
 	}

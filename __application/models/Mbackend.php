@@ -25,6 +25,14 @@ class Mbackend extends CI_Model{
 					  FROM tbl_registration A ".$where;
 				if($balikan=='get')return $this->db->query($sql)->row_array();
 			break;
+			case "member":
+				if($balikan=='get'){$where .=" AND A.member_user='".$this->input->post('id')."'";}
+				$sql="SELECT A.*,A.flag as flag_member,CONCAT(B.title,' ',B.owner_name_first,' ',B.owner_name_last) as name,
+					  B.*
+					  FROM tbl_member A 
+					  LEFT JOIN tbl_registration B ON A.tbl_registration_id=B.id ".$where;
+				if($balikan=='get')return $this->db->query($sql)->row_array();
+			break;
 			
 		}
 		
