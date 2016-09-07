@@ -43,6 +43,10 @@ class Mjingga_api extends CI_Model{
 				$data['flag']='P';
 				if($sts_crud=='add'){
 					$ex=$this->db->get_where('tbl_registration',array('email'=>$data['email']))->row_array();
+					$msg['data']=array('member_user'=>$this->lib->uniq_id(),
+									'pwd'=>$this->lib->uniq_id(),
+									'email_address'=>$data['email']
+					);
 					if(isset($ex['email'])){
 						$this->db->trans_rollback();
 						return array('msg'=>'gagal','pesan'=>'Email Anda Sudah Terdaftar');
@@ -102,11 +106,7 @@ class Mjingga_api extends CI_Model{
 			//return 'gagal';
 		}else{
 			 $this->db->trans_commit();
-			 if($table=='tbl_registration'){
-				if($sts_crud=='add'){
-					$msg['data']=array('member_user'=>$this->lib->uniq_id(),'pwd'=>$this->lib->uniq_id(),'email_address'=>$data['email_address']);
-				}
-			 }
+			 
 			 $msg['msg']='sukses';
 			 $msg['pesan']='';
 			// return 'sukses';
