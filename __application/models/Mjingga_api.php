@@ -49,7 +49,7 @@ class Mjingga_api extends CI_Model{
 					);
 					if(isset($ex['email'])){
 						$this->db->trans_rollback();
-						return array('msg'=>'gagal','pesan'=>'Email Anda Sudah Terdaftar');
+						return array('msg'=>'gagal','pesan'=>'Your email has already in system.');
 					}
 				}
 				if($sts_crud=='edit'){
@@ -61,7 +61,7 @@ class Mjingga_api extends CI_Model{
 						$ex=$this->db->get_where('tbl_member',array('email_address'=>$data['email_address']))->row_array();
 						if(isset($ex['email_address'])){
 							$this->db->trans_rollback();
-							return array('msg'=>'gagal','pesan'=>'User Anda Sudah Ada');
+							return array('msg'=>'gagal','pesan'=>'Your email has already in system.');
 						}else{
 							$data_member=array('member_user'=>$data['member_user'],//$this->lib->uniq_id(),
 											   'email_address'=>$data['email_address'],
@@ -77,7 +77,7 @@ class Mjingga_api extends CI_Model{
 						}
 					}else{
 						$this->db->trans_rollback();
-						return array('msg'=>'gagal','pesan'=>'Registrasi Anda Tidak Terdaftar');
+						return array('msg'=>'gagal','pesan'=>'Failed register.');
 					}
 				}
 			break;
@@ -102,13 +102,13 @@ class Mjingga_api extends CI_Model{
 		if($this->db->trans_status() == false){
 			$this->db->trans_rollback();
 			$msg['msg']='gagal';
-			$msg['pesan']='Tidak Dapat Menyimpan Data';
+			$msg['pesan']='System Failure, Please Try Again Later.';
 			//return 'gagal';
 		}else{
 			 $this->db->trans_commit();
 			 
-			 $msg['msg']='sukses';
-			 $msg['pesan']='';
+			 $msg['msg'] = 'sukses';
+			 $msg['pesan'] = '';
 			// return 'sukses';
 		}
 		
