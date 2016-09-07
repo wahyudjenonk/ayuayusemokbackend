@@ -59,7 +59,7 @@ class Mjingga_api extends CI_Model{
 							$this->db->trans_rollback();
 							return array('msg'=>'gagal','pesan'=>'User Anda Sudah Ada');
 						}else{
-							$data_member=array('member_user'=>$this->lib->uniq_id(),
+							$data_member=array('member_user'=>$data['member_user'],//$this->lib->uniq_id(),
 											   'email_address'=>$data['email_address'],
 											   'tbl_registration_id'=>$reg['id'],
 											   'pwd'=>$this->encrypt->encode($data['pwd']),
@@ -102,6 +102,11 @@ class Mjingga_api extends CI_Model{
 			//return 'gagal';
 		}else{
 			 $this->db->trans_commit();
+			 if($table=='tbl_registration'){
+				if($sts_crud=='add'){
+					$msg['data']=array('member_user'=>$this->lib->uniq_id(),'pwd'=>$this->lib->uniq_id(),'email_address'=>$data['email_address']);
+				}
+			 }
 			 $msg['msg']='sukses';
 			 $msg['pesan']='';
 			// return 'sukses';
