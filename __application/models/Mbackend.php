@@ -20,8 +20,10 @@ class Mbackend extends CI_Model{
 				";
 			break;
 			case "registration":
+				if($balikan=='get'){$where .=" AND A.id=".$this->input->post('id');}
 				$sql="SELECT A.*,CONCAT(A.title,' ',A.owner_name_first,' ',A.owner_name_last) as name
 					  FROM tbl_registration A ".$where;
+				if($balikan=='get')return $this->db->query($sql)->row_array();
 			break;
 			
 		}
@@ -52,7 +54,7 @@ class Mbackend extends CI_Model{
 	}
 	
 	function simpandata($table,$data,$sts_crud){ //$sts_crud --> STATUS NYEE INSERT, UPDATE, DELETE
-		/*$this->db->trans_begin();
+		$this->db->trans_begin();
 		if(isset($data['id'])){
 			$id = $data['id'];
 			unset($data['id']);
@@ -91,7 +93,7 @@ class Mbackend extends CI_Model{
 		}else{
 			 $this->db->trans_commit();
 			 return 'sukses';
-		}*/
+		}
 		
 		return "sukses";
 	

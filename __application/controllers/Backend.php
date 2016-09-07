@@ -137,7 +137,23 @@ class Backend extends JINGGA_Controller {
 			$this->nsmarty->display($temp);
 		}
 	}	
-	
+	function get_konten(){
+		$mod=$this->input->post('mod');
+		if($this->input->post('table'))$mod=$this->input->post('table');
+		//echo $mod;
+		$this->nsmarty->assign('mod',$mod);
+		$temp="backend/modul/".$mod.".html";
+		switch($mod){
+			case "registration":
+				$data=$this->mbackend->getdata('registration','get');
+				$this->nsmarty->assign('data',$data);
+			break;
+			
+		}
+		$this->nsmarty->assign('temp',$temp);
+		if(!file_exists($this->config->item('appl').APPPATH.'views/'.$temp)){$this->nsmarty->display('konstruksi.html');}
+		else{$this->nsmarty->display($temp);}
+	}
 	function getdata($p1,$p2="",$p3=""){
 		echo $this->mbackend->getdata($p1,'json',$p3);
 	}

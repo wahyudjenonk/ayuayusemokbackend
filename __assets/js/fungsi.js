@@ -34,8 +34,8 @@ function windowFormPanel(html,judul,width,height){
 		width:width,
 		height:height,
 		autoOpen:false,
-		top: Math.round(frmHeight/2)-(height/2),
-		left: Math.round(frmWidth/2)-(width/2),
+		top: Math.round(getClientHeight()/2)-(height/2),
+		left: Math.round(getClientWidth()/2)-(width/2),
 		modal:true,
 		maximizable:false,
 		minimizable: false,
@@ -132,6 +132,18 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 			fitnya = true;
 			urlglobal = host+'backoffice-Data/'+urlnya;
 			frozen[modnya] = [	
+				{field:'id',title:'Activation',width:150, halign:'center',align:'center',
+					formatter:function(value,rowData,rowIndex){
+						if(rowData.flag=='P'){
+							
+							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">SetMember</a>';
+						}
+						else{return 'Was Activate';}
+					},
+					styler:function(value,rowData,rowIndex){
+						if(value=='P'){return 'background:red;color:#ffffff;'}
+					}
+				},
 				{field:'flag',title:'Status',width:150, halign:'center',align:'left',
 					formatter:function(value,rowData,rowIndex){
 						if(value=='P'){return 'Waiting Konfirmation';}
@@ -187,30 +199,13 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
             kolom[modnya]
         ],
 		onLoadSuccess:function(d){
-			
+			$('.btn_grid').linkbutton();
 		},
 		onClickRow:function(rowIndex,rowData){
 		 
         },
 		onDblClickRow:function(rowIndex,rowData){
-			if(doble_klik==true){
-				switch(modnya){
-					case "list_produk_kasir":
-						$.post(host+'trx-penjualan', {'editstatus':'add', 'cl_meja_id':par1, 'tbl_produk_id':rowData.id}, function(resp){
-							if(resp == 1){
-								$('#grid_list_pesanan_kasir').datagrid('reload');
-								$.post(host+'total-pesanan', { 'id_meja':par1 }, function(resp){
-									var parsing = $.parseJSON(resp);
-									$('#total_qty').val(parsing.tot_qty);
-									$('#total_hrg').val(NumberFormat(parsing.tot_harga));
-								});
-							}else{
-								$.messager.alert('Error','Error System','error');
-							}
-						});
-					break;
-				}
-			}
+			
 		},
 		toolbar: '#tb_'+modnya,
 		rowStyler: function(index,row){
@@ -667,4 +662,51 @@ function cariData(acak){
 	}
 	//$('#grid_'+typecari).datagrid('reload', post_search);
 }
-
+function get_detil(mod,id_data){
+	switch(mod){
+		case "cetak_bast":
+			openWindowWithPost(host+'backoffice-Cetak',{mod:mod,id:id_data});
+			//openWindowWithPost(host+'backoffice-Cetak',{mod:mod,id:id_data});
+		break;
+		case "kirim_gudang":
+			$.post(host+'backoffice-form/remark',{mod:mod,id:id_data},function(r){
+				windowForm(r,'Pesan Gudang',580,250);
+			});
+		break;
+		case "cancel_pesanan":
+			$.messager.confirm('Cancel Order','Yakin Ingin MengCancel Order Ini? ',function(r){
+				if (r){
+					$.post(host+'backoffice-form/remark',{mod:mod,id:id_data},function(r){
+						windowForm(r,'Manajemen Order',580,250);
+					});
+				}
+			});
+		break;
+		case "set_packing":
+		case "set_kirim":
+			$.post(host+'backoffice-form/remark',{mod:mod,id:id_data},function(r){
+				windowForm(r,'Manajemen Order',580,250);
+			});
+		break;
+		
+		case "rekap_penjualan":
+		case "detil_penjualan":
+		case "lap_bast":
+		case "lap_kwitansi":
+			$('#isi_laporan_'+id_data).html('').addClass('loading');
+			$.post(host+'backoffice-GetDetil',{mod:mod,tgl_mulai:$('#tgl_mulai_'+id_data).datebox('getValue'),tgl_akhir:$('#tgl_akhir_'+id_data).datebox('getValue')},function(r){
+				$('#isi_laporan_'+id_data).removeClass('loading').html(r);
+			});
+			
+		break;
+		
+		default:
+			$('#grid_nya_'+mod).hide();
+			$('#detil_nya_'+mod).html('').show().addClass("loading");
+			$.post(host+'backoffice-GetDetil',{mod:mod,id:id_data},function(r){
+				$('#detil_nya_'+mod).html(r).removeClass("loading");
+			});
+		break;
+	}
+	
+}

@@ -1,0 +1,106 @@
+<div class="span12">
+	<div class="widget-box ">
+		<div class="widget-header">
+			<h4 class="lighter smaller">
+				<i class="icon-comment blue"></i>
+				Information Registration
+			</h4>
+		</div>
+
+		<div class="widget-body">
+			<div class="widget-main no-padding">
+				<div style="padding:10px;">
+				<fieldset>
+					<div class="span6">
+						<table class="table table-hover">
+							<tr>
+								<td>&nbsp;</td><td>ID Number</td><td>:</td>
+								<td style="font-weight:bold;">{$data.id_number|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Name</td><td>:</td>
+								<td style="font-weight:bold;">{$data.name|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Email</td><td>:</td>
+								<td style="font-weight:bold;">{$data.email|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Place Of Birth</td><td>:</td>
+								<td style="font-weight:bold;">{$data.place_of_birth|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Date Of Birth</td><td>:</td>
+								<td style="font-weight:bold;">{$data.date_of_birth|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Address</td><td>:</td>
+								<td style="font-weight:bold;">{$data.address|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>City</td><td>:</td>
+								<td style="font-weight:bold;">{$data.city|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>State</td><td>:</td>
+								<td style="font-weight:bold;">{$data.state|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Zip Code</td><td>:</td>
+								<td style="font-weight:bold;">{$data.zip_code|default:'-'}</td>
+							</tr>
+						</table>
+					</div>
+					<div class="span6">
+						<table class="table table-hover">
+							<tr>
+								<td>&nbsp;</td><td>Phone Home</td><td>:</td>
+								<td style="font-weight:bold;">{$data.phone_home|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Phone Mobile</td><td>:</td>
+								<td style="font-weight:bold;">{$data.phone_mobile|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Current Occupation</td><td>:</td>
+								<td style="font-weight:bold;">{$data.current_occupation|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Previous Education</td><td>:</td>
+								<td style="font-weight:bold;">{$data.previous_education|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Ceo Name</td><td>:</td>
+								<td style="font-weight:bold;">{$data.name_ceo|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Company Name</td><td>:</td>
+								<td style="font-weight:bold;">{$data.company_name|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Company Address</td><td>:</td>
+								<td style="font-weight:bold;">{$data.company_address|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Company Phone</td><td>:</td>
+								<td style="font-weight:bold;">{$data.company_phone|default:'-'}</td>
+							</tr>
+							
+						</table>
+					</div>
+					<div class="span12" style='margin-top:10px !important;'>
+						{include file="backend/template/button_save.html" text="Send Notification To Activation" id_na="simpan" btn_goyz="true" }
+						{include file="backend/template/button_save.html" text="Back To Grid" click="$('#grid_nya_{$mod}').show();$('#detil_nya_{$mod}').hide();" id_na="cancel" style_btn="btn-danger"  btn_goyz="true"}
+					</div>
+				</fieldset>
+				</div>
+			</div><!--/widget-main-->
+		</div><!--/widget-body-->
+	</div><!--/widget-box-->
+</div><!--/span-->
+
+<script>
+	$('#simpan_{$acak}').bind('click',function(){
+		$.post()
+	});
+</script>
