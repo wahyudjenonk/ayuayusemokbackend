@@ -74,6 +74,7 @@ class Mjingga_api extends CI_Model{
 							$this->db->insert('tbl_member',$data_member);
 							unset($data['email_address']);
 							unset($data['pwd']);
+							unset($data['member_user']);
 						}
 					}else{
 						$this->db->trans_rollback();
@@ -106,14 +107,12 @@ class Mjingga_api extends CI_Model{
 			//return 'gagal';
 		}else{
 			 $this->db->trans_commit();
-			 
 			 $msg['msg'] = 'sukses';
 			 $msg['pesan'] = '';
 			// return 'sukses';
 		}
 		
 		return $msg;
-	
 	}
 	
 }
