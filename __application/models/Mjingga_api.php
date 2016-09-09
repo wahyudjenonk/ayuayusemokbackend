@@ -8,21 +8,29 @@ class Mjingga_api extends CI_Model{
 	}
 	
 	function get_data($type="", $balikan="", $p1=""){
+		$msg=array();
 		switch($type){
 			case "data_login":
 				$sql="SELECT * FROM tbl_member where member_user='".$p1."' OR email_address='".$p1."'";
+			break;
+			case "forgot_pwd":
+				$balikan="row_array";
+				$sql="SELECT * FROM tbl_member where email_address='".$this->input->post('email_address')."'";
 				//return $sql;
 			break;
 		}
 		if($balikan == 'json'){
-			return $this->lib->json_grid($sql);
+			$data= $this->lib->json_grid($sql);
 		}elseif($balikan == 'row_array'){
-			return $this->db->query($sql)->row_array();
+			$data= $this->db->query($sql)->row_array();
 		}elseif($balikan == 'result'){
-			return $this->db->query($sql)->result();
+			$data= $this->db->query($sql)->result();
 		}elseif($balikan == 'result_array'){
-			return $this->db->query($sql)->result_array();
+			$data= $this->db->query($sql)->result_array();
 		}
+		return $msg=array('msg'=>'sukses','data'=>$data);
+		
+		
 	}
 	function simpandata($table,$data,$sts_crud){ //$sts_crud --> STATUS NYEE INSERT, UPDATE, DELETE
 		$this->db->trans_begin();

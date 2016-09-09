@@ -19,7 +19,9 @@ class Jingga_api extends REST_Controller
 		}
     }
     function getdata($p1,$p2=""){
-		echo $this->mjingga_api->getdata($p1,$p2);
+		//$this->set_response('XXxxx', REST_Controller::HTTP_OK);
+		$msg=$this->mjingga_api->get_data($p1,$p2);
+		$this->set_response($msg, REST_Controller::HTTP_OK);
 	}
 	function simpandata($p1="",$p2="",$editstatus){
 		$post = array();
