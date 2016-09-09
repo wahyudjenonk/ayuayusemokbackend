@@ -63,7 +63,7 @@ class Mjingga_api extends CI_Model{
 							$this->db->trans_rollback();
 							return array('msg'=>'gagal','pesan'=>'Your email has already in system.');
 						}else{
-							$data_member=array('member_user'=>$data['member_user'],//$this->lib->uniq_id(),
+							$data_member=array('member_user'=>$data['member_user'], //$this->lib->uniq_id(),
 											   'email_address'=>$data['email_address'],
 											   'tbl_registration_id'=>$reg['id'],
 											   'pwd'=>$this->encrypt->encode($data['pwd']),
