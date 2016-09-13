@@ -197,7 +197,48 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 				{field:'id_number',title:'Number ID',width:150, halign:'center',align:'left'}
 			]
 		break;
-		
+		case "property":
+			judulnya = "";
+			urlnya = "property";
+			fitnya = true;
+			urlglobal = host+'backoffice-Data/'+urlnya;
+			kolom[modnya] = [	
+				{field:'id',title:'Detail',width:100, halign:'center',align:'center',
+					formatter:function(value,rowData,rowIndex){
+						return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Detail</a>';
+					}
+				},
+				{field:'nama',title:'Name',width:150, halign:'center',align:'left'},
+				{field:'apartment_name',title:'Apartment Name',width:200, halign:'center',align:'left'},
+				{field:'apartment_address',title:'Apartment Address',width:250, halign:'center',align:'left'},
+				{field:'unit_number',title:'Unit Number',width:100, halign:'center',align:'right'},
+				{field:'unit_size_nett',title:'Unit Size Net',width:100, halign:'center',align:'right'},
+				{field:'unit_size_gross',title:'Unit Size Gross',width:100, halign:'center',align:'right'},
+				{field:'number_of_room',title:'Number Of Room',width:100, halign:'center',align:'right'},
+			]
+		break;
+		case "housekeeping":
+		case "linen":
+		case "check":
+		case "hosting":
+		case "full_host":
+			param['mod']=modnya;
+			judulnya = "";
+			urlnya = "services";
+			fitnya = true;
+			urlglobal = host+'backoffice-Data/'+urlnya;
+			kolom[modnya] = [	
+				{field:'id',title:'Set Pricing',width:100, halign:'center',align:'center',
+					formatter:function(value,rowData,rowIndex){
+						return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Set</a>';
+					}
+				},
+				{field:'code',title:'Code',width:80, halign:'center',align:'left'},
+				{field:'services_name',title:'Services Name',width:200, halign:'center',align:'left'},
+				{field:'desc_services_eng',title:'Desc. Eng',width:350, halign:'center',align:'left'},
+				{field:'desc_services_ind',title:'Desc. Ind',width:350, halign:'center',align:'left'}
+			]
+		break;
 	}
 	
 	grid_nya=$("#"+divnya).datagrid({

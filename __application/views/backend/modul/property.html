@@ -1,0 +1,129 @@
+<div class="span12">
+	<div class="widget-box ">
+		<div class="widget-header">
+			<h4 class="lighter smaller">
+				<i class="icon-comment blue"></i>
+				Information Property Member
+			</h4>
+		</div>
+
+		<div class="widget-body">
+			<div class="widget-main no-padding">
+				<div style="padding:10px;">
+				<fieldset>
+					
+					<div class="span6">
+						<table class="table table-hover">
+							<tr>
+								<td>&nbsp;</td><td>Full Name</td><td>:</td>
+								<td style="font-weight:bold;">{$data.properti.nama|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Email</td><td>:</td>
+								<td style="font-weight:bold;">{$data.properti.email|default:'-'}</td>
+							</tr>
+						</table>
+					</div>
+					<div class="span6">
+						<table class="table table-hover">
+							<tr>
+								<td>&nbsp;</td><td>Phone Home</td><td>:</td>
+								<td style="font-weight:bold;">{$data.properti.phone_home|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Phone Mobile</td><td>:</td>
+								<td style="font-weight:bold;">{$data.properti.phone_mobile|default:'-'}</td>
+							</tr>
+						</table>
+					</div>
+				</fieldset>
+				<fieldset>
+					<div class="span12">
+						<table class="table table-hover">
+							<tr>
+								<td>&nbsp;</td><td>Unit Number</td><td>:</td>
+								<td style="font-weight:bold;">{$data.properti.unit_number|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Unit Size</td><td>:</td>
+								<td style="font-weight:bold;">Nett:{$data.properti.unit_size_nett|default:'-'}&nbsp;sqm/m2&nbsp;&nbsp;Gross:{$data.properti.unit_size_gross|default:'-'}&nbsp;sqm/m2</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Unit Type</td><td>:</td>
+								<td style="font-weight:bold;">{$data.properti.unit_type|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Number of Room(s)</td><td>:</td>
+								<td style="font-weight:bold;">{$data.properti.number_of_room|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Room Type Configuration</td><td>:</td>
+								<td style="font-weight:bold;">
+								<ul>
+								{foreach from=$data.room_type item=i}
+									<li>{$i.room_type|default:'-'}</li>
+								{/foreach}
+								</ul>
+								</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Floor Number</td><td>:</td>
+								<td style="font-weight:bold;">{$data.properti.number_of_room|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>View</td><td>:</td>
+								<td style="font-weight:bold;">{$data.properti.view|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Apartment Name</td><td>:</td>
+								<td style="font-weight:bold;">{$data.properti.apartment_name|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Apartment Developer Name</td><td>:</td>
+								<td style="font-weight:bold;">{$data.properti.apartment_developer|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Apartment Address</td><td>:</td>
+								<td style="font-weight:bold;">{$data.properti.apartment_address|default:'-'}</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>General Facility Check</td><td>:</td>
+								<td style="font-weight:bold;">
+									<ul>
+									{foreach from=$data.facility item=i}
+										<li>{$i.facility_name|default:'-'} : {$i.qty|default:'-'}&nbsp;&nbsp;&nbsp;{$i.unit|default:''}</li>
+									{/foreach}
+									</ul>
+								</td>
+							</tr>
+							<tr>
+								<td>&nbsp;</td><td>Compulsary Periodic Payment</td><td>:</td>
+								<td style="font-weight:bold;">
+									<ul>
+									{foreach from=$data.compulsary item=i}
+										<li>{$i.compulsary_periodic_payment|default:'-'}</li>
+									{/foreach}
+									</ul>
+									
+								</td>
+							</tr>
+							
+						</table>
+					</div>
+					
+					<div class="span12" style='margin-top:10px !important;'>
+						{* {include file="backend/template/button_save.html" text="Send Notification To Activation" id_na="simpan" btn_goyz="true" } *}
+						{include file="backend/template/button_save.html" text="Back To Grid" click="$('#grid_nya_{$mod}').show();$('#detil_nya_{$mod}').hide();" id_na="cancel" style_btn="btn-danger"  btn_goyz="true"}
+					</div>
+				</fieldset>
+				</div>
+			</div><!--/widget-main-->
+		</div><!--/widget-body-->
+	</div><!--/widget-box-->
+</div><!--/span-->
+
+<script>
+	$('#simpan_{$acak}').bind('click',function(){
+		$.post()
+	});
+</script>

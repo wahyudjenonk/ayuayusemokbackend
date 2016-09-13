@@ -152,7 +152,10 @@ class Backend extends JINGGA_Controller {
 				$data=$this->mbackend->getdata('member','get');
 				$this->nsmarty->assign('data',$data);
 			break;
-			
+			case "property":
+				$data=$this->mbackend->getdata('property','get');
+				$this->nsmarty->assign('data',$data);
+			break;
 		}
 		$this->nsmarty->assign('temp',$temp);
 		if(!file_exists($this->config->item('appl').APPPATH.'views/'.$temp)){$this->nsmarty->display('konstruksi.html');}
@@ -200,6 +203,18 @@ class Backend extends JINGGA_Controller {
 				$opt .="<option value='B.owner_name_first'>First Name</option>";
 				$opt .="<option value='B.id_number'>ID Number</option>";
 				$opt .="<option value='B.company_name'>Company Name</option>";
+			break;
+			case "property":
+				$opt .="<option value='C.owner_name_first'>First Name</option>";
+				$opt .="<option value='C.owner_name_last'>Last Name</option>";
+				$opt .="<option value='A.apartment_name'>Apartment Name</option>";
+			break;
+			case "housekeeping":
+			case "check":
+			case "hosting":
+			case "linen":
+			case "full_host":
+				$opt .="<option value='services_name'>Services Name</option>";
 			break;
 		}
 		return $opt;

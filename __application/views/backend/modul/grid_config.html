@@ -1,4 +1,4 @@
-{if $mod eq 'registration' || $mod eq 'member'}
+{if $mod eq 'registration' || $mod eq 'member' || $mod eq 'property' || $mod eq 'housekeeping' || $mod eq 'linen' || $mod eq 'check' || $mod eq 'hosting' || $mod eq 'full_host'}
 	{include file="backend/template/grid.html" main={$mod} button="false" table={$table|default:''} filter_core="true"}
 {else}
 	{include file="backend/template/grid.html" main={$mod} button="true" table={$table|default:''} filter_core="true"}

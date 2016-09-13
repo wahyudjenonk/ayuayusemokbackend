@@ -33,7 +33,47 @@ class Mbackend extends CI_Model{
 					  LEFT JOIN tbl_registration B ON A.tbl_registration_id=B.id ".$where;
 				if($balikan=='get')return $this->db->query($sql)->row_array();
 			break;
-			
+			case "property":
+				if($balikan=='get'){$where .=" AND A.id='".$this->input->post('id')."'";}
+				$sql="SELECT A.*,CONCAT(C.title,' ',C.owner_name_first,' ',C.owner_name_last) as nama,
+						C.id_number,C.phone_home,C.phone_mobile,C.email
+						FROM tbl_unit_member A
+						LEFT JOIN tbl_member B ON A.tbl_member_user=B.member_user
+						LEFT JOIN tbl_registration C ON B.tbl_registration_id=C.id ".$where;
+				if($balikan=='get'){
+					$data=array();
+					$data['properti']=$this->db->query($sql)->row_array();
+					$sql="SELECT A.*,B.facility_name,B.unit 
+							FROM tbl_unit_facility_member A
+							LEFT JOIN cl_facility_unit B ON A.cl_facility_unit_id=B.id 
+							WHERE A.tbl_unit_member_id=".$this->input->post('id');
+					$data['facility']=$this->db->query($sql)->result_array();
+					$sql="SELECT A.*,B.compulsary_periodic_payment
+							FROM tbl_unit_compulsary_periodic_payment  A
+							LEFT JOIN cl_compulsary_periodic_payment B ON A.cl_compulsary_periodic_payment_id=B.id 
+							WHERE A.tbl_unit_member_id=".$this->input->post('id');
+					$data['compulsary']=$this->db->query($sql)->result_array();
+					$sql="SELECT A.*,B.room_type 
+							FROM tbl_unit_room_type_member A 
+							LEFT JOIN cl_room_type B ON A.cl_room_type_id=B.id
+							WHERE A.tbl_unit_member_id=".$this->input->post('id');
+					$data['room_type']=$this->db->query($sql)->result_array();
+					//print_r($data['room_type']);
+					return $data;
+				}
+			break;
+			case "services":
+				$mod=$this->input->post('mod');
+				switch($mod){
+					case "housekeeping":$pid=1;break;
+					case "linen":$pid=2;break;
+					case "check":$pid=3;break;
+					case "hosting":$pid=4;break;
+					case "full_host":$pid=5;break;
+				}
+				$sql="SELECT * FROM tbl_services WHERE pid=".$pid;
+				//return $this->lib->json_grid($sql);
+			break;
 		}
 		
 		if($balikan == 'json'){
