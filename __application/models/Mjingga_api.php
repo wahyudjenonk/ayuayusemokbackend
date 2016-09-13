@@ -11,11 +11,16 @@ class Mjingga_api extends CI_Model{
 		$msg=array();
 		switch($type){
 			case "data_login":
+				$balikan="row_array";
 				$sql="SELECT * FROM tbl_member where member_user='".$p1."' OR email_address='".$p1."'";
+				$data= $this->db->query($sql)->row_array();
+				return $data;
 			break;
 			case "forgot_pwd":
 				$balikan="row_array";
 				$sql="SELECT * FROM tbl_member where email_address='".$this->input->post('email_address')."'";
+				$data= $this->db->query($sql)->row_array();
+				return $msg=array('msg'=>'sukses','data'=>$data);
 				//return $sql;
 			break;
 			case "property":
@@ -46,7 +51,7 @@ class Mjingga_api extends CI_Model{
 		}elseif($balikan == 'result_array'){
 			$data= $this->db->query($sql)->result_array();
 		}
-		return $msg=array('msg'=>'sukses','data'=>$data);
+		
 		
 		
 	}

@@ -53,6 +53,7 @@ class Jingga_api extends REST_Controller
 		if($user && $pass){
 			
 			$cek_user = $this->mjingga_api->get_data('data_login', 'row_array', $user);
+			//$this->set_response(array('data'=>$cek_user), REST_Controller::HTTP_OK);
 			if(count($cek_user)>0){
 				if(isset($cek_user['flag']) && $cek_user['flag']==1){
 					if($pass == $this->encrypt->decode($cek_user['pwd'])){
