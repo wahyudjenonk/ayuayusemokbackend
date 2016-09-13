@@ -18,6 +18,24 @@ class Mjingga_api extends CI_Model{
 				$sql="SELECT * FROM tbl_member where email_address='".$this->input->post('email_address')."'";
 				//return $sql;
 			break;
+			case "property":
+				
+				$sql="SELECT * FROM tbl_unit_member ";
+				if($balikan=='detil'){
+					$data=array();
+					$sql .=" WHERE id=".$this->input->post('id');
+					$data['properti']=$this->db->query($sql)->row_array();
+					$sql="SELECT * FROM tbl_unit_facility_member WHERE tbl_unit_member_id=".$this->input->post('id');
+					$data['facility']=$this->db->query($sql)->result_array();
+					$sql="SELECT * FROM tbl_unit_compulsary_periodic_payment WHERE tbl_unit_member_id=".$this->input->post('id');
+					$data['compulsary']=$this->db->query($sql)->result_array();
+					$sql="SELECT * FROM tbl_unit_room_type_member WHERE tbl_unit_member_id=".$this->input->post('id');
+					$data['room_type']=$this->db->query($sql)->result_array();
+					return $msg=array('msg'=>'sukses','data'=>$data);
+				}else{
+					$balikan="result_array";
+				}
+			break;
 		}
 		if($balikan == 'json'){
 			$data= $this->lib->json_grid($sql);
@@ -90,21 +108,128 @@ class Mjingga_api extends CI_Model{
 					}
 				}
 			break;
+			case "property":
+				$table='tbl_unit_member';
+				$cl_compulsary_id=array();
+				$cl_compulsary_periodic_payment_id=array();
+				$cl_facility_unit_id=array();
+				$cl_facility_id=array();
+				$cl_room_type_id=array();
+				$cl_room_id=array();
+				if(isset($data['cl_compulsary_periodic_payment_id'])){
+					$cl_compulsary_id=$data['cl_compulsary_periodic_payment_id'];
+					unset($data['cl_compulsary_periodic_payment_id']);
+				}
+				if(isset($data['cl_facility_unit_id'])){
+					$cl_facility_id=$data['cl_facility_unit_id'];
+					$qty=$data['qty'];
+					unset($data['cl_facility_unit_id']);
+					unset($data['qty']);
+				}
+				if(isset($data['cl_room_type_id'])){
+					$cl_room_id=$data['cl_room_type_id'];
+					unset($data['cl_room_type_id']);
+				}
+				//return $msg['msg'] =$_POST;
+			break;
 		}
 		
 		switch ($sts_crud){
 			case "add":
 				if($table!='tbl_registration'){
 					$data['create_date'] = date('Y-m-d H:i:s');
-					$data['create_by'] = $this->auth['nama_lengkap'];
+					//$data['create_by'] = $this->auth['nama_lengkap'];
 				}
-				$this->db->insert($table,$data);
+				if($table=='tbl_unit_member'){
+					$this->db->insert($table,$data);//INSERT UNIT;
+					$id_unit=$this->db->insert_id();
+					if(count($cl_compulsary_id)>0){
+						for($i=0;$i<count($cl_compulsary_id);$i++){
+							$cl_compulsary_periodic_payment_id[]=array(	
+										'tbl_unit_member_id'=>$id_unit,
+										'cl_compulsary_periodic_payment_id'=>$cl_compulsary_id[$i],
+										'create_date'=>date('Y-m-d H:i:s')
+							);
+						}
+						 $this->db->insert_batch('tbl_unit_compulsary_periodic_payment', $cl_compulsary_periodic_payment_id);
+					}
+					if(count($cl_facility_id)>0){
+						for($i=0;$i<count($cl_facility_id);$i++){
+							$cl_facility_unit_id[]=array(
+									'tbl_unit_member_id'=>$id_unit,
+									'cl_facility_unit_id'=>$cl_facility_id[$i],
+									'qty'=>$qty[$i],
+									'create_date'=>date('Y-m-d H:i:s')
+							);
+						}
+						 $this->db->insert_batch('tbl_unit_facility_member', $cl_facility_unit_id);
+					}
+					if(count($cl_room_id)>0){
+						for($i=0;$i<count($cl_room_id);$i++){
+							$cl_room_type_id[]=array(
+									'tbl_unit_member_id'=>$id_unit,
+									'cl_room_type_id'=>$cl_room_id[$i],
+									'create_date'=>date('Y-m-d H:i:s')
+							);
+						}
+						 $this->db->insert_batch('tbl_unit_room_type_member', $cl_room_type_id);
+					}
+					
+				}else{
+					$this->db->insert($table,$data);
+				}
 			break;
 			case "edit":
-				$this->db->update($table, $data, array('id' => $id) );
+				if($table=='tbl_unit_member'){
+					$this->db->update($table, $data, array('id' => $id) );
+					if(count($cl_compulsary_id)>0){
+						$this->db->delete('tbl_unit_compulsary_periodic_payment',array('tbl_unit_member_id'=>$id));
+						for($i=0;$i<count($cl_compulsary_id);$i++){
+							$cl_compulsary_periodic_payment_id[]=array(	
+										'tbl_unit_member_id'=>$id,
+										'cl_compulsary_periodic_payment_id'=>$cl_compulsary_id[$i],
+										'create_date'=>date('Y-m-d H:i:s')
+							);
+						}
+						 $this->db->insert_batch('tbl_unit_compulsary_periodic_payment', $cl_compulsary_periodic_payment_id);
+					}
+					if(count($cl_facility_id)>0){
+						$this->db->delete('tbl_unit_facility_member',array('tbl_unit_member_id'=>$id));
+						for($i=0;$i<count($cl_facility_id);$i++){
+							$cl_facility_unit_id[]=array(
+									'tbl_unit_member_id'=>$id,
+									'cl_facility_unit_id'=>$cl_facility_id[$i],
+									'qty'=>$qty[$i],
+									'create_date'=>date('Y-m-d H:i:s')
+							);
+						}
+						 $this->db->insert_batch('tbl_unit_facility_member', $cl_facility_unit_id);
+					}
+					if(count($cl_room_id)>0){
+						$this->db->delete('tbl_unit_room_type_member',array('tbl_unit_member_id'=>$id));
+						for($i=0;$i<count($cl_room_id);$i++){
+							$cl_room_type_id[]=array(
+									'tbl_unit_member_id'=>$id,
+									'cl_room_type_id'=>$cl_room_id[$i],
+									'create_date'=>date('Y-m-d H:i:s')
+							);
+						}
+						 $this->db->insert_batch('tbl_unit_room_type_member', $cl_room_type_id);
+					}
+				}else{
+					$this->db->update($table, $data, array('id' => $id) );
+				}
 			break;
 			case "delete":
-				$this->db->delete($table, array('id' => $id));
+				if($table=='tbl_unit_member'){
+					$this->db->delete('tbl_unit_compulsary_periodic_payment',array('tbl_unit_member_id'=>$id));
+					$this->db->delete('tbl_unit_facility_member',array('tbl_unit_member_id'=>$id));
+					$this->db->delete('tbl_unit_room_type_member',array('tbl_unit_member_id'=>$id));
+					$this->db->delete($table, array('id' => $id));
+					
+				}else{
+					$this->db->delete($table, array('id' => $id));
+				}
 			break;
 		}
 		

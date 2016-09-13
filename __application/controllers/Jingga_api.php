@@ -8,8 +8,13 @@ class Jingga_api extends REST_Controller
 		$method=$this->post('method');
 		$modul=$this->post('modul');
 		$sub_modul=$this->post('sub_modul');
+		//$this->set_response('XXxxx', REST_Controller::HTTP_OK);
+		//$msg=array('data'=>$_POST);
+		//$this->set_response($msg, REST_Controller::HTTP_OK);
+		
 		switch($method){
-			case "create":$editstatus="add";$this->simpandata($modul,$sub_modul,$editstatus);break;
+			case "create":$editstatus="add";$this->simpandata($modul,$sub_modul,$editstatus);
+			break;
 			case "read":
 				if($modul!='login')$this->getdata($modul,$sub_modul);
 				else $this->login();
@@ -19,17 +24,21 @@ class Jingga_api extends REST_Controller
 		}
     }
     function getdata($p1,$p2=""){
-		//$this->set_response('XXxxx', REST_Controller::HTTP_OK);
+		
 		$msg=$this->mjingga_api->get_data($p1,$p2);
 		$this->set_response($msg, REST_Controller::HTTP_OK);
 	}
 	function simpandata($p1="",$p2="",$editstatus){
+		//$this->set_response('XXxxx', REST_Controller::HTTP_OK);
+		
 		$post = array();
         foreach($_POST as $k=>$v){
 			if($this->input->post($k)!=""){
 				$post[$k] = $this->db->escape_str($this->input->post($k));
 			}
 		}
+		//$msg=array('data'=>$_POST);
+	//	$this->set_response($msg, REST_Controller::HTTP_OK);
 		unset($post['method']);unset($post['modul']);unset($post['sub_modul']);
 		$msg=$this->mjingga_api->simpandata($p1, $post, $editstatus);
 		$this->set_response($msg, REST_Controller::HTTP_OK);
