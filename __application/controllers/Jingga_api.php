@@ -54,22 +54,22 @@ class Jingga_api extends REST_Controller
 					}else{
 						$resp['msg']='gagal';
 						$resp['data']='';
-						$resp['pesan']='Password Tidak Benar';
+						$resp['pesan']='Incorrect Password';
 					}
 				}else{
 					$resp['msg']='gagal';
 					$resp['data']='';
-					$resp['pesan']='User Sudah Tidak Aktif Lagi Atau Belum Dikonfirmasi';
+					$resp['pesan']='User Not Active';
 				}
 			}else{
 				$resp['msg']='gagal';
 				$resp['data']='';
-				$resp['pesan']='User Tidak Terdaftar';
+				$resp['pesan']='User Not Registered';
 			}
 		}else{
 			$resp['msg']='gagal';
 			$resp['data']='';
-			$resp['pesan']='Isi UserName Atau Email dan Password';
+			$resp['pesan']='Fill Username/Email & Password';
 		}
 		$this->set_response($resp, REST_Controller::HTTP_OK);
 		
