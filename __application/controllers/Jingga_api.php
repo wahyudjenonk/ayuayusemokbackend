@@ -7,8 +7,8 @@ class Jingga_api extends REST_Controller
     function jingga_post(){
 		$method=$this->post('method');
 		$modul=$this->post('modul');
-		$sub_modul=$this->post('sub_modul');
-		//$this->set_response('XXxxx', REST_Controller::HTTP_OK);
+		$sub_modul=$this->post('submodul');
+		//$this->set_response($sub_modul, REST_Controller::HTTP_OK);
 		//$msg=array('data'=>$_POST);
 		//$this->set_response($msg, REST_Controller::HTTP_OK);
 		
@@ -24,7 +24,7 @@ class Jingga_api extends REST_Controller
 		}
     }
     function getdata($p1,$p2=""){
-		
+		//$this->set_response($p2, REST_Controller::HTTP_OK);
 		$msg=$this->mjingga_api->get_data($p1,$p2);
 		$this->set_response($msg, REST_Controller::HTTP_OK);
 	}
