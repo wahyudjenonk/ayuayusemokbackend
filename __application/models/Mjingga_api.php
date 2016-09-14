@@ -24,7 +24,8 @@ class Mjingga_api extends CI_Model{
 				//return $sql;
 			break;
 			case "property":
-				
+				//return $msg=array('msg'=>'sukses','data'=>'Xxx');
+				//$this->set_response('XXxxx', REST_Controller::HTTP_OK);
 				$sql="SELECT * FROM tbl_unit_member ";
 				if($balikan=='detil'){
 					$data=array();
@@ -38,7 +39,7 @@ class Mjingga_api extends CI_Model{
 					$data['room_type']=$this->db->query($sql)->result_array();
 					return $msg=array('msg'=>'sukses','data'=>$data);
 				}else{
-					$balikan="result_array";
+					return $msg=array('msg'=>'sukses','data'=>$this->db->query($sql)->result_array());
 				}
 			break;
 		}
