@@ -42,6 +42,13 @@ class Mjingga_api extends CI_Model{
 					return $msg=array('msg'=>'sukses','data'=>$this->db->query($sql)->result_array());
 				}
 			break;
+			case "combo_all":
+				$sql="SELECT * FROM ".$balikan;
+				$data= $this->db->query($sql)->result_array();
+				return $msg=array('msg'=>'sukses','data'=>$data);
+				//return $sql;
+			break;
+			
 		}
 		if($balikan == 'json'){
 			$data= $this->lib->json_grid($sql);
