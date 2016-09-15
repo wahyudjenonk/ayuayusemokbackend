@@ -33,7 +33,7 @@ class Mjingga_api extends CI_Model{
 				";
 				if($balikan=='detil'){
 					$data=array();
-					$sql .=" WHERE id=".$this->input->post('id');
+					$sql .=" WHERE A.id=".$this->input->post('id');
 					$data['properti']=$this->db->query($sql)->row_array();
 					$sql="SELECT * FROM tbl_unit_facility_member WHERE tbl_unit_member_id=".$this->input->post('id');
 					$data['facility']=$this->db->query($sql)->result_array();
