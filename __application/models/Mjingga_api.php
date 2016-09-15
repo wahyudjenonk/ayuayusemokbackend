@@ -26,7 +26,11 @@ class Mjingga_api extends CI_Model{
 			case "property":
 				//return $msg=array('msg'=>'sukses','data'=>'Xxx');
 				//$this->set_response('XXxxx', REST_Controller::HTTP_OK);
-				$sql="SELECT * FROM tbl_unit_member ";
+				$sql="
+					SELECT A.*, B.photo_unit 
+					FROM tbl_unit_member A
+					LEFT JOIN (SELECT * FROM tbl_unit_photo LIMIT 1)B ON B.tbl_unit_member_id = A.id
+				";
 				if($balikan=='detil'){
 					$data=array();
 					$sql .=" WHERE id=".$this->input->post('id');
