@@ -37,6 +37,8 @@ class Mjingga_api extends CI_Model{
 					$data['compulsary']=$this->db->query($sql)->result_array();
 					$sql="SELECT * FROM tbl_unit_room_type_member WHERE tbl_unit_member_id=".$this->input->post('id');
 					$data['room_type']=$this->db->query($sql)->result_array();
+					$sql="SELECT * FROM tbl_unit_photo WHERE tbl_unit_member_id=".$this->input->post('id');
+					$data['photo']=$this->db->query($sql)->result_array();
 					return $msg=array('msg'=>'sukses','data'=>$data);
 				}else{
 					return $msg=array('msg'=>'sukses','data'=>$this->db->query($sql)->result_array());
@@ -129,6 +131,8 @@ class Mjingga_api extends CI_Model{
 				$cl_facility_id=array();
 				$cl_room_type_id=array();
 				$cl_room_id=array();
+				$photo_unit=array();
+				$photo_unit_var=array();
 				if(isset($data['cl_compulsary_periodic_payment_id'])){
 					$cl_compulsary_id=$data['cl_compulsary_periodic_payment_id'];
 					unset($data['cl_compulsary_periodic_payment_id']);
@@ -142,6 +146,10 @@ class Mjingga_api extends CI_Model{
 				if(isset($data['cl_room_type_id'])){
 					$cl_room_id=$data['cl_room_type_id'];
 					unset($data['cl_room_type_id']);
+				}
+				if(isset($data['photo_unit'])){
+					$photo_unit_var=$data['photo_unit'];
+					unset($data['photo_unit']);
 				}
 				//return $msg['msg'] =$_POST;
 			break;
@@ -187,6 +195,16 @@ class Mjingga_api extends CI_Model{
 						}
 						 $this->db->insert_batch('tbl_unit_room_type_member', $cl_room_type_id);
 					}
+					if(count($photo_unit_var)>0){
+						for($i=0;$i<count($photo_unit_var);$i++){
+							$photo_unit[]=array(
+									'tbl_unit_member_id'=>$id_unit,
+									'photo_unit'=>$photo_unit_var[$i],
+									'create_date'=>date('Y-m-d H:i:s')
+							);
+						}
+						 $this->db->insert_batch('tbl_unit_photo', $photo_unit);
+					}
 					
 				}else{
 					$this->db->insert($table,$data);
@@ -229,6 +247,17 @@ class Mjingga_api extends CI_Model{
 						}
 						 $this->db->insert_batch('tbl_unit_room_type_member', $cl_room_type_id);
 					}
+					if(count($photo_unit_var)>0){
+						$this->db->delete('tbl_unit_photo',array('tbl_unit_member_id'=>$id));
+						for($i=0;$i<count($photo_unit_var);$i++){
+							$photo_unit[]=array(
+									'tbl_unit_member_id'=>$id,
+									'photo_unit'=>$photo_unit_var[$i],
+									'create_date'=>date('Y-m-d H:i:s')
+							);
+						}
+						 $this->db->insert_batch('tbl_unit_photo', $photo_unit);
+					}
 				}else{
 					$this->db->update($table, $data, array('id' => $id) );
 				}
@@ -238,6 +267,7 @@ class Mjingga_api extends CI_Model{
 					$this->db->delete('tbl_unit_compulsary_periodic_payment',array('tbl_unit_member_id'=>$id));
 					$this->db->delete('tbl_unit_facility_member',array('tbl_unit_member_id'=>$id));
 					$this->db->delete('tbl_unit_room_type_member',array('tbl_unit_member_id'=>$id));
+					$this->db->delete('tbl_unit_photo',array('tbl_unit_member_id'=>$id));
 					$this->db->delete($table, array('id' => $id));
 					
 				}else{
