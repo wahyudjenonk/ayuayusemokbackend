@@ -63,7 +63,23 @@ class Mbackend extends CI_Model{
 				}
 			break;
 			case "services":
-				$mod=$this->input->post('mod');
+				$data=array();
+				$sts=$this->input->post('editstatus');
+				if($sts=='add'){
+					//if($this->input->post('flag_tree')!='H'){
+						$sql="SELECT * FROM tbl_services WHERE id=".$this->input->post('pid');
+						$data['parent']=$this->db->query($sql)->row_array();
+					//}
+				}else if($sts=='edit'){
+					if($this->input->post('flag_tree')!='H'){
+						$sql="SELECT * FROM tbl_services WHERE id=".$this->input->post('pid');
+						$data['parent']=$this->db->query($sql)->row_array();
+					}
+					$sql="SELECT * FROM tbl_services WHERE id=".$this->input->post('id');
+					$data['child']=$this->db->query($sql)->row_array();
+				}
+				return $data;
+				/*$mod=$this->input->post('mod');
 				switch($mod){
 					case "housekeeping":$pid=1;break;
 					case "linen":$pid=2;break;
@@ -72,7 +88,156 @@ class Mbackend extends CI_Model{
 					case "full_host":$pid=5;break;
 				}
 				$sql="SELECT * FROM tbl_services WHERE pid=".$pid;
+				*/
 				//return $this->lib->json_grid($sql);
+			break;
+			case "services_all":
+				$sql="SELECT * FROM tbl_services WHERE pid IS NULL";
+				$data=array();
+				$serv=$this->db->query($sql)->result_array();
+				$aa=0;
+				foreach($serv as $x=>$y){
+					$data[$aa]=array(
+						'id'=>$y['id'],
+						'name'=>'&nbsp;&nbsp;'.$y['code'].'. '.$y['services_name'],
+						'services_name'=>$y['services_name'],
+						'code'=>$y['code'],
+						'desc_services_eng'=>$y['desc_services_eng'],			
+						'iconCls'=>'icon-tree-h',	
+						'flag_tree'=>'H'
+									
+					);
+					$sql="SELECT * FROM tbl_services WHERE pid = ".$y['id'];
+					$ch=$this->db->query($sql)->result_array();
+					if(count($ch)>0){
+						$data[$aa]['state']='closed';
+						$data[$aa]['children']=array();
+						foreach($ch as $a=>$b){
+							$det=array();
+							$det['id']=$b['id'];
+							$det['name']='&nbsp;&nbsp;'.$b['code'].'. '.$b['services_name'];
+							$det['services_name']=$b['services_name'];
+							$det['code']=$b['code'];
+							$det['desc_services_eng']=$b['desc_services_eng'];
+							$det['iconCls']='icon-tree-d1';
+							$det['flag_tree']='D';
+							$det['pid']=$y['id'];
+							
+							$sql="SELECT * FROM tbl_services WHERE pid = ".$b['id'];
+							$ch2=$this->db->query($sql)->result_array();
+							if(count($ch2)>0){
+								$det['state']='closed';
+								$det['children']=array();
+								foreach($ch2 as $c=>$d){
+									$det2=array();
+									$det2['id']=$d['id'];
+									$det2['name']='&nbsp;&nbsp;'.$d['code'].'. '.$d['services_name'];
+									$det2['services_name']=$d['services_name'];
+									$det2['code']=$d['code'];
+									$det2['desc_services_eng']=$d['desc_services_eng'];
+									$det2['flag_tree']='C';
+									$det2['pid']=$b['id'];
+									$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark 
+									FROM tbl_pricing_services WHERE tbl_services_id=".$d['id'];
+								
+									$price=$this->db->query($sql_pr)->row_array();
+									if(isset($price['id_price']))$det2=array_merge($det2,$price);
+									
+									
+									array_push($det['children'],$det2);
+								}
+								
+							}else{
+								$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark 
+									FROM tbl_pricing_services WHERE tbl_services_id=".$b['id'];
+								
+								$price=$this->db->query($sql_pr)->row_array();
+								if(isset($price['id_price']))$det=array_merge($det,$price);
+							}
+							array_push($data[$aa]['children'],$det);
+							
+						}
+						
+					}
+					$aa++;
+				}
+				//echo "<pre>";
+				//print_r($data);exit;
+				return json_encode($data);
+			break;
+			case "services_master":
+				$sql="SELECT * FROM tbl_services WHERE pid IS NULL";
+			break;
+			case "services_detil":
+				$pid=$this->input->post('id');
+				$sql="SELECT * FROM tbl_services WHERE pid =".$pid;
+				$res=$this->db->query($sql)->result_array();
+				$data=array();
+				if(count($res)>0){
+					foreach($res as $a=>$b){
+						$det=array();
+						$det['id']=$b['id'];
+						$det['name']='&nbsp;&nbsp;'.$b['code'].'. '.$b['services_name'];
+						$det['services_name']=$b['services_name'];
+						
+						$sql="SELECT * FROM tbl_services WHERE pid =".$b['id'];
+						$res_ch=$this->db->query($sql)->result_array();
+						if(count($res_ch)>0){
+							$det['children']=array();
+							foreach($res_ch as $c=>$d){
+								$det2=array();
+								$det2['id']=$d['id'];
+								$det2['name']='&nbsp;&nbsp;'.$d['code'].'. '.$d['services_name'];
+								$det2['services_name']=$d['services_name'];
+								
+								
+								$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark 
+										FROM tbl_pricing_services WHERE tbl_services_id=".$d['id'];
+								$price=$this->db->query($sql_pr)->result_array();
+								if(count($price)>0){
+									$det2['price']=$price;
+									//array_push($det['price'],$price);
+								}
+								array_push($det['children'],$det2);
+							}
+						}
+						else{
+							$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark 
+									FROM tbl_pricing_services WHERE tbl_services_id=".$b['id'];
+							$price=$this->db->query($sql_pr)->result_array();
+							if(count($price)>0){
+								$det['price']=$price;
+								//array_push($det['price'],$price);
+							}
+						}
+						array_push($data,$det);
+					}
+				}
+				//echo "<pre>";print_r($data);
+				return $data;
+			break;
+			case "pricing":
+				$sts=$this->input->post('editstatus');
+				$data=array();
+				
+				if($sts=='edit'){
+					$sql="SELECT A.*,B.services_name 
+					FROM tbl_pricing_services A 
+					LEFT JOIN tbl_services B ON A.tbl_services_id=B.id 
+					WHERE A.id=".$this->input->post('id_price');
+					$data['price']=$this->db->query($sql)->row_array();
+				}else{
+					$sql="SELECT * FROM tbl_services WHERE id=".$this->input->post('id_parent');
+					$data['price']=$this->db->query($sql)->row_array();
+				}
+				return $data;
+			break;
+			case "invoice":
+				$sql="SELECT A.*,CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last)as name,B.method_payment
+					FROM tbl_header_transaction A
+					LEFT JOIN cl_method_payment B ON A.cl_method_payment_id=B.id
+					LEFT JOIN tbl_member C ON A.tbl_member_user=C.member_user
+					LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id ".$where;
 			break;
 		}
 		
@@ -87,7 +252,15 @@ class Mbackend extends CI_Model{
 		}
 		
 	}
-	
+	function get_child($id){
+		$rs = $this->db->get_where("tbl_services",array('pid'=>$id))->result_array();
+		if(count($rs) > 0){
+			return $rs;
+		}else{
+			return 'closed';
+		}
+		//return count($rs) > 0 ? true : false;
+	}
 	function get_combo($type="", $p1="", $p2=""){
 		switch($type){
 			case "cl_kategori":
@@ -109,13 +282,23 @@ class Mbackend extends CI_Model{
 		}
 		
 		switch($table){
-			case "admin":
+			case "services":
+				$table='tbl_services';
+				if($sts_crud=='add_new')$sts_crud='add';$data['flag']='F';
+				if($sts_crud=='delete'){
+					$sql="SELECT * FROM tbl_services where pid=".$id;
+					$ex=$this->db->query($sql)->result_array();
+					if(count($ex)>0){
+						foreach($ex as $v){
+							$this->db->delete('tbl_services',array('pid'=>$v['id']));
+						}
+					}
+					$this->db->delete('tbl_services',array('pid'=>$id));
+				}
 				//print_r($data);exit;
-				if($sts_crud=='add')$data['password']=$this->encrypt->encode($data['password']);
-				if(!isset($data['status'])){$data['status']=0;}
 			break;
-			case "registrasi":
-				$table='tbl_registration';
+			case "pricing":
+				$table='tbl_pricing_services';
 			break;
 		}
 		
@@ -123,7 +306,7 @@ class Mbackend extends CI_Model{
 			case "add":
 				if($table!='tbl_registration'){
 					$data['create_date'] = date('Y-m-d H:i:s');
-					$data['create_by'] = $this->auth['nama_lengkap'];
+					$data['create_by'] = $this->auth['nama_user'];
 				}
 				$this->db->insert($table,$data);
 			break;
@@ -139,12 +322,8 @@ class Mbackend extends CI_Model{
 			$this->db->trans_rollback();
 			return 'gagal';
 		}else{
-			 $this->db->trans_commit();
-			 return 'sukses';
+			 return $this->db->trans_commit();
 		}
-		
-		return "sukses";
-	
 	}
 	
 }

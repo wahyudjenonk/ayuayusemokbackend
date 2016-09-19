@@ -1,0 +1,73 @@
+
+<table class="table table-hover">
+	<tr>
+		<td>&nbsp;</td>
+		<td>Services Name</td>
+		<td>Of Unit</td>
+		<td>Of Area/Item</td>
+		<td>Percen</td>
+		<td>Rate</td>
+		<td>Remark</td>
+	</tr>
+	{foreach from=$data item=i}
+	<tr>
+		<td>&nbsp;</td>
+		<td>{$i.name|default:''}</td>
+		<td colspan="5"></td>
+	</tr>
+	{if isset($i.children)}
+		{foreach from=$i.children item=j}
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;{$j.name|default:''}</td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		{if isset($j.price)}
+		{foreach from=$j.price item=k}
+		<tr>
+			<td>&nbsp;</td>
+			<td>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<a href="javascript:void(0);" onclick="get_form_price('add',{$j.id})" class="btn btn-small btn-info">AddNew</a>
+				<a href="javascript:void(0);" onclick="get_form_price('edit',{$j.id},{$k.id_price})" class="btn btn-small btn-info">Edit</a>
+				<a href="javascript:void(0);" onclick="get_form_price('delete',{$j.id},{$k.id_price})" class="btn btn-small btn-danger">Delete</a>
+			</td>
+			<td>{$k.of_unit|default:''}</td>
+			<td>{$k.of_area_item|default:''}</td>
+			<td>{$k.percen|default:''}</td>
+			<td>{$k.rate|default:''}</td>
+			<td>{$k.remark|default:''}</td>
+		</tr>
+		{/foreach}
+		{/if}
+		{/foreach}
+	{/if}
+	
+	{if isset($i.price)}
+	{foreach from=$i.price item=k}
+	<tr>
+		<td>&nbsp;</td>
+		<td>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="javascript:void(0);" onclick="get_form_price('add',{$i.id})" class="btn btn-small btn-info">AddNew</a>
+			<a href="javascript:void(0);" onclick="get_form_price('edit',{$i.id},{$k.id_price})" class="btn btn-small btn-info">Edit</a>
+			<a href="javascript:void(0);" onclick="get_form_price('delete',{$i.id},{$k.id_price})" class="btn btn-small btn-danger">Delete</a>
+		</td>
+		<td>{$k.of_unit|default:''}</td>
+		<td>{$k.of_area_item|default:''}</td>
+		<td>{$k.percen|default:''}</td>
+		<td>{$k.rate|default:''}</td>
+		<td>{$k.remark|default:''}</td>
+	</tr>
+	{/foreach}
+	{/if}
+	
+	{/foreach}
+</table>
+<script>
+	var id_services={$id_parent};
+</script>

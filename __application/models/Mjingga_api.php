@@ -54,6 +54,63 @@ class Mjingga_api extends CI_Model{
 				return $msg=array('msg'=>'sukses','data'=>$data);
 				//return $sql;
 			break;
+			case "services":
+				$sql="SELECT * FROM tbl_services WHERE pid IS NULL";
+				$data=array();
+				$serv=$this->db->query($sql)->result_array();
+				foreach($serv as $x=>$y){
+					$data[$y['id']]=array(
+						'id'=>$y['id'],
+						'services_name'=>$y['services_name'],
+						'code'=>$y['code'],
+						'desc_services_eng'=>$y['desc_services_eng']			
+					);
+					$sql="SELECT * FROM tbl_services WHERE pid = ".$y['id'];
+					$ch=$this->db->query($sql)->result_array();
+					if(count($ch)>0){
+						$data[$y['id']]['child']=array();
+						foreach($ch as $a=>$b){
+							$det=array();
+							$det['id']=$b['id'];
+							$det['services_name']=$b['services_name'];
+							$det['code']=$b['code'];
+							$det['desc_services_eng']=$b['desc_services_eng'];
+							$sql="SELECT * FROM tbl_services WHERE pid = ".$b['id'];
+							$ch2=$this->db->query($sql)->result_array();
+							if(count($ch2)>0){
+								$det['child']=array();
+								foreach($ch2 as $c=>$d){
+									$det2=array();
+									$det2['id']=$d['id'];
+									$det2['services_name']=$d['services_name'];
+									$det2['code']=$d['code'];
+									$det2['desc_services_eng']=$d['desc_services_eng'];
+									
+									$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark 
+									FROM tbl_pricing_services WHERE tbl_services_id=".$d['id'];
+								
+									$price=$this->db->query($sql_pr)->row_array();
+									if(isset($price['id_price']))$det2=array_merge($det2,$price);
+									
+									
+									array_push($det['child'],$det2);
+								}
+								
+							}else{
+								$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark 
+									FROM tbl_pricing_services WHERE tbl_services_id=".$b['id'];
+								
+								$price=$this->db->query($sql_pr)->row_array();
+								if(isset($price['id_price']))$det=array_merge($det,$price);
+							}
+							array_push($data[$y['id']]['child'],$det);
+							
+						}
+						
+					}
+				}
+				return $msg=array('msg'=>'sukses','data'=>$data);
+			break;
 			
 		}
 		if($balikan == 'json'){

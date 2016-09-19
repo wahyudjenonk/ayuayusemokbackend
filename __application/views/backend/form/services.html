@@ -1,0 +1,48 @@
+	<fieldset>
+		<div style="width:100%">
+			<form id="form_{$acak}" method="post" url="{$host}backoffice-simpan/services/{$sts}">
+			<input type="hidden" id="editStatus_{$acak}" name="editstatus" value="{$sts}">
+			<input type="hidden" id="id_{$acak}" name="id" value="{$id|default:''}">
+			<input type="hidden" id="pid_{$acak}" name="pid" value="{$pid|default:''}">
+			<table class="table table-hover">
+				<tr>
+					<td>&nbsp;</td><td>Code Parent Services</td><td>:</td>
+					<td style="font-weight:bold;">{$data.parent.code|default:'-'}</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td><td>Parent Services</td><td>:</td>
+					<td style="font-weight:bold;">{$data.parent.services_name|default:'-'}</td>
+				</tr>
+				{include file="backend/template/input_goyz.html" label="Code Services" style_type="width:10%" type="text" id="code_{$acak}" name="code" class="validasi" value="{$data.child.code|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Services Name" style_type="width:80%" type="text" id="services_name_{$acak}" name="services_name" class="validasi" value="{$data.child.services_name|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Desc. Services Eng." style_type="width:80%" type="textarea" id="desc_services_eng_{$acak}" name="desc_services_eng" value="{$data.child.desc_services_eng|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Desc. Services Ind." style_type="width:80%" type="textarea" id="desc_services_ind_{$acak}" name="desc_services_ind" value="{$data.child.desc_services_ind|default:''}"}
+			</table>
+			</form>
+		</div>
+		<div style="width:100%">
+			{* {include file="backend/template/button_save.html" text="Send Notification To Activation" id_na="simpan" btn_goyz="true" } *}
+			{include file="backend/template/button_save.html" text="Save Services" id_na="save" style_btn="btn-danger"  btn_goyz="true"}
+		</div>
+	</fieldset>
+
+
+<script>
+	$(".validasi").validatebox({ required:true }); 
+	$('#save_{$acak}').bind('click',function(){
+		if ($('#form_{$acak}').form('validate')){
+			submit_form('form_{$acak}',function(r){
+				console.log(r);
+				if(r==1){
+					$.messager.alert('Homtel Back-Office',"Data Was Save ",'info');
+					grid_nya.treegrid('reload');
+					closeWindow();
+				}else{
+					$.messager.alert('Homtel Back-Office',"Failed Save ",'error');
+				}
+			});
+		}else{
+			$.messager.alert('Homtel Back-Office',"Isi Data Yang Kosong ",'info');
+		}
+	});
+</script>

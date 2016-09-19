@@ -6,69 +6,59 @@
 				<span class="menu-text">Dashboard 1</span>
 			</a>
 		</li>
-		<li>
-			<a href="javascript:void(0);" onclick="">
-				<i class="icon-laptop"></i>
-				<span class="menu-text">Profile</span>
-			</a>
-		</li>
+		
 		<li>
 			<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Grid/property');$('#judul_kecil').html('Property List')">
 				<i class="icon-laptop"></i>
 				<span class="menu-text">Property</span>
 			</a>
 		</li>
+		
 		<li>
 			<a href="javascript:void(0);"  class="dropdown-toggle" >
 				<i class="icon-cogs"></i>
-				<span class="menu-text">Services</span>
+				<span class="menu-text">Services & Pricing</span>
 				<b class="arrow icon-angle-down"></b>
 			</a>
 			<ul class="submenu">
 				<li>
-					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Grid/housekeeping');$('#judul_kecil').html('HouseKeeping Services List')">
+					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Grid/services');$('#judul_kecil').html('Services List')">
 						<i class="icon-double-angle-right"></i>
-						<span class="menu-text">Housekeeping Service</span>
+						<span class="menu-text">Services</span>
 					</a>
 				</li>
 				<li>
-					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Grid/linen');$('#judul_kecil').html('Linen Services List')">
+					<a href="javascript:void(0);" onclick="loadUrl('{$host}backoffice-konten/pricing');$('#judul_kecil').html('Pricing Services List')">
 						<i class="icon-double-angle-right"></i>
-						<span class="menu-text">Linen Service</span>
+						<span class="menu-text">Pricing Services</span>
 					</a>
 				</li>
-				<li>
-					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Grid/check');$('#judul_kecil').html('Linen Services List')">
-						<i class="icon-double-angle-right"></i>
-						<span class="menu-text">Check-in & Check out Service</span>
-					</a>
-				</li>
-				<li>
-					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Grid/hosting');$('#judul_kecil').html('Linen Services List')">
-						<i class="icon-double-angle-right"></i>
-						<span class="menu-text">Hosting Service</span>
-					</a>
-				</li>
-				<li>
-					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Grid/full_host');$('#judul_kecil').html('Linen Services List')">
-						<i class="icon-double-angle-right"></i>
-						<span class="menu-text">Full Host Service</span>
-					</a>
-				</li>
+				
 			</ul>
 		</li>
 		<li>
-			<a href="javascript:void(0);" onclick="">
-				<i class="icon-laptop"></i>
-				<span class="menu-text">Transaction </span>
+			<a href="javascript:void(0);"  class="dropdown-toggle" >
+				<i class="icon-cogs"></i>
+				<span class="menu-text">Transaction</span>
+				<b class="arrow icon-angle-down"></b>
 			</a>
+			<ul class="submenu">
+				<li>
+					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Grid/invoice');$('#judul_kecil').html('Invoice List')">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Invoice</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="loadUrl('{$host}backoffice-konten/planing');$('#judul_kecil').html('Planning Services From Invoice')">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Planing Services</span>
+					</a>
+				</li>
+				
+			</ul>
 		</li>
-		<li>
-			<a href="javascript:void(0);" onclick="">
-				<i class="icon-laptop"></i>
-				<span class="menu-text">Invoice</span>
-			</a>
-		</li>
+		
 		<li>
 			<a href="javascript:void(0);" onclick="">
 				<i class="icon-laptop"></i>

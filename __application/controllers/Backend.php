@@ -137,8 +137,9 @@ class Backend extends JINGGA_Controller {
 			$this->nsmarty->display($temp);
 		}
 	}	
-	function get_konten(){
-		$mod=$this->input->post('mod');
+	function get_konten($p1=""){
+		if($p1!="")$mod=$p1;
+		else $mod=$this->input->post('mod');
 		if($this->input->post('table'))$mod=$this->input->post('table');
 		//echo $mod;
 		$this->nsmarty->assign('mod',$mod);
@@ -156,10 +157,49 @@ class Backend extends JINGGA_Controller {
 				$data=$this->mbackend->getdata('property','get');
 				$this->nsmarty->assign('data',$data);
 			break;
+			case "pricing":
+				
+				$data=$this->mbackend->getdata('services_master','result_array');
+				$this->nsmarty->assign('data',$data);
+				
+			break;
+			case "pricing_detil":
+				$data=$this->mbackend->getdata('services_detil','result_array');
+				$this->nsmarty->assign('data',$data);
+				$this->nsmarty->assign('id_parent',$this->input->post('id'));
+			break;
 		}
 		$this->nsmarty->assign('temp',$temp);
 		if(!file_exists($this->config->item('appl').APPPATH.'views/'.$temp)){$this->nsmarty->display('konstruksi.html');}
 		else{$this->nsmarty->display($temp);}
+	}
+	function get_form($mod){
+		$temp='backend/form/'.$mod.".html";
+		$sts=$this->input->post('editstatus');
+		$this->nsmarty->assign('sts',$sts);
+		switch($mod){
+			case "services":
+				if($sts!='add_new'){
+					$data=$this->mbackend->getdata('services','row_array');
+					$this->nsmarty->assign('data',$data);
+					$this->nsmarty->assign('pid',$this->input->post('pid'));
+					$this->nsmarty->assign('id',$this->input->post('id'));
+				}
+			break;
+			case "pricing":
+				
+				$data=$this->mbackend->getdata('pricing','row_array');
+				$this->nsmarty->assign('data',$data);
+				$this->nsmarty->assign('tbl_services_id',$this->input->post("id_parent"));
+				if($sts=='edit'){$this->nsmarty->assign('id',$this->input->post("id_price"));}
+			break;
+		}
+		$this->nsmarty->assign('mod',$mod);
+		$this->nsmarty->assign('temp',$temp);
+		
+		if(!file_exists($this->config->item('appl').APPPATH.'views/'.$temp)){$this->nsmarty->display('konstruksi.html');}
+		else{$this->nsmarty->display($temp);}
+		
 	}
 	function getdata($p1,$p2="",$p3=""){
 		echo $this->mbackend->getdata($p1,'json',$p3);
@@ -182,10 +222,30 @@ class Backend extends JINGGA_Controller {
 	}
 	
 	function test(){
-		$a = 'cl_komisi_id';
+		/*$a = 'cl_komisi_id';
 		if (strpos($a, 'tipe') !== false) {
 			echo 'true';
-		}
+		}*/
+		$a=array
+		(
+			'id'=> 6,
+			'services_name' => 'Basic Housekeeping Service',
+			'code'=> 'A.1',
+			'desc_services_eng' => 'Basic Housekeeping Service is when host is providing the cleaning tools as mentioned in Terms & Conditions'
+		);
+		$b=array
+		(
+			'id_price' => 1,
+			'tbl_services_id' => 6,
+			'of_unit' => 1,
+			'of_area_item' => 1,
+			'percen' => '',
+			'rate' => 8000,
+			'type' => 'per m2',
+			'remark' => '1x time payment'
+		);
+		print_r(array_merge($a,$b));
+		
 	}
 	function combo_option($mod){
 		$opt="";
@@ -215,6 +275,12 @@ class Backend extends JINGGA_Controller {
 			case "linen":
 			case "full_host":
 				$opt .="<option value='services_name'>Services Name</option>";
+			break;
+			case "invoice":
+				$opt .="<option value='A.no_invoice'>No Invoice</option>";
+				$opt .="<option value='B.method_payment'>Method Payment</option>";
+				$opt .="<option value='D.owner_name_first'>First Name</option>";
+				$opt .="<option value='D.owner_name_last'>Last Name</option>";
 			break;
 		}
 		return $opt;

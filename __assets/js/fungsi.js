@@ -222,80 +222,178 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 		case "check":
 		case "hosting":
 		case "full_host":
+		case "services":
 			param['mod']=modnya;
 			judulnya = "";
-			urlnya = "services";
+			urlnya = "services_all";
 			fitnya = true;
+			nowrap_nya=false;
 			urlglobal = host+'backoffice-Data/'+urlnya;
 			kolom[modnya] = [	
-				{field:'id',title:'Set Pricing',width:100, halign:'center',align:'center',
+				/*{field:'id',title:'Set Pricing',width:100, halign:'center',align:'center',
 					formatter:function(value,rowData,rowIndex){
 						return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Set</a>';
 					}
-				},
-				{field:'code',title:'Code',width:80, halign:'center',align:'left'},
-				{field:'services_name',title:'Services Name',width:200, halign:'center',align:'left'},
+				},*/
+				{field:'name',title:'Services Name',width:350, halign:'center',align:'left'},
+				//{field:'code',title:'Code',width:80, halign:'center',align:'left'},
+				
 				{field:'desc_services_eng',title:'Desc. Eng',width:350, halign:'center',align:'left'},
 				{field:'desc_services_ind',title:'Desc. Ind',width:350, halign:'center',align:'left'}
 			]
 		break;
-	}
-	
-	grid_nya=$("#"+divnya).datagrid({
-		title:judulnya,
-        height:tingginya,
-        width:lebarnya,
-		rownumbers:true,
-		iconCls:'database',
-        fit:fitnya,
-        striped:true,
-        pagination:true,
-        remoteSort: false,
-		showFooter:footer,
-		singleSelect:singleSelek,
-        url: urlglobal,		
-		nowrap: nowrap_nya,
-		pageSize:pagesizeboy,
-		pageList:[10,20,30,40,50,75,100,200],
-		queryParams:param,
-		frozenColumns:[
-            frozen[modnya]
-        ],
-		columns:[
-            kolom[modnya]
-        ],
-		onLoadSuccess:function(d){
-			$('.btn_grid').linkbutton();
-		},
-		onClickRow:function(rowIndex,rowData){
-		 
-        },
-		onDblClickRow:function(rowIndex,rowData){
-			
-		},
-		toolbar: '#tb_'+modnya,
-		rowStyler: function(index,row){
-			if(modnya == 'reservasi'){
-				if (row.flag == 1){
-					return 'background-color:#C5FFC2;'; // return inline style
-				}else if(row.flag == 0){
-					return 'background-color:#FFD1BB;'; // return inline style
+		case "invoice":
+			judulnya = "";
+			urlnya = "invoice";
+			fitnya = true;
+			urlglobal = host+'backoffice-Data/'+urlnya;
+			kolom[modnya] = [	
+				{field:'id',title:'Detail',width:100, halign:'center',align:'center',
+					formatter:function(value,rowData,rowIndex){
+						return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Detail</a>';
+					}
+				},
+				{field:'flag',title:'Status',width:100, halign:'center',align:'left',
+					formatter:function(value,rowData,rowIndex){
+						if(value=='P')return 'Waiting Pay';
+						else if(value=='PL')return 'Planning Set';
+						else if(value=='C')return 'Cancel Invoice';
+						else return 'Finish';
+					},
+					styler:function(value,rowData,rowIndex){
+						if(value=='P'){return 'background:green;color:yellow;'}
+						else if(value=='PL')return 'background:#6DBCED;color:#ffffff;';
+						else if(value=='C')return 'background:red;color:#ffffff;';
+					}
+				},
+				{field:'name',title:'Owner Name',width:220, halign:'center',align:'left'},
+				{field:'no_invoice',title:'No Invoice',width:200, halign:'center',align:'left'},
+				{field:'method_payment',title:'Method Payment',width:200, halign:'center',align:'left'},
+				{field:'date_invoice',title:'Inv. Date',width:150, halign:'center',align:'center'},
+				{field:'grand_total',title:'Grand Total',width:120, halign:'center',align:'right',
+					formatter:function(value,rowData,rowIndex){
+						return NumberFormat(value);
+					}
 				}
-			}
-			
-		},
-		onLoadSuccess: function(data){
-			if(data.total == 0){
-				var $panel = $(this).datagrid('getPanel');
-				var $info = '<div class="info-empty" style="margin-top:20%;">Data Tidak Tersedia</div>';
-				$($panel).find(".datagrid-view").append($info);
-				//$('#edit').linkbutton({disabled:true});
-				//$('#del').linkbutton({disabled:true});
-			}else{
-				$($panel).find(".datagrid-view").append('');
-			}
-		},
-	});
+			]
+		break;
+	}
+	if(par1=='tree'){
+		grid_nya=$("#"+divnya).treegrid({
+			title:judulnya,
+			height:tingginya,
+			width:lebarnya,
+			rownumbers:true,
+			iconCls:'database',
+			fit:fitnya,
+			striped:true,
+			pagination:true,
+			remoteSort: false,
+			showFooter:footer,
+			singleSelect:singleSelek,
+			url: urlglobal,		
+			nowrap: nowrap_nya,
+			pageSize:pagesizeboy,
+			pageList:[10,20,30,40,50,75,100,200],
+			queryParams:param,
+			idField: 'id',
+			treeField: 'name',
+			frozenColumns:[
+				frozen[modnya]
+			],
+			columns:[
+				kolom[modnya]
+			],
+			onLoadSuccess:function(d){
+				$('.btn_grid').linkbutton();
+			},
+			onClickRow:function(rowIndex,rowData){
+			 
+			},
+			onDblClickRow:function(rowIndex,rowData){
+				
+			},
+			toolbar: '#tb_'+modnya,
+			rowStyler: function(index,row){
+				if(modnya == 'reservasi'){
+					if (row.flag == 1){
+						return 'background-color:#C5FFC2;'; // return inline style
+					}else if(row.flag == 0){
+						return 'background-color:#FFD1BB;'; // return inline style
+					}
+				}
+				
+			},
+			onLoadSuccess: function(data){
+				/*if(data.total == 0){
+					var $panel = $(this).datagrid('getPanel');
+					var $info = '<div class="info-empty" style="margin-top:20%;">Data Tidak Tersedia</div>';
+					$($panel).find(".datagrid-view").append($info);
+					//$('#edit').linkbutton({disabled:true});
+					//$('#del').linkbutton({disabled:true});
+				}else{
+					$($panel).find(".datagrid-view").append('');
+				}*/
+			},
+		});
+	}
+	else{
+		grid_nya=$("#"+divnya).datagrid({
+			title:judulnya,
+			height:tingginya,
+			width:lebarnya,
+			rownumbers:true,
+			iconCls:'database',
+			fit:fitnya,
+			striped:true,
+			pagination:true,
+			remoteSort: false,
+			showFooter:footer,
+			singleSelect:singleSelek,
+			url: urlglobal,		
+			nowrap: nowrap_nya,
+			pageSize:pagesizeboy,
+			pageList:[10,20,30,40,50,75,100,200],
+			queryParams:param,
+			frozenColumns:[
+				frozen[modnya]
+			],
+			columns:[
+				kolom[modnya]
+			],
+			onLoadSuccess:function(d){
+				$('.btn_grid').linkbutton();
+			},
+			onClickRow:function(rowIndex,rowData){
+			 
+			},
+			onDblClickRow:function(rowIndex,rowData){
+				
+			},
+			toolbar: '#tb_'+modnya,
+			rowStyler: function(index,row){
+				if(modnya == 'reservasi'){
+					if (row.flag == 1){
+						return 'background-color:#C5FFC2;'; // return inline style
+					}else if(row.flag == 0){
+						return 'background-color:#FFD1BB;'; // return inline style
+					}
+				}
+				
+			},
+			onLoadSuccess: function(data){
+				if(data.total == 0){
+					var $panel = $(this).datagrid('getPanel');
+					var $info = '<div class="info-empty" style="margin-top:20%;">Data Tidak Tersedia</div>';
+					$($panel).find(".datagrid-view").append($info);
+					//$('#edit').linkbutton({disabled:true});
+					//$('#del').linkbutton({disabled:true});
+				}else{
+					$($panel).find(".datagrid-view").append('');
+				}
+			},
+		});
+	}
 }
 
 
@@ -765,7 +863,13 @@ function get_detil(mod,id_data){
 			});
 			
 		break;
-		
+		case "pricing_detil":
+			$('#service_list').hide();
+			$('#service_detil').html('').show().addClass("loading");
+			$.post(host+'backoffice-GetDetil',{mod:mod,id:id_data},function(r){
+				$('#service_detil').html(r).removeClass("loading");
+			});
+		break;
 		default:
 			$('#grid_nya_'+mod).hide();
 			$('#detil_nya_'+mod).html('').show().addClass("loading");
@@ -775,4 +879,96 @@ function get_detil(mod,id_data){
 		break;
 	}
 	
+}
+function get_form_tree(sts,mod){
+	var row = grid_nya.treegrid('getSelected');
+	var param={};
+	console.log(row);
+	if(sts !='add_new'){
+		if(row){
+			param['flag_tree']=row.flag_tree;
+			if (sts=='add'){
+				if(row.flag_tree!='C'){
+					param['editstatus']='add';
+					param['pid']=row.id;
+				}else{
+					$.messager.alert('HOMTEL Back-Office',"No Add Child",'error');
+					return false;
+				}
+			}else if(sts=='edit'){
+				param['editstatus']='edit';
+				param['id']=row.id;
+				param['pid']=row.pid;
+			}else{
+				param['id']=row.id;
+				param['editstatus']='delete';
+				$.messager.confirm('Homtel Backoffice','Anda Yakin Menghapus Data Ini ?',function(re){
+					if(re){
+						$.post(host+'backoffice-simpan/'+mod+'/delete',param,function(r){
+							if(r==1){
+								$.messager.alert('Homtel Back-Office',"Data Was Deleted ",'info');
+								grid_nya.treegrid('reload');
+							}else{
+								$.messager.alert('Homtel Back-Office',"Failed Deleted ",'error');
+							}
+						});
+					}
+				});
+				return false;
+			}
+		}else{
+			$.messager.alert('HOMTEL Back-Office',"Select Row In Grid",'error');
+		}
+	}else{
+		param['editstatus']='add_new';
+	}
+	
+	$.post(host+'backoffice-form/'+mod,param,function(r){
+		windowForm(r,'HOMTEL Services',800,500);
+	});
+}
+
+function get_form_price(sts,par_id,pr_id){
+	param={};
+	param['editstatus']=sts;
+	param['id_parent']=par_id;
+	param['id_price']=pr_id;
+	if(sts=='delete'){
+		$.messager.confirm('Homtel Backoffice','Anda Yakin Menghapus Data Ini ?',function(re){
+			if(re){
+				param['id']=pr_id;
+				$.post(host+'backoffice-simpan/pricing/delete',param,function(r){
+					if(r==1){
+						$.messager.alert('Homtel Back-Office',"Data Was Deleted ",'info');
+						get_detil('pricing_detil',id_services);
+					}else{
+						$.messager.alert('Homtel Back-Office',"Failed Deleted ",'error');
+					}
+				});
+			}
+		});
+		return false;
+		
+	}
+	$.post(host+'backoffice-form/pricing',param,function(r){
+		windowForm(r,'HOMTEL Services',800,500);
+	});
+}
+
+function simpan_form(id_form,id_cancel,msg){
+	if ($('#'+id_form).form('validate')){
+		submit_form(id_form,function(r){
+			console.log(r)
+			if(r==1){
+				$.messager.alert('Aldeaz Back-Office',msg,'info');
+				$('#'+id_cancel).trigger('click');
+				grid_nya.datagrid('reload');
+			}else{
+				console.log(r);
+				$.messager.alert('Aldeaz Back-Office',"Tdak Dapat Menyimpan Data",'error');
+			}
+		});
+	}else{
+		$.messager.alert('Aldeaz Back-Office',"Isi Data Yang Kosong ",'info');
+	}
 }

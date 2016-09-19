@@ -1,0 +1,46 @@
+	<fieldset>
+		<div style="width:100%">
+			<form id="form_{$acak}" method="post" url="{$host}backoffice-simpan/pricing/{$sts}">
+			<input type="hidden" id="editStatus_{$acak}" name="editstatus" value="{$sts}">
+			<input type="hidden" id="id_{$acak}" name="id" value="{$id|default:''}">
+			<input type="hidden" id="tbl_services_id_{$acak}" name="tbl_services_id" value="{$tbl_services_id|default:''}">
+			<table class="table table-hover">
+				<tr>
+					<td>&nbsp;</td><td>Services Name</td><td>:</td>
+					<td style="font-weight:bold;">{$data.price.services_name|default:'-'}</td>
+				</tr>
+				{include file="backend/template/input_goyz.html" label="Of Unit" style_type="width:20%" type="text" id="of_unit_{$acak}" name="of_unit" class="validasi angka" value="{$data.price.of_unit|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Of Area/Item" style_type="width:20%" type="text" id="of_area_item_{$acak}" name="of_area_item" class="validasi angka" value="{$data.price.of_area_item|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Percen" style_type="width:20%" type="text" id="percen_{$acak}" name="percen" class="angka" value="{$data.price.percen|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Rate." style_type="width:50%" type="text" id="rate_{$acak}" name="rate" class="angka" value="{$data.price.rate|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Remark" style_type="width:80%" type="textarea" id="remark_{$acak}" name="remark" value="{$data.price.remark|default:''}"}
+			</table>
+			</form>
+		</div>
+		<div style="width:100%">
+			{* {include file="backend/template/button_save.html" text="Send Notification To Activation" id_na="simpan" btn_goyz="true" } *}
+			{include file="backend/template/button_save.html" text="Save Pricing" id_na="save" style_btn="btn-danger"  btn_goyz="true"}
+		</div>
+	</fieldset>
+
+
+<script>
+	$(".validasi").validatebox({ required:true }); 
+	$(".angka").numberbox(); 
+	$('#save_{$acak}').bind('click',function(){
+		if ($('#form_{$acak}').form('validate')){
+			submit_form('form_{$acak}',function(r){
+				console.log(r);
+				if(r==1){
+					$.messager.alert('Homtel Back-Office',"Data Was Save ",'info');
+					get_detil('pricing_detil',id_services);
+					closeWindow();
+				}else{
+					$.messager.alert('Homtel Back-Office',"Failed Save ",'error');
+				}
+			});
+		}else{
+			$.messager.alert('Homtel Back-Office',"Isi Data Yang Kosong ",'info');
+		}
+	});
+</script>

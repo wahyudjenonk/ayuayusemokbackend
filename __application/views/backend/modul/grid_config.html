@@ -1,5 +1,7 @@
-{if $mod eq 'registration' || $mod eq 'member' || $mod eq 'property' || $mod eq 'housekeeping' || $mod eq 'linen' || $mod eq 'check' || $mod eq 'hosting' || $mod eq 'full_host'}
+{if $mod eq 'registration' || $mod eq 'member' || $mod eq 'property' || $mod eq 'invoice'}
 	{include file="backend/template/grid.html" main={$mod} button="false" table={$table|default:''} filter_core="true"}
+{else if $mod eq 'services'}
+	{include file="backend/template/grid.html" main={$mod} button="false" button_tree="true" table={$table|default:''} filter_core="false"}
 {else}
 	{include file="backend/template/grid.html" main={$mod} button="true" table={$table|default:''} filter_core="true"}
 {/if}
