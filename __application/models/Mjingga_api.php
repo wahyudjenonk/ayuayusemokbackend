@@ -89,10 +89,8 @@ class Mjingga_api extends CI_Model{
 									$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark 
 									FROM tbl_pricing_services WHERE tbl_services_id=".$d['id'];
 								
-									$price=$this->db->query($sql_pr)->row_array();
-									if(isset($price['id_price']))$det2=array_merge($det2,$price);
-									
-									
+									$price=$this->db->query($sql_pr)->result_array();
+									if(count($price)>0){$det2['price']=$price;}
 									array_push($det['child'],$det2);
 								}
 								
@@ -100,8 +98,8 @@ class Mjingga_api extends CI_Model{
 								$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark 
 									FROM tbl_pricing_services WHERE tbl_services_id=".$b['id'];
 								
-								$price=$this->db->query($sql_pr)->row_array();
-								if(isset($price['id_price']))$det=array_merge($det,$price);
+								$price=$this->db->query($sql_pr)->result_array();
+								if(count($price)>0){$det['price']=$price;}
 							}
 							array_push($data[$y['id']]['child'],$det);
 							
@@ -214,6 +212,35 @@ class Mjingga_api extends CI_Model{
 				}
 				//return $msg['msg'] =$_POST;
 			break;
+			case "transaction":
+				//return $msg['msg'] =$_POST;
+				$table="tbl_header_transaction";
+				$tbl_services_id=array();
+				$services_id=array();
+				$ex=$this->db->get_where('tbl_header_transaction',array('tbl_member_user'=>$data['tbl_member_user']))->row_array();
+				if(isset($ex['id'])){
+					$sql="SELECT MAX(SUBSTRING(no_invoice FROM 12 FOR 5)) + 1 as no_baru FROM tbl_header_transaction WHERE tbl_member_user='".$data['tbl_member_user']."'";
+					$id=$this->db->query($sql)->row('no_baru');
+				}else{
+					$id=1;
+				}
+				if($id<10){$id_baru='0000'.$id;}
+				if($id<100 && $id >=10){$id_baru='000'.$id;}
+				if($id<1000 && $id >=100){$id_baru='00'.$id;}
+				if($id<10000 && $id >=1000){$id_baru='0'.$id;}
+				$no_inv='INV-'.$data['tbl_member_user'].'-'.$id_baru;
+				$data['no_invoice']=$no_inv;
+				$data['date_invoice']=date('Y-m-d H:i:s');
+				
+				if(isset($data['tbl_services_id'])){
+					$tbl_services_id=$data['tbl_services_id'];unset($data['tbl_services_id']);
+					$qty=$data['qty'];unset($data['qty']);
+					$total=$data['total'];unset($data['total']);
+					$flag_transaction=$data['flag_transaction'];unset($data['flag_transaction']);
+				}
+				
+				
+			break;
 		}
 		
 		switch ($sts_crud){
@@ -267,6 +294,22 @@ class Mjingga_api extends CI_Model{
 						 $this->db->insert_batch('tbl_unit_photo', $photo_unit);
 					}
 					
+				}else if($table=='tbl_header_transaction'){
+					$this->db->insert($table,$data);//INSERT HEADER TRANSACTION;
+					$id_header=$this->db->insert_id();
+					if(count($tbl_services_id)>0){
+						for($i=0;$i<count($tbl_services_id);$i++){
+							$services_id[]=array(
+									'tbl_header_transaction_id'=>$id_header,
+									'tbl_services_id'=>$tbl_services_id[$i],
+									'qty'=>$qty[$i],
+									'total'=>$total[$i],
+									'flag_transaction'=>$flag_transaction[$i],
+									
+							);
+						}
+						 $this->db->insert_batch('tbl_detail_transaction', $services_id);
+					}
 				}else{
 					$this->db->insert($table,$data);
 				}
