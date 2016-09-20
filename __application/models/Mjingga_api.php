@@ -159,7 +159,7 @@ class Mjingga_api extends CI_Model{
 									$det2['code']=$d['code'];
 									$det2['desc_services_eng']=$d['desc_services_eng'];
 									
-									$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark,type_choice 
+									$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark,type_choice,uom 
 									FROM tbl_pricing_services WHERE tbl_services_id=".$d['id'];
 								
 									$price=$this->db->query($sql_pr)->result_array();
@@ -168,7 +168,7 @@ class Mjingga_api extends CI_Model{
 								}
 								
 							}else{
-								$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark,type_choice 
+								$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark,type_choice,uom 
 									FROM tbl_pricing_services WHERE tbl_services_id=".$b['id'];
 								
 								$price=$this->db->query($sql_pr)->result_array();
@@ -305,8 +305,8 @@ class Mjingga_api extends CI_Model{
 				$data['no_invoice']=$no_inv;
 				$data['date_invoice']=date('Y-m-d H:i:s');
 				
-				if(isset($data['tbl_services_id'])){
-					$tbl_services_id=$data['tbl_services_id'];unset($data['tbl_services_id']);
+				if(isset($data['tbl_pricing_services_id'])){
+					$tbl_services_id=$data['tbl_pricing_services_id'];unset($data['tbl_pricing_services_id']);
 					$qty=$data['qty'];unset($data['qty']);
 					$total=$data['total'];unset($data['total']);
 					$flag_transaction=$data['flag_transaction'];unset($data['flag_transaction']);
@@ -374,7 +374,7 @@ class Mjingga_api extends CI_Model{
 						for($i=0;$i<count($tbl_services_id);$i++){
 							$services_id[]=array(
 									'tbl_header_transaction_id'=>$id_header,
-									'tbl_services_id'=>$tbl_services_id[$i],
+									'tbl_pricing_services_id'=>$tbl_services_id[$i],
 									'qty'=>$qty[$i],
 									'total'=>$total[$i],
 									'flag_transaction'=>$flag_transaction[$i],
