@@ -128,7 +128,7 @@ class Mjingga_api extends CI_Model{
 				return $msg=array('msg'=>'sukses','data'=>$data);
 			break;
 			case "services":
-				$sql="SELECT * FROM tbl_services WHERE pid IS NULL";
+				$sql="SELECT * FROM tbl_services WHERE pid IS NULL AND type_services='".$this->input->post('type_services')."'";
 				$data=array();
 				$serv=$this->db->query($sql)->result_array();
 				foreach($serv as $x=>$y){
