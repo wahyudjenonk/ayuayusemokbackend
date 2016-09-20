@@ -159,7 +159,7 @@ class Mjingga_api extends CI_Model{
 									$det2['code']=$d['code'];
 									$det2['desc_services_eng']=$d['desc_services_eng'];
 									
-									$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark 
+									$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark,type_choice 
 									FROM tbl_pricing_services WHERE tbl_services_id=".$d['id'];
 								
 									$price=$this->db->query($sql_pr)->result_array();
@@ -168,7 +168,7 @@ class Mjingga_api extends CI_Model{
 								}
 								
 							}else{
-								$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark 
+								$sql_pr="SELECT id as id_price,tbl_services_id,of_unit,of_area_item,percen,rate,type,remark,type_choice 
 									FROM tbl_pricing_services WHERE tbl_services_id=".$b['id'];
 								
 								$price=$this->db->query($sql_pr)->result_array();
