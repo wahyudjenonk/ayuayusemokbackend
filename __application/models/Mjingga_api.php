@@ -183,6 +183,18 @@ class Mjingga_api extends CI_Model{
 				return $msg=array('msg'=>'sukses','data'=>$data);
 			break;
 			
+			case "pricing_pilih":
+				$pilih=$this->input->post('tbl_services_id');
+				if($pilih){
+					$sql="SELECT A.*,B.services_name 
+							FROM tbl_pricing_services A 
+							LEFT JOIN tbl_services B ON A.tbl_services_id=B.id
+							WHERE A.id IN (".join(',',$pilih).") ";
+					$msg=array('msg'=>'sukses','data'=>$this->db->query($sql)->result_array());		
+					return $msg;
+				}
+			break;
+			
 		}
 		if($balikan == 'json'){
 			$data= $this->lib->json_grid($sql);
