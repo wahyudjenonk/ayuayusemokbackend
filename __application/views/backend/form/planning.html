@@ -1,0 +1,36 @@
+		<fieldset>
+		<div style="width:100%">
+			<form id="form_{$acak}" method="post" url="{$host}backoffice-simpan/planning/{$sts}">
+			<input type="hidden" id="editStatus_{$acak}" name="editstatus" value="{$sts}">
+			<input type="hidden" id="id_{$acak}" name="id" value="{$data.id|default:''}">
+			<input type="hidden" id="tbl_detail_transaction_id_{$acak}" name="tbl_detail_transaction_id" value="{$tbl_detail_transaction_id|default:''}">
+			<table class="table table-hover">
+				{include file="backend/template/input_goyz.html" label="Planned Date" style_type="width:40%;height:30px" type="text" id="planned_date{$acak}" name="planned_date" class="validasi tgl" value="{$data.planned_date|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Planned Time" style_type="width:20%;height:30px" type="text" id="planned_time{$acak}" name="planned_time" class="validasi waktu" value="{$data.planned_time|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Remark" style_type="width:80%" type="textarea" id="remark_{$acak}" name="remark" value="{$data.remark|default:''}"}
+			</table>
+			</form>
+		</div>
+		<div style="width:100%">
+			{* {include file="backend/template/button_save.html" text="Send Notification To Activation" id_na="simpan" btn_goyz="true" } *}
+			{include file="backend/template/button_save.html" text="Save Planning Log" id_na="save" style_btn="btn-danger"  btn_goyz="true"}
+		</div>
+	</fieldset>
+
+<script>
+	$(".tgl").datebox({ formatter: formatDate  }); 
+	$('.waktu').timespinner();
+	$('#save_{$acak}').bind('click',function(){
+			submit_form('form_{$acak}',function(r){
+				console.log(r);
+				 if(r==1){
+					$.messager.alert('Homtel Back-Office',"Data Log Plaaning Was Save ",'info');
+					get_form_plan({$tbl_detail_transaction_id},total_row_plan,div_id_plan_acak)
+					closeWindow();
+				}else{
+					$.messager.alert('Homtel Back-Office',"Failed Save ",'error');
+				}
+				
+			});
+	});
+</script>

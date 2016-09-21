@@ -243,39 +243,54 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 			]
 		break;
 		case "invoice":
+		case "planning":
 			judulnya = "";
 			urlnya = "invoice";
 			fitnya = true;
 			urlglobal = host+'backoffice-Data/'+urlnya;
-			kolom[modnya] = [	
-				{field:'id',title:'Detail',width:100, halign:'center',align:'center',
-					formatter:function(value,rowData,rowIndex){
-						return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Detail</a>';
-					}
-				},
-				{field:'flag',title:'Status',width:100, halign:'center',align:'left',
-					formatter:function(value,rowData,rowIndex){
-						if(value=='P')return 'Waiting Pay';
-						else if(value=='PL')return 'Planning Set';
-						else if(value=='C')return 'Cancel Invoice';
-						else return 'Finish';
+			if(modnya=='invoice'){
+				kolom[modnya] = [	
+					{field:'id',title:'Detail',width:100, halign:'center',align:'center',
+						formatter:function(value,rowData,rowIndex){
+							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Detail</a>';
+						}
 					},
-					styler:function(value,rowData,rowIndex){
-						if(value=='P'){return 'background:green;color:yellow;'}
-						else if(value=='PL')return 'background:#6DBCED;color:#ffffff;';
-						else if(value=='C')return 'background:red;color:#ffffff;';
+					{field:'flag',title:'Status',width:100, halign:'center',align:'left',
+						formatter:function(value,rowData,rowIndex){
+							if(value=='P')return 'Waiting Pay';
+							else if(value=='PL')return 'Planning Set';
+							else if(value=='C')return 'Cancel Invoice';
+							else return 'Finish';
+						},
+						styler:function(value,rowData,rowIndex){
+							if(value=='P'){return 'background:green;color:yellow;'}
+							else if(value=='PL')return 'background:#6DBCED;color:#ffffff;';
+							else if(value=='C')return 'background:red;color:#ffffff;';
+						}
+					},
+					{field:'name',title:'Owner Name',width:220, halign:'center',align:'left'},
+					{field:'no_invoice',title:'No Invoice',width:200, halign:'center',align:'left'},
+					{field:'method_payment',title:'Method Payment',width:200, halign:'center',align:'left'},
+					{field:'date_invoice',title:'Inv. Date',width:150, halign:'center',align:'center'},
+					{field:'grand_total',title:'Grand Total',width:120, halign:'center',align:'right',
+						formatter:function(value,rowData,rowIndex){
+							return NumberFormat(value);
+						}
 					}
-				},
-				{field:'name',title:'Owner Name',width:220, halign:'center',align:'left'},
-				{field:'no_invoice',title:'No Invoice',width:200, halign:'center',align:'left'},
-				{field:'method_payment',title:'Method Payment',width:200, halign:'center',align:'left'},
-				{field:'date_invoice',title:'Inv. Date',width:150, halign:'center',align:'center'},
-				{field:'grand_total',title:'Grand Total',width:120, halign:'center',align:'right',
-					formatter:function(value,rowData,rowIndex){
-						return NumberFormat(value);
-					}
-				}
-			]
+				]
+			}else{
+				kolom[modnya] = [	
+					{field:'id',title:'Set Plan',width:200, halign:'center',align:'center',
+						formatter:function(value,rowData,rowIndex){
+							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Set</a>';
+						}
+					},
+					
+					{field:'name',title:'Owner Name',width:300, halign:'center',align:'left'},
+					{field:'no_invoice',title:'No Invoice',width:200, halign:'center',align:'center'},
+					{field:'date_invoice',title:'Inv. Date',width:150, halign:'center',align:'center'},
+				]				
+			}
 		break;
 	}
 	if(par1=='tree'){
@@ -972,3 +987,81 @@ function simpan_form(id_form,id_cancel,msg){
 		$.messager.alert('Aldeaz Back-Office',"Isi Data Yang Kosong ",'info');
 	}
 }
+var div_id_plan_acak;
+function get_form_plan(id,jml_row,acak){
+	div_id_plan_acak=acak;
+	param={};
+	param['id_detil_trans']=id;
+	param['jml_row']=jml_row;
+	param['mod']='planning_detil';
+	$('#form_plan_'+acak).empty().addClass('loading');
+	$.post(host+'backoffice-GetDetil',param,function(r){
+		$('#form_plan_'+acak).html(r).removeClass('loading');
+	});
+	console.log(id,jml_row)
+}
+function get_form(mod,sts,id){
+	param={};
+	if(sts=='edit_flag'){param['editstatus']='edit';}else{param['editstatus']=sts;}
+	switch(mod){
+		case "planning":
+			param['id']=id;
+			if(sts!='edit_flag'){
+				param['detil_id']=detil_id;
+				param['total_row']=total_row_plan;
+			}
+			else param['flag']='F';
+		break;
+	}
+	if(sts=='delete'){
+		$.messager.confirm('Homtel Backoffice','Are You Sure Delete This Data?',function(re){
+			if(re){
+				$.post(host+'backoffice-simpan/'+mod+'/'+sts,param,function(r){
+					if(r==1){
+						$.messager.alert('Homtel Back-Office',"Data Was Deleted ",'info');
+						switch(mod){
+							case "planning":get_form_plan(detil_id,total_row_plan,div_id_plan_acak);break;
+						}
+					}else{
+						$.messager.alert('Homtel Back-Office',"Failed Deleted ",'error');
+					}
+				});
+			}
+		});
+		return false;
+		
+	}
+	if(sts=='edit_flag'){
+		$.messager.confirm('Homtel Backoffice','Are You Sure ?',function(re){
+			if(re){
+				$.post(host+'backoffice-simpan/'+mod+'/edit',param,function(r){
+					if(r==1){
+						$.messager.alert('Homtel Back-Office',"Data Updated ",'info');
+						switch(mod){
+							case "planning":get_form_plan(detil_id,total_row_plan,div_id_plan_acak);break;
+						}
+					}else{
+						$.messager.alert('Homtel Back-Office',"Failed Updated ",'error');
+					}
+				});
+			}
+		});
+		return false;
+		
+	}
+	$.post(host+'backoffice-form/'+mod,param,function(r){
+		windowForm(r,'HOMTEL Services',800,350);
+	});
+}
+function formatDate(date) {
+	var bulan=date.getMonth() +1;
+	var tgl=date.getDate();
+	if(bulan < 10){
+		bulan='0'+bulan;
+	}
+	
+	if(tgl < 10){
+		tgl='0'+tgl;
+	}
+	return date.getFullYear() + "-" + bulan + "-" + tgl;
+}		

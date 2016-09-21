@@ -1,0 +1,75 @@
+<div class="span6">
+<table class="table table-hover">
+	<tr>
+		<td>&nbsp;</td><td>No Invoice</td><td>:</td>
+		<td style="font-weight:bold;">{$data.header.no_invoice|default:'-'}</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td><td>Invoice Date</td><td>:</td>
+		<td style="font-weight:bold;">{$data.header.date_invoice|default:'-'}</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td><td>Method Payment</td><td>:</td>
+		<td style="font-weight:bold;">{$data.header.method_payment|default:'-'}</td>
+	</tr>
+</table>
+</div>
+<div class="span6">
+<table class="table table-hover">
+	<tr>
+		<td>&nbsp;</td><td>Owner Name</td><td>:</td>
+		<td style="font-weight:bold;">{$data.header.nama|default:'-'}</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td><td>Apartment Name</td><td>:</td>
+		<td style="font-weight:bold;">{$data.header.apartment_name|default:'-'}</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td><td>Grand Total</td><td>:</td>
+		<td style="font-weight:bold;">{$data.header.grand_total|number_format:2:',':'.'|default:'-'}</td>
+	</tr>
+</table>
+</div>
+<hr>
+<table class="table table-striped table-bordered table-hover">
+	<thead>
+	<tr>
+		<th>No</th>
+		<th>Services Name</th>
+		<th>Of Unit</th>
+		<th>Of Area/Item</th>
+		<th>Percen</th>
+		<th style="text-align:right;">Rate</th>
+		<th style="text-align:left;">Type Services</th>
+		<th style="text-align:right;">Qty</th>
+		<th style="text-align:right;">Total</th>
+	</tr>
+	</thead>
+	<tbody>
+	{assign var=tot_qty value=0}
+	{assign var=grand_tot value=0}
+	{foreach from=$data.detil item=i name=x}
+	{assign var=tot_qty value=$tot_qty+$i.qty}
+	{assign var=grand_tot value=$grand_tot+$i.total}
+	
+	<tr>
+		<td>{$smarty.foreach.x.iteration}</td>
+		<td>{$i.services_name|default:'-'}</td>
+		<td>{$i.of_unit|default:'-'}</td>
+		<td>{$i.of_area_item|default:'-'}</td>
+		<td style="text-align:right;">{$i.percen|number_format:2:',':'.'|default:''}</td>
+		<td style="text-align:right;">{$i.rate|number_format:2:',':'.'|default:''}</td>
+		<td style="text-align:right;">{$i.type_serv|default:'-'}</td>
+		<td style="text-align:right;">{$i.qty|number_format:0:',':'.'|default:''}x</td>
+		<td style="text-align:right;">{$i.total|number_format:2:',':'.'|default:''}</td>
+	</tr>
+	{/foreach}
+	<tr style="background:#B2B0B0;font-weight:bold;">
+		<td>&nbsp;</td>
+		<td colspan="6">Grand Total</td>
+		<td style="text-align:right;">{$tot_qty|number_format:0:',':'.'|default:''}x</td>
+		<td style="text-align:right;">{$grand_tot|number_format:2:',':'.'|default:''}</td>
+	</tr>
+	</tbody>
+</table>
+{include file="backend/template/button_save.html" text="Back To Grid" click="$('#grid_nya_{$mod}').show();$('#detil_nya_{$mod}').hide();" id_na="cancel" style_btn="btn-danger"  btn_goyz="true"}

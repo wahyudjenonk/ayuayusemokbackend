@@ -168,6 +168,20 @@ class Backend extends JINGGA_Controller {
 				$this->nsmarty->assign('data',$data);
 				$this->nsmarty->assign('id_parent',$this->input->post('id'));
 			break;
+			case "invoice":
+			case "planning":
+				$data=$this->mbackend->getdata('invoice','get');
+				$this->nsmarty->assign('data',$data);
+			break;
+			case "planning_detil":
+				$data=$this->mbackend->getdata('planning','get_data');
+				$this->nsmarty->assign('data',$data);
+				$total_row=(int)$this->input->post("jml_row");
+				$sisa_row=((int)$this->input->post("jml_row")-(int)$data['jml_data']);
+				$this->nsmarty->assign('total_row',$total_row);
+				$this->nsmarty->assign('sisa_row',$sisa_row);
+				$this->nsmarty->assign('tbl_detail_transaction_id',$this->input->post('id_detil_trans'));
+			break;
 		}
 		$this->nsmarty->assign('temp',$temp);
 		if(!file_exists($this->config->item('appl').APPPATH.'views/'.$temp)){$this->nsmarty->display('konstruksi.html');}
@@ -192,6 +206,13 @@ class Backend extends JINGGA_Controller {
 				$this->nsmarty->assign('data',$data);
 				$this->nsmarty->assign('tbl_services_id',$this->input->post("id_parent"));
 				if($sts=='edit'){$this->nsmarty->assign('id',$this->input->post("id_price"));}
+			break;
+			case "planning":
+				if($sts=='edit'){
+					$data=$this->mbackend->getdata('planning','get');
+					$this->nsmarty->assign('data',$data);
+				}
+				$this->nsmarty->assign('tbl_detail_transaction_id',$this->input->post("detil_id"));
 			break;
 		}
 		$this->nsmarty->assign('mod',$mod);
@@ -277,6 +298,7 @@ class Backend extends JINGGA_Controller {
 				$opt .="<option value='services_name'>Services Name</option>";
 			break;
 			case "invoice":
+			case "planning":
 				$opt .="<option value='A.no_invoice'>No Invoice</option>";
 				$opt .="<option value='B.method_payment'>Method Payment</option>";
 				$opt .="<option value='D.owner_name_first'>First Name</option>";
