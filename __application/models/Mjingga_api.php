@@ -29,7 +29,7 @@ class Mjingga_api extends CI_Model{
 				$sql="
 					SELECT A.*, B.photo_unit 
 					FROM tbl_unit_member A
-					LEFT JOIN (SELECT * FROM tbl_unit_photo LIMIT 1)B ON B.tbl_unit_member_id = A.id
+					LEFT JOIN (SELECT tbl_unit_member_id, photo_unit FROM tbl_unit_photo GROUP BY tbl_unit_member_id)B ON B.tbl_unit_member_id = A.id
 				";
 				if($balikan=='detil'){
 					$data=array();
