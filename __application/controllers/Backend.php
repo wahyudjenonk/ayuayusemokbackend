@@ -173,6 +173,10 @@ class Backend extends JINGGA_Controller {
 				$data=$this->mbackend->getdata('invoice','get');
 				$this->nsmarty->assign('data',$data);
 			break;
+			case "invoice_package":
+				$data=$this->mbackend->getdata('invoice_package','get');
+				$this->nsmarty->assign('data',$data);
+			break;
 			case "planning_detil":
 				$data=$this->mbackend->getdata('planning','get_data');
 				$this->nsmarty->assign('data',$data);
@@ -297,6 +301,7 @@ class Backend extends JINGGA_Controller {
 			case "full_host":
 				$opt .="<option value='services_name'>Services Name</option>";
 			break;
+			case "invoice_package":
 			case "invoice":
 			case "planning":
 				$opt .="<option value='A.no_invoice'>No Invoice</option>";

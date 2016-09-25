@@ -284,6 +284,48 @@ class Mbackend extends CI_Model{
 						LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id ".$where." ORDER BY A.date_invoice DESC";
 				}
 			break;
+			case "invoice_package":
+				if($balikan=='get'){
+					$data=array();
+					$sql="SELECT A.*,CONCAT(C.title,' ',C.owner_name_first,' ',C.owner_name_last)as nama,F.services_name,
+							E.apartment_name,D.method_payment 
+							FROM tbl_transaction_package A
+							LEFT JOIN tbl_member B ON A.tbl_member_user=B.member_user
+							LEFT JOIN tbl_registration C ON B.tbl_registration_id=C.id
+							LEFT JOIN cl_method_payment D ON A.cl_method_payment_id=D.id
+							LEFT JOIN tbl_unit_member E ON A.tbl_unit_member_id=E.id 
+							LEFT JOIN tbl_services F ON A.tbl_services_id=F.id
+							WHERE A.id=".$this->input->post('id');
+					$data["header"]=$this->db->query($sql)->row_array();
+					if(isset($data["header"]['id'])){
+						$sql="SELECT * 
+								FROM tbl_listing_member
+								WHERE tbl_transaction_package_id=".$data["header"]['id'];
+						$data["listing"]=$this->db->query($sql)->row_array();
+						if(isset($data["listing"]['id'])){
+							$sql="SELECT A.*,B.third_party_affiliation 
+									FROM tbl_listing_member_affiliation A
+									LEFT JOIN cl_listing_third_party_affiliation B ON A.cl_listing_third_party_affiliation_id=B.id 
+									WHERE A.tbl_listing_member_id=".$data["listing"]['id'];
+							$data["affiliation"]=$this->db->query($sql)->row_array();
+							$sql="SELECT A.*,B.listed_unit 
+									FROM tbl_listing_member_list A
+									LEFT JOIN cl_listing_list B ON A.cl_listing_list_id=B.id
+									WHERE A.tbl_listing_member_id=".$data["listing"]['id'];
+							$data["list"]=$this->db->query($sql)->result_array();
+						}
+					}
+					return $data;
+				}else{
+					$sql="SELECT A.*,CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last)as name,B.method_payment,F.services_name
+						FROM tbl_transaction_package A
+						LEFT JOIN cl_method_payment B ON A.cl_method_payment_id=B.id
+						LEFT JOIN tbl_member C ON A.tbl_member_user=C.member_user
+						LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id
+						LEFT JOIN tbl_services F ON A.tbl_services_id=F.id 
+						".$where." ORDER BY A.date_invoice DESC";
+				}
+			break;
 		}
 		
 		if($balikan == 'json'){

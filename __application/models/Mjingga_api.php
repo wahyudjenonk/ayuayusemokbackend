@@ -10,6 +10,49 @@ class Mjingga_api extends CI_Model{
 	function get_data($type="", $balikan="", $p1=""){
 		$msg=array();
 		switch($type){
+			case "invoice_package":
+				$sql="SELECT A.*,CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last)as name,B.method_payment,F.services_name,
+						E.apartment_name,E.apartment_address
+						FROM tbl_transaction_package A
+						LEFT JOIN cl_method_payment B ON A.cl_method_payment_id=B.id
+						LEFT JOIN tbl_member C ON A.tbl_member_user=C.member_user
+						LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id 
+						LEFT JOIN tbl_unit_member E ON A.tbl_unit_member_id=E.id
+						LEFT JOIN tbl_services F ON A.tbl_services_id=F.id
+						";
+				if($balikan=='detil'){
+					$data=array();
+					$sql .=" WHERE A.id=".$this->input->post('id');
+					$sql .=" ORDER BY A.date_invoice DESC";
+					//return $msg=array('msg'=>'sukses','data'=>$sql);
+					$data['header']=$this->db->query($sql)->row_array();
+					if(isset($data["header"]['id'])){
+						$sql="SELECT * 
+								FROM tbl_listing_member
+								WHERE tbl_transaction_package_id=".$data["header"]['id'];
+						$data["listing"]=$this->db->query($sql)->row_array();
+						if(isset($data["listing"]['id'])){
+							$sql="SELECT A.*,B.third_party_affiliation 
+									FROM tbl_listing_member_affiliation A
+									LEFT JOIN cl_listing_third_party_affiliation B ON A.cl_listing_third_party_affiliation_id=B.id 
+									WHERE A.tbl_listing_member_id=".$data["listing"]['id'];
+							$data["affiliation"]=$this->db->query($sql)->row_array();
+							$sql="SELECT A.*,B.listed_unit 
+									FROM tbl_listing_member_list A
+									LEFT JOIN cl_listing_list B ON A.cl_listing_list_id=B.id
+									WHERE A.tbl_listing_member_id=".$data["listing"]['id'];
+							$data["list"]=$this->db->query($sql)->result_array();
+						}
+					}
+					
+					return $msg=array('msg'=>'sukses','data'=>$data);
+				}else{
+					$sql .=" ORDER BY A.date_invoice DESC";
+					return $msg=array('msg'=>'sukses','data'=>$this->db->query($sql)->result_array());
+				}		
+						
+				
+			break;
 			case "invoice":
 				$sql="SELECT A.*,CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last)as name,B.method_payment,
 						E.apartment_name,E.apartment_address
@@ -253,6 +296,36 @@ class Mjingga_api extends CI_Model{
 		}
 		
 		switch($table){
+			case "invoice_package":
+				$table='tbl_transaction_package';
+				if(isset($data['listing_data'])){
+					$data_listing=$data['listing_data'];
+					unset($data['listing_data']);
+				}if(isset($data['listing_affiliation'])){
+					$listing_affiliation=$data['listing_affiliation'];
+					unset($data['listing_affiliation']);
+				}if(isset($data['listing_list'])){
+					$listing_list=$data['listing_list'];
+					unset($data['listing_list']);
+					//return array('msg'=>$listing_list);
+				}
+				
+				$ex=$this->db->get_where('tbl_transaction_package',array('tbl_member_user'=>$data['tbl_member_user']))->row_array();
+				if(isset($ex['id'])){
+					$sql="SELECT MAX(SUBSTRING(no_invoice FROM 14 FOR 5)) + 1 as no_baru FROM tbl_transaction_package 
+							WHERE tbl_member_user='".$data['tbl_member_user']."'";
+					$id=$this->db->query($sql)->row('no_baru');
+				}else{
+					$id=1;
+				}
+				if($id<10){$id_baru='0000'.$id;}
+				if($id<100 && $id >=10){$id_baru='000'.$id;}
+				if($id<1000 && $id >=100){$id_baru='00'.$id;}
+				if($id<10000 && $id >=1000){$id_baru='0'.$id;}
+				$no_inv='INV-'.$data['tbl_member_user'].'-P-'.$id_baru;
+				$data['no_invoice']=$no_inv;
+				$data['date_invoice']=date('Y-m-d H:i:s');
+			break;
 			case "admin":
 				//print_r($data);exit;
 				if($sts_crud=='add')$data['password']=$this->encrypt->encode($data['password']);
@@ -369,6 +442,7 @@ class Mjingga_api extends CI_Model{
 					$data['create_date'] = date('Y-m-d H:i:s');
 					//$data['create_by'] = $this->auth['nama_lengkap'];
 				}
+				
 				if($table=='tbl_unit_member'){
 					$this->db->insert($table,$data);//INSERT UNIT;
 					$id_unit=$this->db->insert_id();
@@ -429,6 +503,43 @@ class Mjingga_api extends CI_Model{
 							);
 						}
 						 $this->db->insert_batch('tbl_detail_transaction', $services_id);
+					}
+				}else if($table=='tbl_transaction_package'){
+					$this->db->insert($table,$data);//INSERT INVOICE PACKAGE;
+					$id_package=$this->db->insert_id();
+					if($data_listing){
+						$data_listing['tbl_transaction_package_id']=$id_package;
+						$this->db->insert('tbl_listing_member',$data_listing);//INSERT LISTING;
+						$id_listing=$this->db->insert_id();//ID LISTING
+						if($listing_affiliation){
+							$listing_affiliation['tbl_listing_member_id']=$id_listing;
+							$listing_affiliation['create_date']=date('Y-m-d H:i:s');
+							$listing_affiliation['create_by']=$data['tbl_member_user'];
+							$this->db->insert('tbl_listing_member_affiliation',$listing_affiliation);//INSERT affiliation;
+						}
+						if($listing_list){
+							$data_list=array();	
+							$a=0;
+							foreach($listing_list as $x=>$v){
+								$data_list[$a]=array(	
+											'tbl_listing_member_id'=>$id_listing,
+											'create_date'=>date('Y-m-d H:i:s'),
+											'create_by'=>$data['tbl_member_user']
+								);
+								if(is_numeric($v)){$data_list[$a]['cl_listing_list_id']=$v;$data_list[$a]['other']='';}
+								else{
+									$data_list[$a]['cl_listing_list_id']=$x;
+									$data_list[$a]['other']=$v;
+								}
+								$a++;
+							}
+							//echo '<pre>';
+							//return array('msg'=>$data_list);
+							$this->db->insert_batch('tbl_listing_member_list', $data_list);
+							//return array('msg'=>$this->db->last_query());
+						}
+						
+						
 					}
 				}else{
 					$this->db->insert($table,$data);

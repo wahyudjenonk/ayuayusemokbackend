@@ -292,6 +292,38 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 				]				
 			}
 		break;
+		case "invoice_package":
+			judulnya = "";
+			urlnya = "invoice_package";
+			fitnya = true;
+			urlglobal = host+'backoffice-Data/'+urlnya;
+			kolom[modnya] = [	
+					{field:'id',title:'Detail',width:100, halign:'center',align:'center',
+						formatter:function(value,rowData,rowIndex){
+							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Detail</a>';
+						}
+					},
+					{field:'flag',title:'Status',width:100, halign:'center',align:'left',
+						formatter:function(value,rowData,rowIndex){
+							if(value=='P')return 'Waiting Pay';
+							else if(value=='PL')return 'Planning Set';
+							else if(value=='C')return 'Cancel Invoice';
+							else return 'Finish';
+						},
+						styler:function(value,rowData,rowIndex){
+							if(value=='P'){return 'background:green;color:yellow;'}
+							else if(value=='PL')return 'background:#6DBCED;color:#ffffff;';
+							else if(value=='C')return 'background:red;color:#ffffff;';
+						}
+					},
+					{field:'services_name',title:'Services Name',width:220, halign:'center',align:'left'},
+					{field:'name',title:'Owner Name',width:220, halign:'center',align:'left'},
+					{field:'no_invoice',title:'No Invoice',width:200, halign:'center',align:'left'},
+					{field:'method_payment',title:'Method Payment',width:200, halign:'center',align:'left'},
+					{field:'date_invoice',title:'Inv. Date',width:150, halign:'center',align:'center'},
+					
+				]
+		break;
 	}
 	if(par1=='tree'){
 		grid_nya=$("#"+divnya).treegrid({
