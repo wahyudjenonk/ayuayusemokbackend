@@ -10,6 +10,41 @@ class Mjingga_api extends CI_Model{
 	function get_data($type="", $balikan="", $p1=""){
 		$msg=array();
 		switch($type){
+			case "invoice":
+				$sql="SELECT A.*,CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last)as name,B.method_payment,
+						E.apartment_name,E.apartment_address
+						FROM tbl_header_transaction A
+						LEFT JOIN cl_method_payment B ON A.cl_method_payment_id=B.id
+						LEFT JOIN tbl_member C ON A.tbl_member_user=C.member_user
+						LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id 
+						LEFT JOIN tbl_unit_member E ON A.tbl_unit_member_id=E.id
+						";
+				if($balikan=='detil'){
+					$data=array();
+					$sql .=" WHERE A.id=".$this->input->post('id');
+					$sql .=" ORDER BY A.date_invoice DESC";
+					//return $msg=array('msg'=>'sukses','data'=>$sql);
+					$data['header']=$this->db->query($sql)->row_array();
+					$sql="SELECT A.*,C.services_name,B.of_unit,B.of_area_item,B.percen,B.rate,
+								CASE 
+								WHEN A.flag_transaction='H' THEN 'Hourly'
+								WHEN A.flag_transaction='M' THEN 'Weekly'
+								ELSE 'Mothly'
+								END as type_serv
+								FROM tbl_detail_transaction A
+								LEFT JOIN tbl_pricing_services B ON A.tbl_pricing_services_id=B.id
+								LEFT JOIN tbl_services C ON B.tbl_services_id=C.id
+								WHERE A.tbl_header_transaction_id=".$data["header"]['id'];
+					$data['detil']=$this->db->query($sql)->result_array();
+					
+					return $msg=array('msg'=>'sukses','data'=>$data);
+				}else{
+					$sql .=" ORDER BY A.date_invoice DESC";
+					return $msg=array('msg'=>'sukses','data'=>$this->db->query($sql)->result_array());
+				}		
+						
+				
+			break;
 			case "data_login":
 				$balikan="row_array";
 				$sql="SELECT * FROM tbl_member where member_user='".$p1."' OR email_address='".$p1."'";
