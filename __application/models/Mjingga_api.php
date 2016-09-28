@@ -10,15 +10,30 @@ class Mjingga_api extends CI_Model{
 	function get_data($type="", $balikan="", $p1=""){
 		$msg=array();
 		switch($type){
+			case "package":
+				$data=array();
+				$sql="SELECT * FROM tbl_package_header WHERE flag='F'";
+				$data['paket']=$this->db->query($sql)->result_array();
+				foreach($data['paket'] as $x=>$v){
+					$sql="SELECT A.*,B.services_name 
+							FROM tbl_package_detil A
+							LEFT JOIN tbl_services B ON A.tbl_services_id=B.id
+							LEFT JOIN tbl_package_header C ON A.tbl_package_header_id=C.id 
+							WHERE A.tbl_package_header_id=".$v['id'];
+					$res=$this->db->query($sql)->result_array();
+					if(count($res)>0){$data['paket'][$x]['detil']=$res;}
+				}
+				return array('msg'=>'sukses','data'=>$data);
+			break;
 			case "invoice_package":
-				$sql="SELECT A.*,CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last)as name,B.method_payment,F.services_name,
+				$sql="SELECT A.*,CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last)as name,B.method_payment,F.package_name,F.package_desc,
 						E.apartment_name,E.apartment_address
 						FROM tbl_transaction_package A
 						LEFT JOIN cl_method_payment B ON A.cl_method_payment_id=B.id
 						LEFT JOIN tbl_member C ON A.tbl_member_user=C.member_user
 						LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id 
 						LEFT JOIN tbl_unit_member E ON A.tbl_unit_member_id=E.id
-						LEFT JOIN tbl_services F ON A.tbl_services_id=F.id
+						LEFT JOIN tbl_package_header F ON A.tbl_package_header_id=F.id
 						";
 				if($balikan=='detil'){
 					$data=array();
@@ -27,22 +42,14 @@ class Mjingga_api extends CI_Model{
 					//return $msg=array('msg'=>'sukses','data'=>$sql);
 					$data['header']=$this->db->query($sql)->row_array();
 					if(isset($data["header"]['id'])){
-						$sql="SELECT * 
-								FROM tbl_listing_member
-								WHERE tbl_transaction_package_id=".$data["header"]['id'];
-						$data["listing"]=$this->db->query($sql)->row_array();
-						if(isset($data["listing"]['id'])){
-							$sql="SELECT A.*,B.third_party_affiliation 
-									FROM tbl_listing_member_affiliation A
-									LEFT JOIN cl_listing_third_party_affiliation B ON A.cl_listing_third_party_affiliation_id=B.id 
-									WHERE A.tbl_listing_member_id=".$data["listing"]['id'];
-							$data["affiliation"]=$this->db->query($sql)->row_array();
-							$sql="SELECT A.*,B.listed_unit 
-									FROM tbl_listing_member_list A
-									LEFT JOIN cl_listing_list B ON A.cl_listing_list_id=B.id
-									WHERE A.tbl_listing_member_id=".$data["listing"]['id'];
-							$data["list"]=$this->db->query($sql)->result_array();
-						}
+						$sql="SELECT A.*,B.services_name 
+							FROM tbl_package_detil A
+							LEFT JOIN tbl_services B ON A.tbl_services_id=B.id
+							LEFT JOIN tbl_package_header C ON A.tbl_package_header_id=C.id 
+							WHERE A.tbl_package_header_id=".$data["header"]['tbl_package_header_id'];
+						$res=$this->db->query($sql)->result_array();
+						$data["detil"]=$res;
+						
 					}
 					
 					return $msg=array('msg'=>'sukses','data'=>$data);
@@ -298,7 +305,7 @@ class Mjingga_api extends CI_Model{
 		switch($table){
 			case "invoice_package":
 				$table='tbl_transaction_package';
-				if(isset($data['listing_data'])){
+				/*if(isset($data['listing_data'])){
 					$data_listing=$data['listing_data'];
 					unset($data['listing_data']);
 				}if(isset($data['listing_affiliation'])){
@@ -309,7 +316,7 @@ class Mjingga_api extends CI_Model{
 					unset($data['listing_list']);
 					//return array('msg'=>$listing_list);
 				}
-				
+				*/
 				$ex=$this->db->get_where('tbl_transaction_package',array('tbl_member_user'=>$data['tbl_member_user']))->row_array();
 				if(isset($ex['id'])){
 					$sql="SELECT MAX(SUBSTRING(no_invoice FROM 14 FOR 5)) + 1 as no_baru FROM tbl_transaction_package 
@@ -423,7 +430,11 @@ class Mjingga_api extends CI_Model{
 			case "transaction":
 				//return $msg['msg'] =$_POST;
 				$table="tbl_header_transaction";
+				//return array('msg'=>$data);
+				
+				
 				$tbl_services_id=array();
+				$listing=array();
 				$services_id=array();
 				$ex=$this->db->get_where('tbl_header_transaction',array('tbl_member_user'=>$data['tbl_member_user']))->row_array();
 				if(isset($ex['id'])){
@@ -446,7 +457,9 @@ class Mjingga_api extends CI_Model{
 					$total=$data['total'];unset($data['total']);
 					$flag_transaction=$data['flag_transaction'];unset($data['flag_transaction']);
 				}
-				
+				if(isset($data['listing_management'])){
+					$listing=$data['listing_management'];unset($data['listing_management']);
+				}
 				
 			break;
 		}
@@ -508,18 +521,34 @@ class Mjingga_api extends CI_Model{
 					$id_header=$this->db->insert_id();
 					if(count($tbl_services_id)>0){
 						for($i=0;$i<count($tbl_services_id);$i++){
-							$services_id[]=array(
+							$services_id[$i]=array(
 									'tbl_header_transaction_id'=>$id_header,
 									'tbl_pricing_services_id'=>$tbl_services_id[$i],
 									'qty'=>$qty[$i],
 									'total'=>$total[$i],
 									'flag_transaction'=>$flag_transaction[$i],
+									'start_date'=>'',
+									'end_date'=>'',
+									'rental_price'=>0
 									
 							);
+							
+							if(count($listing)>0){
+								for($x=0;$x<count($listing['price_services_id']);$x++){
+									if($listing['price_services_id'][$x]==$tbl_services_id[$i]){
+										$services_id[$i]['start_date']=$listing['start_date'];
+										$services_id[$i]['end_date']=$listing['end_date'];
+										$services_id[$i]['rental_price']=$listing['rental_price'];
+										
+									}
+								}
+							}
 						}
+						//return $services_id;
 						 $this->db->insert_batch('tbl_detail_transaction', $services_id);
 					}
-				}else if($table=='tbl_transaction_package'){
+				}
+				/*else if($table=='tbl_transaction_package'){
 					$this->db->insert($table,$data);//INSERT INVOICE PACKAGE;
 					$id_package=$this->db->insert_id();
 					if($data_listing){
@@ -556,7 +585,8 @@ class Mjingga_api extends CI_Model{
 						
 						
 					}
-				}else{
+				}*/
+				else{
 					$this->db->insert($table,$data);
 				}
 			break;
