@@ -335,18 +335,23 @@ class Mjingga_api extends CI_Model{
 				$table='tbl_registration';
 				$data['flag']='P';
 				if($sts_crud=='add'){
+					//$data['registration_code']=$this->lib->uniq_id();
+					$data['registration_code']=123456;
 					$ex=$this->db->get_where('tbl_registration',array('email'=>$data['email']))->row_array();
-					$msg['data']=array('member_user'=>$this->lib->uniq_id(),
+					/*$msg['data']=array('member_user'=>$this->lib->uniq_id(),
 									'pwd'=>$this->lib->uniq_id(),
 									'email_address'=>$data['email']
-					);
+					);*/
 					if(isset($ex['email'])){
 						$this->db->trans_rollback();
 						return array('msg'=>'gagal','pesan'=>'Your email has already in system.');
 					}
 				}
 				if($sts_crud=='edit'){
-					$sql="SELECT * FROM tbl_registration WHERE email='".$data['email_address']."'";
+					$sql="SELECT * FROM tbl_registration WHERE email='".$data['email_address']."' 
+						AND registration_code='".$data['kode_registration']."'";
+					//return array('msg'=>$sql);
+					//$sql="SELECT * FROM tbl_registration WHERE email='".$data['email_address']."'";
 					$reg=$this->db->query($sql)->row_array();
 					if(isset($reg['email'])){
 						$id=$reg['id'];
@@ -356,6 +361,8 @@ class Mjingga_api extends CI_Model{
 							$this->db->trans_rollback();
 							return array('msg'=>'gagal','pesan'=>'Your email has already in system.');
 						}else{
+							$data['member_user']=$this->lib->uniq_id();
+							$data['pwd']=$this->lib->uniq_id();
 							$data_member=array('member_user'=>$data['member_user'], //$this->lib->uniq_id(),
 											   'email_address'=>$data['email_address'],
 											   'tbl_registration_id'=>$reg['id'],
@@ -365,9 +372,17 @@ class Mjingga_api extends CI_Model{
 											   'flag'=>1
 							);
 							$this->db->insert('tbl_member',$data_member);
+							//return array('msg'=>$data);
+							$msg['data']=array('member_user'=>$data['member_user'],
+									'pwd'=>$data['pwd'],
+									'email_address'=>$data['email_address']
+							);
+							
 							unset($data['email_address']);
 							unset($data['pwd']);
 							unset($data['member_user']);
+							unset($data['kode_registration']);
+							
 						}
 					}else{
 						$this->db->trans_rollback();
@@ -594,7 +609,9 @@ class Mjingga_api extends CI_Model{
 						 $this->db->insert_batch('tbl_unit_photo', $photo_unit);
 					}
 				}else{
+					
 					$this->db->update($table, $data, array('id' => $id) );
+					
 				}
 			break;
 			case "delete":

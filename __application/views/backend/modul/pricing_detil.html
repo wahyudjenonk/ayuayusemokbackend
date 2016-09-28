@@ -13,14 +13,14 @@
 	<tr>
 		<td>&nbsp;</td>
 		<td>{$i.name|default:''}</td>
-		<td colspan="5"></td>
+		<td colspan="5">{if !isset($i.children)}<a href="javascript:void(0);" onclick="get_form_price('add',{$i.id})" class="btn btn-small btn-info">AddNew</a>{/if}</td>
 	</tr>
 	{if isset($i.children)}
 		{foreach from=$i.children item=j}
 		<tr>
 			<td>&nbsp;</td>
 			<td>&nbsp;&nbsp;&nbsp;&nbsp;{$j.name|default:''}</td>
-			<td></td>
+			<td ><a href="javascript:void(0);" onclick="get_form_price('add',{$j.id})" class="btn btn-small btn-info">AddNew</a></td>
 			<td></td>
 			<td></td>
 			<td></td>
@@ -32,7 +32,7 @@
 			<td>&nbsp;</td>
 			<td>
 				&nbsp;&nbsp;&nbsp;&nbsp;
-				<a href="javascript:void(0);" onclick="get_form_price('add',{$j.id})" class="btn btn-small btn-info">AddNew</a>
+				
 				<a href="javascript:void(0);" onclick="get_form_price('edit',{$j.id},{$k.id_price})" class="btn btn-small btn-info">Edit</a>
 				<a href="javascript:void(0);" onclick="get_form_price('delete',{$j.id},{$k.id_price})" class="btn btn-small btn-danger">Delete</a>
 			</td>
