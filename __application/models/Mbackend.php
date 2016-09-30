@@ -465,6 +465,9 @@ class Mbackend extends CI_Model{
 			case "pricing":
 				$table='tbl_pricing_services';
 			break;
+			case "property":
+				$table='tbl_unit_member';
+			break;
 		}
 		
 		switch ($sts_crud){

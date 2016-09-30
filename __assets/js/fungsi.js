@@ -208,6 +208,16 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 						return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Detail</a>';
 					}
 				},
+				{field:'flag',title:'Approval',width:100, halign:'center',align:'center',
+					formatter:function(value,rowData,rowIndex){
+						if(value=='P'){
+							return "<img src='"+host+"__assets/easyui/themes/icons/cancel.png'";
+						}else{
+							return "<img src='"+host+"__assets/easyui/themes/icons/ok.png'";
+						}
+						
+					}
+				},
 				{field:'nama',title:'Name',width:150, halign:'center',align:'left'},
 				{field:'apartment_name',title:'Apartment Name',width:200, halign:'center',align:'left'},
 				{field:'apartment_address',title:'Apartment Address',width:250, halign:'center',align:'left'},
