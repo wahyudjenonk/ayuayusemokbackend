@@ -9,19 +9,27 @@ class Mjingga_api extends CI_Model{
 	
 	function get_data($type="", $balikan="", $p1=""){
 		$msg=array();
+		$where =" WHERE 1=1 ";
 		switch($type){
 			case "package":
 				$data=array();
-				$sql="SELECT * FROM tbl_package_header WHERE flag='F'";
+				if($balikan=='detil'){$where .=" AND id=".$this->input->post('id');}
+				$sql="SELECT * FROM tbl_package_header ".$where." AND flag='F'";
 				$data['paket']=$this->db->query($sql)->result_array();
-				foreach($data['paket'] as $x=>$v){
-					$sql="SELECT A.*,B.services_name 
-							FROM tbl_package_detil A
-							LEFT JOIN tbl_services B ON A.tbl_services_id=B.id
-							LEFT JOIN tbl_package_header C ON A.tbl_package_header_id=C.id 
-							WHERE A.tbl_package_header_id=".$v['id'];
-					$res=$this->db->query($sql)->result_array();
-					if(count($res)>0){$data['paket'][$x]['detil']=$res;}
+				if($balikan=='detil'){
+					$sql="SELECT 
+									CASE WHEN E.id IS NULL THEN '-' 
+									ELSE E.services_name 
+									END AS header,
+									D.services_name as header2,
+									C.services_name,B.package_name,C.flag_sum,A.*
+									FROM tbl_package_detil A
+									LEFT JOIN tbl_package_header B ON A.tbl_package_header_id=B.id
+									LEFT JOIN tbl_services C ON A.tbl_services_id=C.id
+									LEFT JOIN tbl_services D ON C.pid=D.id
+									LEFT JOIN tbl_services E ON D.pid=E.id
+								WHERE A.tbl_package_header_id=".$this->input->post('id');
+					$data['detil']=$this->db->query($sql)->result_array();
 				}
 				return array('msg'=>'sukses','data'=>$data);
 			break;
