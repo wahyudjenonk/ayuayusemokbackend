@@ -1,0 +1,53 @@
+		<fieldset>
+		<div style="width:100%">
+			<form id="form_{$acak}" method="post" url="{$host}backoffice-simpan/package_item/{$sts}">
+			<input type="hidden" id="editStatus_{$acak}" name="editstatus" value="{$sts}">
+			<input type="hidden" id="id_{$acak}" name="id" value="{$data.id|default:''}">
+			<input type="hidden" id="tbl_package_header_id{$acak}" name="tbl_package_header_id" value="{$tbl_package_header_id|default:''}">
+			<table class="table table-hover">
+				<tr>
+					<td>&nbsp;</td><td>Services Name</td><td>:</td>
+					<td style="font-weight:bold;">
+						<select style="width:100%" id="tbl_services_id_{$acak}" name="tbl_services_id">
+							{foreach from=$price item=i}
+							<option value="{$i.tbl_services_id}" {if $sts eq 'edit'}{if $data.tbl_services_id eq $i.tbl_services_id}selected{/if}{/if}>
+								{if $i.header eq '-'}
+								{$i.header2}
+								{else}
+								{$i.header} - {$i.header2}
+								{/if}
+								- {$i.services_name}
+							</option>
+							{/foreach}
+						</select>
+						
+					</td>
+				</tr>
+				{include file="backend/template/input_goyz.html" label="Qty" style_type="width:20%;height:30px" type="text" id="qty{$acak}" name="qty" class="angka" value="{$data.qty|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Rate" style_type="width:40%;height:30px" type="text" id="rate{$acak}" name="rate" class="angka" value="{$data.rate|default:''}"}
+			</table>
+			</form>
+		</div>
+		<div style="width:100%">
+			{* {include file="backend/template/button_save.html" text="Send Notification To Activation" id_na="simpan" btn_goyz="true" } *}
+			{include file="backend/template/button_save.html" text="Save Package" id_na="save" style_btn="btn-danger"  btn_goyz="true"}
+		</div>
+	</fieldset>
+
+<script>
+	$('.angka').numberbox({ groupSeparator:',',decimalSeparator:'.' });
+	$('#save_{$acak}').bind('click',function(){
+			submit_form('form_{$acak}',function(r){
+				console.log(r);
+				 if(r==1){
+					$.messager.alert('Homtel Back-Office',"Data Log Plaaning Was Save ",'info');
+					
+					get_form_plan('package',{$tbl_package_header_id|default:''},'',div_id_plan_acak);
+					closeWindow();
+				}else{
+					$.messager.alert('Homtel Back-Office',"Failed Save ",'error');
+				}
+				
+			});
+	});
+</script>

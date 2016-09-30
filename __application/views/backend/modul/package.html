@@ -1,0 +1,15 @@
+<div id="service_list">
+<center>
+<div class="col-sm-12">
+	<h3 class="header smaller lighter green">Services Package</h3>
+	{foreach from=$data item=i}
+	<div class="dropdown dropdown-preview" style="text-align:center;" >
+		<a href="javascript:void(0);" onclick="get_detil('package_detil',{$i.id})" class="dropdown-menu btn btn-small btn-info" style="padding:10px;min-height:100px;" >
+		<b>{$i.services_name|default:'-'}</b><hr>Set Item Package
+		</a>
+	</div>
+	{/foreach}
+</div>
+</center>
+</div>
+<div id="service_detil" style="display:none;"></div>

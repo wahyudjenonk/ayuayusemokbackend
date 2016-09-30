@@ -12,6 +12,55 @@ class Mbackend extends CI_Model{
 				$where .=" AND ".$this->input->post('kat')." like '%".$this->db->escape_str($this->input->post('key'))."%'";
 		}
 		switch($type){
+			case "package_header":
+				if($balikan=='get'){$where .=" AND A.id=".$this->input->post('id');}
+				else {$where .=" AND A.tbl_services_id=".$this->input->post('id');}
+				$sql="SELECT A.*,B.services_name
+						FROM tbl_package_header A 
+						LEFT JOIN tbl_services B ON A.tbl_services_id=B.id ".$where;
+				if($balikan=='get')return $this->db->query($sql)->row_array();
+			break;
+			case "package_item":
+				if($balikan=='get'){$where .=" AND A.id=".$this->input->post('id');}
+				else {$where .=" AND A.tbl_package_header_id=".$this->input->post('id');}
+				$sql="SELECT 
+						CASE WHEN E.id IS NULL THEN '-' 
+						ELSE E.services_name 
+						END AS header,
+						D.services_name as header2,
+						C.services_name,B.package_name,C.flag_sum,A.*
+						FROM tbl_package_detil A
+						LEFT JOIN tbl_package_header B ON A.tbl_package_header_id=B.id
+						LEFT JOIN tbl_services C ON A.tbl_services_id=C.id
+						LEFT JOIN tbl_services D ON C.pid=D.id
+						LEFT JOIN tbl_services E ON D.pid=E.id 
+						".$where;
+				if($balikan=='get')return $this->db->query($sql)->row_array();
+			break;
+			case "package_services":
+				$id_ser=array();
+				if($this->input->post('editstatus')=='add'){
+					$sql="SELECT tbl_services_id FROM tbl_package_detil WHERE tbl_package_header_id=".$this->input->post("id_header");
+					$ex=$this->db->query($sql)->result_array();
+					foreach($ex as $v){
+						$id_ser[]=$v['tbl_services_id'];
+					}
+					if(count($ex)>0){$where .=" AND A.tbl_services_id not in (".join(',',$id_ser).")";}
+				}
+				$sql="SELECT A.tbl_services_id, 
+						CASE WHEN E.id IS NULL THEN '-' 
+						ELSE E.services_name 
+						END AS header,
+						D.services_name as header2,
+						C.services_name
+						FROM tbl_pricing_services A
+						LEFT JOIN tbl_services C ON A.tbl_services_id=C.id
+						LEFT JOIN tbl_services D ON C.pid=D.id
+						LEFT JOIN tbl_services E ON D.pid=E.id
+						".$where."
+						GROUP BY A.tbl_services_id 
+						ORDER BY A.tbl_services_id ASC ";
+			break;
 			case "planning":
 				if($balikan!="get"){
 					$data=array();
@@ -184,7 +233,14 @@ class Mbackend extends CI_Model{
 				return json_encode($data);
 			break;
 			case "services_master":
-				$sql="SELECT * FROM tbl_services WHERE pid IS NULL";
+				if($balikan!='get'){
+					if($p1=='package')$where .=' AND type_services=2 ';
+					else $where .=' AND type_services=1';
+				}else{
+					$where .=' AND type_services=2 AND id='.$this->input->post('services_id');
+				}
+				$sql="SELECT * FROM tbl_services ".$where." AND pid IS NULL ";
+				if($balikan=='get'){return $this->db->query($sql)->row_array();}
 			break;
 			case "services_detil":
 				$pid=$this->input->post('id');
@@ -287,42 +343,45 @@ class Mbackend extends CI_Model{
 			case "invoice_package":
 				if($balikan=='get'){
 					$data=array();
-					$sql="SELECT A.*,CONCAT(C.title,' ',C.owner_name_first,' ',C.owner_name_last)as nama,F.services_name,
-							E.apartment_name,D.method_payment 
+					$sql="SELECT A.*,CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last)as name,
+							B.method_payment,F.package_name,F.package_desc,
+							E.apartment_name,E.apartment_address
 							FROM tbl_transaction_package A
-							LEFT JOIN tbl_member B ON A.tbl_member_user=B.member_user
-							LEFT JOIN tbl_registration C ON B.tbl_registration_id=C.id
-							LEFT JOIN cl_method_payment D ON A.cl_method_payment_id=D.id
-							LEFT JOIN tbl_unit_member E ON A.tbl_unit_member_id=E.id 
-							LEFT JOIN tbl_services F ON A.tbl_services_id=F.id
+							LEFT JOIN cl_method_payment B ON A.cl_method_payment_id=B.id
+							LEFT JOIN tbl_member C ON A.tbl_member_user=C.member_user
+							LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id 
+							LEFT JOIN tbl_unit_member E ON A.tbl_unit_member_id=E.id
+							LEFT JOIN tbl_package_header F ON A.tbl_package_header_id=F.id
 							WHERE A.id=".$this->input->post('id');
 					$data["header"]=$this->db->query($sql)->row_array();
 					if(isset($data["header"]['id'])){
-						$sql="SELECT * 
-								FROM tbl_listing_member
-								WHERE tbl_transaction_package_id=".$data["header"]['id'];
-						$data["listing"]=$this->db->query($sql)->row_array();
-						if(isset($data["listing"]['id'])){
-							$sql="SELECT A.*,B.third_party_affiliation 
-									FROM tbl_listing_member_affiliation A
-									LEFT JOIN cl_listing_third_party_affiliation B ON A.cl_listing_third_party_affiliation_id=B.id 
-									WHERE A.tbl_listing_member_id=".$data["listing"]['id'];
-							$data["affiliation"]=$this->db->query($sql)->row_array();
-							$sql="SELECT A.*,B.listed_unit 
-									FROM tbl_listing_member_list A
-									LEFT JOIN cl_listing_list B ON A.cl_listing_list_id=B.id
-									WHERE A.tbl_listing_member_id=".$data["listing"]['id'];
-							$data["list"]=$this->db->query($sql)->result_array();
-						}
+						$sql="SELECT 
+								CASE WHEN E.id IS NULL THEN '-' 
+								ELSE E.services_name 
+								END AS header,
+								D.services_name as header2,
+								C.services_name,B.package_name,C.flag_sum,A.*
+								FROM tbl_package_detil A
+								LEFT JOIN tbl_package_header B ON A.tbl_package_header_id=B.id
+								LEFT JOIN tbl_services C ON A.tbl_services_id=C.id
+								LEFT JOIN tbl_services D ON C.pid=D.id
+								LEFT JOIN tbl_services E ON D.pid=E.id
+							WHERE A.tbl_package_header_id=".$data["header"]['tbl_package_header_id'];
+						$res=$this->db->query($sql)->result_array();
+						$data["detil"]=$res;
+						
 					}
 					return $data;
 				}else{
-					$sql="SELECT A.*,CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last)as name,B.method_payment,F.services_name
+					$sql="SELECT A.*,CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last)as name,
+						B.method_payment,F.package_name,F.package_desc,
+						E.apartment_name,E.apartment_address
 						FROM tbl_transaction_package A
 						LEFT JOIN cl_method_payment B ON A.cl_method_payment_id=B.id
 						LEFT JOIN tbl_member C ON A.tbl_member_user=C.member_user
-						LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id
-						LEFT JOIN tbl_services F ON A.tbl_services_id=F.id 
+						LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id 
+						LEFT JOIN tbl_unit_member E ON A.tbl_unit_member_id=E.id
+						LEFT JOIN tbl_package_header F ON A.tbl_package_header_id=F.id
 						".$where." ORDER BY A.date_invoice DESC";
 				}
 			break;
@@ -378,6 +437,16 @@ class Mbackend extends CI_Model{
 				//echo $sts_crud;exit;
 				//print_r($_POST);exit;
 			break;
+			case "package":
+				$table='tbl_package_header';
+				if($sts_crud=='delete'){
+					$this->db->delete('tbl_package_detil',array('tbl_package_header_id'=>$id));
+				}
+			break;
+			case "package_item":
+				$table='tbl_package_detil';
+			break;
+			
 			case "services":
 				$table='tbl_services';
 				if($sts_crud=='add_new')$sts_crud='add';$data['flag']='F';

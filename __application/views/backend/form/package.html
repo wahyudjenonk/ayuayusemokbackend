@@ -1,0 +1,38 @@
+		<fieldset>
+		<div style="width:100%">
+			<form id="form_{$acak}" method="post" url="{$host}backoffice-simpan/package/{$sts}">
+			<input type="hidden" id="editStatus_{$acak}" name="editstatus" value="{$sts}">
+			<input type="hidden" id="id_{$acak}" name="id" value="{$data.id|default:''}">
+			<input type="hidden" id="tbl_services_id{$acak}" name="tbl_services_id" value="{$tbl_services_id|default:''}">
+			<table class="table table-hover">
+				<tr>
+					<td>&nbsp;</td><td>Services Name</td><td>:</td>
+					<td style="font-weight:bold;">{$data_service.services_name|default:'-'}</td>
+				</tr>
+				{include file="backend/template/input_goyz.html" label="Package Name" style_type="width:40%;height:30px" type="text" id="package_name{$acak}" name="package_name" class="validasi" value="{$data.package_name|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Package Desc." style_type="width:80%" type="textarea" id="package_desc{$acak}" name="package_desc" value="{$data.package_desc|default:''}"}
+			</table>
+			</form>
+		</div>
+		<div style="width:100%">
+			{* {include file="backend/template/button_save.html" text="Send Notification To Activation" id_na="simpan" btn_goyz="true" } *}
+			{include file="backend/template/button_save.html" text="Save Package" id_na="save" style_btn="btn-danger"  btn_goyz="true"}
+		</div>
+	</fieldset>
+
+<script>
+	$('#save_{$acak}').bind('click',function(){
+			submit_form('form_{$acak}',function(r){
+				console.log(r);
+				 if(r==1){
+					$.messager.alert('Homtel Back-Office',"Data Log Plaaning Was Save ",'info');
+					
+					get_detil('package_detil',{$tbl_services_id});
+					closeWindow();
+				}else{
+					$.messager.alert('Homtel Back-Office',"Failed Save ",'error');
+				}
+				
+			});
+	});
+</script>

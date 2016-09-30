@@ -316,7 +316,7 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 							else if(value=='C')return 'background:red;color:#ffffff;';
 						}
 					},
-					{field:'services_name',title:'Services Name',width:220, halign:'center',align:'left'},
+					{field:'package_name',title:'Package Name',width:220, halign:'center',align:'left'},
 					{field:'name',title:'Owner Name',width:220, halign:'center',align:'left'},
 					{field:'no_invoice',title:'No Invoice',width:200, halign:'center',align:'left'},
 					{field:'method_payment',title:'Method Payment',width:200, halign:'center',align:'left'},
@@ -911,6 +911,7 @@ function get_detil(mod,id_data){
 			
 		break;
 		case "pricing_detil":
+		case "package_detil":
 			$('#service_list').hide();
 			$('#service_detil').html('').show().addClass("loading");
 			$.post(host+'backoffice-GetDetil',{mod:mod,id:id_data},function(r){
@@ -971,7 +972,7 @@ function get_form_tree(sts,mod){
 	}
 	
 	$.post(host+'backoffice-form/'+mod,param,function(r){
-		windowForm(r,'HOMTEL Services',800,500);
+		windowForm(r,'HOMTEL Services',800,600);
 	});
 }
 
@@ -1020,19 +1021,24 @@ function simpan_form(id_form,id_cancel,msg){
 	}
 }
 var div_id_plan_acak;
-function get_form_plan(id,jml_row,acak){
+function get_form_plan(mod,id,jml_row,acak){
 	div_id_plan_acak=acak;
 	param={};
-	param['id_detil_trans']=id;
-	param['jml_row']=jml_row;
-	param['mod']='planning_detil';
+	if(mod=='planning'){
+		param['id_detil_trans']=id;
+		param['jml_row']=jml_row;
+		param['mod']='planning_detil';
+	}else{
+		param['id']=id;
+		param['mod']='package_item';
+	}
 	$('#form_plan_'+acak).empty().addClass('loading');
 	$.post(host+'backoffice-GetDetil',param,function(r){
 		$('#form_plan_'+acak).html(r).removeClass('loading');
 	});
 	console.log(id,jml_row)
 }
-function get_form(mod,sts,id){
+function get_form(mod,sts,id,par1){
 	param={};
 	if(sts=='edit_flag'){param['editstatus']='edit';}else{param['editstatus']=sts;}
 	switch(mod){
@@ -1044,6 +1050,15 @@ function get_form(mod,sts,id){
 			}
 			else param['flag']='F';
 		break;
+		case "package":
+			param['services_id']=par1;
+			param['id']=id;
+		break;
+		case "package_item":
+			//param['services_id']=par1;
+			param['id_header']=par1;
+			param['id']=id;
+		break;
 	}
 	if(sts=='delete'){
 		$.messager.confirm('Homtel Backoffice','Are You Sure Delete This Data?',function(re){
@@ -1053,6 +1068,8 @@ function get_form(mod,sts,id){
 						$.messager.alert('Homtel Back-Office',"Data Was Deleted ",'info');
 						switch(mod){
 							case "planning":get_form_plan(detil_id,total_row_plan,div_id_plan_acak);break;
+							case "package":get_detil('package_detil',par1);break;
+							case "package_item":get_form_plan('package',par1,'',div_id_plan_acak);break;
 						}
 					}else{
 						$.messager.alert('Homtel Back-Office',"Failed Deleted ",'error');

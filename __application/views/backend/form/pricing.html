@@ -14,6 +14,16 @@
 				{include file="backend/template/input_goyz.html" label="Percen" style_type="width:20%" type="text" id="percen_{$acak}" name="percen" class="angka" value="{$data.price.percen|default:''}"}
 				{include file="backend/template/input_goyz.html" label="Rate." style_type="width:50%" type="text" id="rate_{$acak}" name="rate" class="angka" value="{$data.price.rate|default:''}"}
 				{include file="backend/template/input_goyz.html" label="Remark" style_type="width:80%" type="textarea" id="remark_{$acak}" name="remark" value="{$data.price.remark|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Unit Of Measurement" style_type="width:50%" type="text" id="uom{$acak}" name="uom" class="" value="{$data.price.uom|default:''}"}
+				<tr>
+					<td>&nbsp;</td><td>Type Choice</td><td>:</td>
+					<td style="font-weight:bold;">
+							<input name="type_choice" type="radio" value="R" {if $sts eq 'edit'}{if $data.price.type_choice|default:'' eq 'R'}checked{/if}{else}checked{/if} >&nbsp;&nbsp;<span class="lbl" >Radio</span>&nbsp;&nbsp;
+							<input name="type_choice" type="radio" value="C" {if $sts eq 'edit'}{if $data.price.type_choice|default:'' eq 'C'}checked{/if}{/if}>&nbsp;&nbsp;<span class="lbl">Checkbox</span>
+							
+						</div>
+					</td>
+				</tr>
 			</table>
 			</form>
 		</div>

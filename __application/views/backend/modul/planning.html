@@ -35,7 +35,7 @@
 	{assign var=tot_qty value=$tot_qty+$i.qty}
 	{assign var=grand_tot value=$grand_tot+$i.total}
 	
-	<tr data="{$i.id|default:'-'}" jml_row="{$i.qty|default:'-'}" onclick="get_form_plan({$i.id|default:''},{$i.qty|default:''},'{$acak}')">
+	<tr data="{$i.id|default:'-'}" jml_row="{$i.qty|default:'-'}" onclick="get_form_plan('planning',{$i.id|default:''},{$i.qty|default:''},'{$acak}')">
 		<td>{$smarty.foreach.x.iteration}</td>
 		<td>{$i.services_name|default:'-'}</td>
 		<td style="text-align:right;">{$i.rate|number_format:2:',':'.'|default:''}</td>

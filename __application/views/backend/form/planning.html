@@ -25,7 +25,7 @@
 				console.log(r);
 				 if(r==1){
 					$.messager.alert('Homtel Back-Office',"Data Log Plaaning Was Save ",'info');
-					get_form_plan({$tbl_detail_transaction_id},total_row_plan,div_id_plan_acak)
+					get_form_plan('planning',{$tbl_detail_transaction_id},total_row_plan,div_id_plan_acak)
 					closeWindow();
 				}else{
 					$.messager.alert('Homtel Back-Office',"Failed Save ",'error');

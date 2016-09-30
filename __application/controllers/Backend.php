@@ -158,10 +158,23 @@ class Backend extends JINGGA_Controller {
 				$this->nsmarty->assign('data',$data);
 			break;
 			case "pricing":
+			case "package":
 				
-				$data=$this->mbackend->getdata('services_master','result_array');
+				$data=$this->mbackend->getdata('services_master','result_array',$mod);
 				$this->nsmarty->assign('data',$data);
 				
+			break;
+			case "package_detil":
+				$data=$this->mbackend->getdata('package_header','result_array');
+				$this->nsmarty->assign('data',$data);
+				$this->nsmarty->assign('id_header',$this->input->post('id'));
+				//$this->nsmarty->assign('id_parent',$this->input->post('id'));
+			break;
+			case "package_item":
+				$data=$this->mbackend->getdata('package_item','result_array');
+				$this->nsmarty->assign('data',$data);
+				//print_r($data);
+				$this->nsmarty->assign('tbl_package_header_id',$this->input->post('id'));
 			break;
 			case "pricing_detil":
 				$data=$this->mbackend->getdata('services_detil','result_array');
@@ -217,6 +230,24 @@ class Backend extends JINGGA_Controller {
 					$this->nsmarty->assign('data',$data);
 				}
 				$this->nsmarty->assign('tbl_detail_transaction_id',$this->input->post("detil_id"));
+			break;
+			case "package":
+				$data_service=$this->mbackend->getdata('services_master','get');
+				$this->nsmarty->assign('data_service',$data_service);
+				if($sts=='edit'){
+					$data=$this->mbackend->getdata('package_header','get');
+					$this->nsmarty->assign('data',$data);
+				}
+				$this->nsmarty->assign('tbl_services_id',$this->input->post("services_id"));
+			break;
+			case "package_item":
+				$price=$this->mbackend->getdata('package_services','result_array');
+				$this->nsmarty->assign('price',$price);
+				if($sts=='edit'){
+					$data=$this->mbackend->getdata('package_item','get');
+					$this->nsmarty->assign('data',$data);
+				}
+				$this->nsmarty->assign('tbl_package_header_id',$this->input->post("id_header"));
 			break;
 		}
 		$this->nsmarty->assign('mod',$mod);

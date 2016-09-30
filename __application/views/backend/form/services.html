@@ -17,6 +17,28 @@
 				{include file="backend/template/input_goyz.html" label="Services Name" style_type="width:80%" type="text" id="services_name_{$acak}" name="services_name" class="validasi" value="{$data.child.services_name|default:''}"}
 				{include file="backend/template/input_goyz.html" label="Desc. Services Eng." style_type="width:80%" type="textarea" id="desc_services_eng_{$acak}" name="desc_services_eng" value="{$data.child.desc_services_eng|default:''}"}
 				{include file="backend/template/input_goyz.html" label="Desc. Services Ind." style_type="width:80%" type="textarea" id="desc_services_ind_{$acak}" name="desc_services_ind" value="{$data.child.desc_services_ind|default:''}"}
+				<tr>
+					<td>&nbsp;</td><td>Summery Value</td><td>:</td>
+					<td style="font-weight:bold;">
+						
+							<input name="flag_sum" type="checkbox" value="Y" {if $sts eq 'add_new' || $sts eq 'add'}checked{else}{if $data.child.flag_sum|default:'' eq 'Y'}checked{else}{/if}{/if}>&nbsp;&nbsp;<span class="lbl" >YA</span>
+	
+							
+						</div>
+					</td>
+				</tr>
+				{if $sts eq 'add_new'}
+				<tr>
+					<td>&nbsp;</td><td>Type Services</td><td>:</td>
+					<td style="font-weight:bold;">
+						
+							<input name="type_services" type="radio" value="1" {if $sts eq 'edit'}{if $data.child.type_services|default:'' eq '1'}checked{/if}{else}checked{/if} >&nbsp;&nbsp;<span class="lbl" >Independent</span>&nbsp;&nbsp;
+							<input name="type_services" type="radio" value="2" {if $sts eq 'edit'}{if $data.child.type_services|default:'' eq '1'}checked{/if}{/if}>&nbsp;&nbsp;<span class="lbl">Package</span>
+							
+						</div>
+					</td>
+				</tr>
+				{/if}
 			</table>
 			</form>
 		</div>

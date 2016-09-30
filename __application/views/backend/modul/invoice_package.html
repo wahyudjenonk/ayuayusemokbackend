@@ -22,125 +22,74 @@
 	<table class="table table-hover">
 		<tr>
 			<td>&nbsp;</td><td>Owner Name</td><td>:</td>
-			<td style="font-weight:bold;">{$data.header.nama|default:'-'}</td>
+			<td style="font-weight:bold;">{$data.header.name|default:'-'}</td>
 		</tr>
 		<tr>
 			<td>&nbsp;</td><td>Apartment Name</td><td>:</td>
 			<td style="font-weight:bold;">{$data.header.apartment_name|default:'-'}</td>
 		</tr>
 		<tr>
-			<td>&nbsp;</td><td>Services Name</td><td>:</td>
-			<td style="font-weight:bold;">{$data.header.services_name|default:'-'}</td>
+			<td>&nbsp;</td><td>Package Name</td><td>:</td>
+			<td style="font-weight:bold;">{$data.header.package_name|default:'-'}</td>
 		</tr>
 	</table>
 	</div>
 </div>
 <div class="row-fluid">
-	<h3>Listing Member</h3>
-</div>
-<div class="row-fluid">
-	<div class="span6">
 	<table class="table table-hover">
+		<thead>
 		<tr>
-			<td>&nbsp;</td><td>Listing Platform</td><td>:</td>
-			<td style="font-weight:bold;">{$data.listing.listing_platform|default:'-'}</td>
+			<th style="text-align:center;">No</th>
+			<th style="text-align:center;" >Services Name</th>
+			<th style="text-align:right;">Qty</th>
+			<th style="text-align:right;">Rate</th>
+			<!--th style="text-align:center;">Editing</th-->
 		</tr>
+		</thead>
+		<tbody>
+		{if !empty($data.detil)}
+		{assign var=tot_qty value=0}
+		{assign var=grand_tot value=0}
+		{foreach from=$data.detil item=i name=x}
+		{if $i.flag_sum eq 'Y'}
+		{assign var=tot_qty value=$tot_qty+$i.qty}
+		{assign var=grand_tot value=$grand_tot+$i.rate}
+		{/if}
 		<tr>
-			<td>&nbsp;</td><td>Listed Unit</td><td>:</td>
-			<td style="font-weight:bold;">
-			<ul>
-			{foreach from=$data.list item=i}
-				<li>{$i.listed_unit|default:'-'}{if $i.other neq ''}( {$i.other|default:'-'} ){/if}</li>
-			{/foreach}
-			</ul>
+			<td style="text-align:center;">{$smarty.foreach.x.iteration}</td>
+			<td style="text-align:left;">
+				{if $i.header|default:'' eq '-'}
+				{$i.header2|default:''}
+				{else}
+				{$i.header|default:''} - {$i.header2|default:''}
+				{/if}
+				- {$i.services_name|default:''}
 			</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td><td>Listing UserName</td><td>:</td>
-			<td style="font-weight:bold;">{$data.listing.listing_user|default:'-'}</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td><td>Listing Password</td><td>:</td>
-			<td style="font-weight:bold;">{$data.listing.listing_pwd|default:'-'}</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td><td>Pictures Tacking</td><td>:</td>
-			<td style="font-weight:bold;">{$data.listing.pictures_taking|default:'-'}</td>
-		</tr>
-		
-		<tr>
-			<td>&nbsp;</td><td>Third Party Affiliation</td><td>:</td>
-			<td style="font-weight:bold;">{$data.affiliation.third_party_affiliation|default:'-'}</td>
-		</tr>
-		
-		
-		<tr>
-			<td>&nbsp;</td><td>Unit Management</td><td>:</td>
-			<td style="font-weight:bold;">
-				 {$data.listing.unit_management|default:'-'}
+			<td style="text-align:right;">{$i.qty|default:''}</td>
+			<td style="text-align:right;">{$i.rate|number_format:2:',':'.'|default:''}{if $i.flag_sum eq 'N'}%{/if}</td>
+			{* <td style="text-align:center;">
+				{if $i.flag|default:'P' eq 'P'}
+				<a href="javascript:void(0);" onclick="get_form('package_item','edit',{$i.id|default:''},{$tbl_package_header_id});" class="btn btn-small btn-info">Edit</a>
+				<a href="javascript:void(0);" onclick="get_form('package_item','delete',{$i.id|default:''},{$tbl_package_header_id});" class="btn btn-small btn-danger">Delete</a>
+				{else}
+				Not Availabe To Editing
+				{/if}
 			</td>
+			*}
+		</tr>	
+		{/foreach}
+		<tr style="background:#B2B0B0;font-weight:bold;">
+			<td>&nbsp;</td>
+			<td>Grand Total</td>
+			<td style="text-align:right;">{$tot_qty|number_format:0:',':'.'|default:''}</td>
+			<td style="text-align:right;">{$grand_tot|number_format:2:',':'.'|default:''}</td>
 		</tr>
+		{else}
 		<tr>
-			<td>&nbsp;</td><td>Other Unit Management Contact</td><td>:</td>
-			<td style="font-weight:bold;">
-				Name : {$data.listing.management_contact_name|default:'-'}<br>
-				Contact Number : {$data.listing.management_contact_number|default:'-'}<br>
-				Relation : {$data.listing.management_contact_relation|default:'-'}
-			</td>
+			<td colspan="7" style="text-align:center;">NO DATA PACKAGE ITEM..</td>
 		</tr>
+		{/if}
+		</tbody>
 	</table>
-	</div>
-	<div class="span6">
-	<table class="table table-hover">
-		<tr>
-			<td>&nbsp;</td><td>Daily Rental Price Range</td><td>:</td>
-			<td style="font-weight:bold;">
-				{$data.listing.daily_price_min|number_format:2:',':'.'|default:'-'} - {$data.listing.daily_price_max|number_format:2:',':'.'|default:'-'}
-			</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td><td>Monthly Rental Price Range</td><td>:</td>
-			<td style="font-weight:bold;">
-			{$data.listing.monthly_price_min|number_format:2:',':'.'|default:'-'} - {$data.listing.monthly_price_max|number_format:2:',':'.'|default:'-'}
-		</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td><td>Weekly Rental Price Range</td><td>:</td>
-			<td style="font-weight:bold;">
-				{$data.listing.weekly_price_min|number_format:2:',':'.'|default:'-'} - {$data.listing.weekly_price_max|number_format:2:',':'.'|default:'-'}
-			</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td><td>Yearly Rental Price Range</td><td>:</td>
-			<td style="font-weight:bold;">
-				{$data.listing.yearly_price_min|number_format:2:',':'.'|default:'-'} - {$data.listing.yearly_price_max|number_format:2:',':'.'|default:'-'}
-			</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td><td>Unit Utilization</td><td>:</td>
-			<td style="font-weight:bold;">{$data.listing.unit_utilization|default:'-'}</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td><td>Unit Rental Availability</td><td>:</td>
-			<td style="font-weight:bold;">{$data.listing.unit_rental_availability|default:'-'}</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td><td>Payment Transfer</td><td>:</td>
-			<td style="font-weight:bold;">{$data.listing.payment_transfer|default:'-'}</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td><td>&nbsp;&nbsp; Bank Name</td><td>:</td>
-			<td style="font-weight:bold;">{$data.listing.bank_name|default:'-'}</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td><td>&nbsp;&nbsp; Account Number</td><td>:</td>
-			<td style="font-weight:bold;">{$data.listing.account_number|default:'-'}</td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td><td>&nbsp;&nbsp; Account Holder</td><td>:</td>
-			<td style="font-weight:bold;">{$data.listing.account_holder|default:'-'}</td>
-		</tr>
-	</table>
-	</div>
 </div>
 {include file="backend/template/button_save.html" text="Back To Grid" click="$('#grid_nya_{$mod}').show();$('#detil_nya_{$mod}').hide();" id_na="cancel" style_btn="btn-danger"  btn_goyz="true"}
