@@ -42,10 +42,17 @@ class Mjingga_api extends CI_Model{
 					//return $msg=array('msg'=>'sukses','data'=>$sql);
 					$data['header']=$this->db->query($sql)->row_array();
 					if(isset($data["header"]['id'])){
-						$sql="SELECT A.*,B.services_name 
-							FROM tbl_package_detil A
-							LEFT JOIN tbl_services B ON A.tbl_services_id=B.id
-							LEFT JOIN tbl_package_header C ON A.tbl_package_header_id=C.id 
+						$sql="SELECT 
+								CASE WHEN E.id IS NULL THEN '-' 
+								ELSE E.services_name 
+								END AS header,
+								D.services_name as header2,
+								C.services_name,B.package_name,C.flag_sum,A.*
+								FROM tbl_package_detil A
+								LEFT JOIN tbl_package_header B ON A.tbl_package_header_id=B.id
+								LEFT JOIN tbl_services C ON A.tbl_services_id=C.id
+								LEFT JOIN tbl_services D ON C.pid=D.id
+								LEFT JOIN tbl_services E ON D.pid=E.id
 							WHERE A.tbl_package_header_id=".$data["header"]['tbl_package_header_id'];
 						$res=$this->db->query($sql)->result_array();
 						$data["detil"]=$res;
