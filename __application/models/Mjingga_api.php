@@ -360,6 +360,7 @@ class Mjingga_api extends CI_Model{
 					//$data['registration_code']=$this->lib->uniq_id();
 					$data['registration_code']=123456;
 					$ex=$this->db->get_where('tbl_registration',array('email'=>$data['email']))->row_array();
+					
 					/*$msg['data']=array('member_user'=>$this->lib->uniq_id(),
 									'pwd'=>$this->lib->uniq_id(),
 									'email_address'=>$data['email']
@@ -367,6 +368,12 @@ class Mjingga_api extends CI_Model{
 					if(isset($ex['email'])){
 						$this->db->trans_rollback();
 						return array('msg'=>'gagal','pesan'=>'Your email has already in system.');
+					}else{
+						$txt="Kode Registrasi : ".$data['registration_code'].",Silahkan lakukan aktivasi sesuai dengan akun anda. Terima Kasih ";
+						$data_sms=array('nohp'=>$data['phone_mobile'],
+										'teks'=>$txt
+						);
+						$this->db->insert('tbl_kirimsms',$data_sms);
 					}
 				}
 				if($sts_crud=='edit'){
@@ -399,7 +406,7 @@ class Mjingga_api extends CI_Model{
 									'pwd'=>$data['pwd'],
 									'email_address'=>$data['email_address']
 							);
-							
+						
 							unset($data['email_address']);
 							unset($data['pwd']);
 							unset($data['member_user']);

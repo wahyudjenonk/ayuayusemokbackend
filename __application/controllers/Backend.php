@@ -187,6 +187,8 @@ class Backend extends JINGGA_Controller {
 				$this->nsmarty->assign('data',$data);
 			break;
 			case "invoice_package":
+			case "planning_package":
+			case "planning_package_own":
 				$data=$this->mbackend->getdata('invoice_package','get');
 				$this->nsmarty->assign('data',$data);
 			break;
@@ -198,6 +200,17 @@ class Backend extends JINGGA_Controller {
 				$this->nsmarty->assign('total_row',$total_row);
 				$this->nsmarty->assign('sisa_row',$sisa_row);
 				$this->nsmarty->assign('tbl_detail_transaction_id',$this->input->post('id_detil_trans'));
+			break;
+			case "planning_package_detil":
+			case "planning_package_own_detil":
+				$data=$this->mbackend->getdata('planning_package','get_data');
+				$this->nsmarty->assign('data',$data);
+				$total_row=(int)$this->input->post("jml_row");
+				$sisa_row=((int)$this->input->post("jml_row")-(int)$data['jml_data']);
+				$this->nsmarty->assign('total_row',$total_row);
+				$this->nsmarty->assign('sisa_row',$sisa_row);
+				$this->nsmarty->assign('tbl_transaction_package_id',$this->input->post('id_header'));
+				$this->nsmarty->assign('tbl_package_detil_id',$this->input->post('id_detil_trans'));
 			break;
 		}
 		$this->nsmarty->assign('temp',$temp);
@@ -230,6 +243,14 @@ class Backend extends JINGGA_Controller {
 					$this->nsmarty->assign('data',$data);
 				}
 				$this->nsmarty->assign('tbl_detail_transaction_id',$this->input->post("detil_id"));
+			break;
+			case "planning_package":
+				if($sts=='edit'){
+					$data=$this->mbackend->getdata('planning_package','get');
+					$this->nsmarty->assign('data',$data);
+				}
+				$this->nsmarty->assign('tbl_package_detil_id',$this->input->post("detil_id"));
+				$this->nsmarty->assign('tbl_transaction_package_id',$this->input->post("header_id"));
 			break;
 			case "package":
 				$data_service=$this->mbackend->getdata('services_master','get');
@@ -335,6 +356,7 @@ class Backend extends JINGGA_Controller {
 			case "invoice_package":
 			case "invoice":
 			case "planning":
+			case "planning_package":
 				$opt .="<option value='A.no_invoice'>No Invoice</option>";
 				$opt .="<option value='B.method_payment'>Method Payment</option>";
 				$opt .="<option value='D.owner_name_first'>First Name</option>";

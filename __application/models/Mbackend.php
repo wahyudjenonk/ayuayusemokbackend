@@ -79,6 +79,27 @@ class Mbackend extends CI_Model{
 					
 				}
 			break;
+			case "planning_package":
+				if($balikan!="get"){
+					$data=array();
+					$sql="SELECT A.*,CASE WHEN A.flag='P' THEN 'Planned' ELSE 'Finish' END as flag_desc 
+							FROM tbl_execution_transaction_package A
+							WHERE A.tbl_transaction_package_id =".$this->input->post('id_header')."
+							AND A.tbl_package_detil_id=".$this->input->post('id_detil_trans');
+					$res=$this->db->query($sql)->result_array();
+					$data['data']=$res;
+					$data['jml_data']=count($res);
+					return $data;
+				}else{
+					$balikan="row_array";
+					$sql="SELECT A.*,CASE WHEN FLAG='P' THEN 'Planned' ELSE 'Finish' END as flag_desc
+						FROM tbl_execution_transaction_package A
+						WHERE A.id=".$this->input->post('id');
+						
+						//echo $sql;
+					
+				}
+			break;
 			case "data_login":
 				$sql = "
 					SELECT *
@@ -341,8 +362,13 @@ class Mbackend extends CI_Model{
 				}
 			break;
 			case "invoice_package":
+			case "invoice_package_planning":
+			case "invoice_package_planning_own":
+				if($type=='invoice_package_planning')$where .=" AND F.flag_log_owner=0 ";
+				else if($type=='invoice_package_planning_own')$where .=" AND F.flag_log_owner=1 ";
 				if($balikan=='get'){
 					$data=array();
+					
 					$sql="SELECT A.*,CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last)as name,
 							B.method_payment,F.package_name,F.package_desc,
 							E.apartment_name,E.apartment_address
@@ -352,7 +378,7 @@ class Mbackend extends CI_Model{
 							LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id 
 							LEFT JOIN tbl_unit_member E ON A.tbl_unit_member_id=E.id
 							LEFT JOIN tbl_package_header F ON A.tbl_package_header_id=F.id
-							WHERE A.id=".$this->input->post('id');
+							".$where." AND A.id=".$this->input->post('id');
 					$data["header"]=$this->db->query($sql)->row_array();
 					if(isset($data["header"]['id'])){
 						$sql="SELECT 
@@ -383,6 +409,8 @@ class Mbackend extends CI_Model{
 						LEFT JOIN tbl_unit_member E ON A.tbl_unit_member_id=E.id
 						LEFT JOIN tbl_package_header F ON A.tbl_package_header_id=F.id
 						".$where." ORDER BY A.date_invoice DESC";
+						
+						//echo $sql;
 				}
 			break;
 		}
@@ -429,7 +457,9 @@ class Mbackend extends CI_Model{
 		
 		switch($table){
 			case "planning":
-				$table='tbl_execution_transaction';
+			case "planning_package":
+				if($table=='planning_package')$table='tbl_execution_transaction_package';
+				else $table='tbl_execution_transaction';
 				if($sts_crud=='edit'){
 					if(isset($data['flag'])){$data['finish_date']=date('Y-m-d H:i:s');}
 				}
@@ -439,6 +469,10 @@ class Mbackend extends CI_Model{
 			break;
 			case "package":
 				$table='tbl_package_header';
+				if($sts_crud=='add'){
+					if($data['tbl_services_id']==5){$data['flag_log_owner']=0;}
+					else $data['flag_log_owner']=1;
+				}
 				if($sts_crud=='delete'){
 					$this->db->delete('tbl_package_detil',array('tbl_package_header_id'=>$id));
 				}

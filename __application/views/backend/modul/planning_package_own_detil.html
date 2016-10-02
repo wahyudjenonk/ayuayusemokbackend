@@ -1,0 +1,77 @@
+<div class="span6">
+<table class="table table-hover">
+	<tr>
+		<td>&nbsp;</td><td>Max. Total Planning</td><td>:</td>
+		<td style="font-weight:bold;">{$total_row|default:'-'}</td>
+	</tr>
+	
+</table>
+</div>
+<div class="span6">
+<table class="table table-hover">
+	<tr>
+		<td>&nbsp;</td><td>Total residual</td><td>:</td>
+		<td style="font-weight:bold;">{$sisa_row|default:'-'}</td>
+	</tr>
+	
+</table>
+</div>
+<div class="row-fluid">
+	<center>
+	{* {include file="backend/template/button_save.html" text="Add Planning Log" id_na="add" style_btn="btn-info"  btn_goyz="true"} *}
+	</center>
+</div>
+<br>
+<table class="table table-hover">
+	<thead>
+	<tr>
+		<th style="text-align:center;">No</th>
+		<th style="text-align:center;" >Planned Date</th>
+		<th style="text-align:center;">Planned Time</th>
+		<th style="text-align:center;">Finish Date</th>
+		<th style="text-align:center;">Remark</th>
+		<th style="text-align:center;">Status</th>
+		<th style="text-align:center;">Editing</th>
+	</tr>
+	</thead>
+	<tbody>
+	{if !empty($data.data)}
+	{foreach from=$data.data item=i name=x}
+	<tr>
+		<td style="text-align:center;">{$smarty.foreach.x.iteration}</td>
+		<td style="text-align:center;">{$i.planned_date|default:''}</td>
+		<td style="text-align:center;">{$i.planned_time|default:''}</td>
+		<td style="text-align:center;">{$i.finish_date|default:''}</td>
+		<td style="text-align:center;" >{$i.remark|default:''}</td>
+		<td style="text-align:center;">{$i.flag_desc|default:''}</td>
+		<td style="text-align:center;">
+			{if $i.flag|default:'' eq 'P'}
+			{* <a href="javascript:void(0);" onclick="get_form('planning_package','edit',{$i.id|default:''});" class="btn btn-small btn-info">Edit</a> *}
+			{* <a href="javascript:void(0);" onclick="get_form('planning_package','delete',{$i.id|default:''});" class="btn btn-small btn-danger">Delete</a> *}
+			<a href="javascript:void(0);" onclick="get_form('planning_package','edit_flag',{$i.id|default:''});" class="btn btn-small btn-success">SetFinish</a>
+			{else}
+			Not Availabe To Editing
+			{/if}
+		</td>
+	</tr>	
+	{/foreach}
+	{else}
+	<tr>
+		<td colspan="7" style="text-align:center;">NO DATA PLANNING LOG INPUT BY OWNER..</td>
+	</tr>
+	{/if}
+	</tbody>
+</table>
+<script>
+var detil_id={$tbl_package_detil_id|default:0};
+var header_id={$tbl_transaction_package_id|default:0};
+var total_row_plan={$total_row|default:0};
+$('#add_{$acak}').bind('click',function(){
+	var sisa={$sisa_row|default:0}
+	if(parseInt(sisa)<=0){
+		$.messager.alert('Homtel Back-Office',"The rest of the planning is over",'error');
+	}else{
+		get_form('planning_package','add');
+	}
+});
+</script>
