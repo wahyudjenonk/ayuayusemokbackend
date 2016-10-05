@@ -12,6 +12,147 @@ class Mbackend extends CI_Model{
 				$where .=" AND ".$this->input->post('kat')." like '%".$this->db->escape_str($this->input->post('key'))."%'";
 		}
 		switch($type){
+			case "report_paid":
+				$start=$this->input->post('start_date');
+				$end=$this->input->post('end_date');
+				$flag_transaction=$this->input->post('type_trans');
+				if($start)$where .=" AND A.date_confirm BETWEEN '".$start."' AND '".$end." 23:59:00' ";
+				if($flag_transaction=='I'){
+					$sql="SELECT A.*,B.no_invoice,B.date_invoice,
+							CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last) as nama,
+							F.apartment_name,B.grand_total,B.id as id_invoice
+							FROM tbl_payment_confirm A
+							LEFT JOIN tbl_header_transaction B ON A.tbl_transaction_id=B.id
+							LEFT JOIN tbl_member C ON B.tbl_member_user=C.member_user
+							LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id
+							LEFT JOIN cl_method_payment E ON B.cl_method_payment_id=E.id
+							LEFT JOIN tbl_unit_member F ON B.tbl_unit_member_id=F.id 
+							".$where."
+							AND flag_transaction='I' 
+							AND A.flag='F' ";
+				}else{
+					$sql="SELECT A.*,B.no_invoice,B.date_invoice,
+					CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last) as nama,
+					F.package_name,B.id as id_invoice,B.total,G.apartment_name,F.id as id_pack
+					FROM tbl_payment_confirm A
+					LEFT JOIN tbl_transaction_package B ON A.tbl_transaction_id=B.id
+					LEFT JOIN tbl_member C ON B.tbl_member_user=C.member_user
+					LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id
+					LEFT JOIN cl_method_payment E ON B.cl_method_payment_id=E.id
+					LEFT JOIN tbl_package_header F ON B.tbl_package_header_id=F.id 
+					LEFT JOIN tbl_unit_member G ON B.tbl_unit_member_id=G.id 
+					".$where."
+					AND flag_transaction='P' 
+					AND A.flag='F'";
+				}
+				
+			break;
+			case "report_unpaid":
+				$start=$this->input->post('start_date');
+				$end=$this->input->post('end_date');
+				$flag_transaction=$this->input->post('type_trans');
+				if($start)$where .=" AND B.date_invoice BETWEEN '".$start."' AND '".$end." 23:59:00' ";
+				if($flag_transaction=='I'){
+				$sql="SELECT B.*,CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last) as nama,
+						F.apartment_name,B.grand_total as total
+						FROM tbl_header_transaction B 
+						LEFT JOIN tbl_member C ON B.tbl_member_user=C.member_user
+						LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id
+						LEFT JOIN cl_method_payment E ON B.cl_method_payment_id=E.id
+						LEFT JOIN tbl_unit_member F ON B.tbl_unit_member_id=F.id
+						".$where." AND B.flag='P' ";
+				}
+				else{
+					$sql="SELECT B.*,CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last) as nama,
+						G.apartment_name
+					FROM tbl_transaction_package B
+					LEFT JOIN tbl_member C ON B.tbl_member_user=C.member_user
+					LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id
+					LEFT JOIN cl_method_payment E ON B.cl_method_payment_id=E.id
+					LEFT JOIN tbl_package_header F ON B.tbl_package_header_id=F.id 
+					LEFT JOIN tbl_unit_member G ON B.tbl_unit_member_id=G.id 
+					".$where." AND B.flag='P' ";
+					
+				}
+						
+			break;
+			case "report_unit":
+				$sql="SELECT A.*,CONCAT(C.title,' ',C.owner_name_first,' ',C.owner_name_last) as nama
+						FROM tbl_unit_member A
+						LEFT JOIN tbl_member B ON A.tbl_member_user=B.member_user
+						LEFT JOIN tbl_registration C ON B.tbl_registration_id=C.id ";
+			break;
+			case "report_registrasi":
+				$sql="SELECT A.*,CONCAT(A.title,' ',A.owner_name_first,' ',A.owner_name_last) as nama
+				FROM tbl_registration A";
+			break;
+			case "confirmation_independent":
+				$where .=" AND A.flag_transaction='I'";
+				if($balikan=='get'){$where .=" AND A.id=".$this->input->post('id');}
+				$sql="SELECT A.*,B.no_invoice,B.date_invoice,
+						CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last) as nama,
+						F.apartment_name,B.grand_total,B.id as id_invoice
+						FROM tbl_payment_confirm A
+						LEFT JOIN tbl_header_transaction B ON A.tbl_transaction_id=B.id
+						LEFT JOIN tbl_member C ON B.tbl_member_user=C.member_user
+						LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id
+						LEFT JOIN cl_method_payment E ON B.cl_method_payment_id=E.id
+						LEFT JOIN tbl_unit_member F ON B.tbl_unit_member_id=F.id
+						".$where;
+				if($balikan=='get'){
+					$data=array();
+					$data['header']=$this->db->query($sql)->row_array();
+					if(isset($data["header"]['id_invoice'])){
+						$sql="SELECT A.*,C.services_name,B.of_unit,B.of_area_item,B.percen,B.rate,
+								CASE 
+								WHEN A.flag_transaction='H' THEN 'Hourly'
+								WHEN A.flag_transaction='M' THEN 'Weekly'
+								ELSE 'Mothly'
+								END as type_serv
+								FROM tbl_detail_transaction A
+								LEFT JOIN tbl_pricing_services B ON A.tbl_pricing_services_id=B.id
+								LEFT JOIN tbl_services C ON B.tbl_services_id=C.id
+								WHERE A.tbl_header_transaction_id=".$data["header"]['id_invoice'];
+						$data["detil"]=$this->db->query($sql)->result_array();
+					}
+					return $data;
+				}
+			break;
+			case "confirmation_package":
+				$where .=" AND A.flag_transaction='P'";
+				if($balikan=='get'){$where .=" AND A.id=".$this->input->post('id');}
+				$sql="SELECT A.*,B.no_invoice,B.date_invoice,
+					CONCAT(D.title,' ',D.owner_name_first,' ',D.owner_name_last) as nama,
+					F.package_name,B.id as id_invoice,B.total,G.apartment_name,F.id as id_pack
+					FROM tbl_payment_confirm A
+					LEFT JOIN tbl_transaction_package B ON A.tbl_transaction_id=B.id
+					LEFT JOIN tbl_member C ON B.tbl_member_user=C.member_user
+					LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id
+					LEFT JOIN cl_method_payment E ON B.cl_method_payment_id=E.id
+					LEFT JOIN tbl_package_header F ON B.tbl_package_header_id=F.id 
+					LEFT JOIN tbl_unit_member G ON B.tbl_unit_member_id=G.id
+					".$where;
+				if($balikan=='get'){
+					$data=array();
+					$data['header']=$this->db->query($sql)->row_array();
+					if(isset($data["header"]['id_pack'])){
+						$sql="SELECT 
+								CASE WHEN E.id IS NULL THEN '-' 
+								ELSE E.services_name 
+								END AS header,
+								D.services_name as header2,
+								C.services_name,B.package_name,C.flag_sum,A.*
+								FROM tbl_package_detil A
+								LEFT JOIN tbl_package_header B ON A.tbl_package_header_id=B.id
+								LEFT JOIN tbl_services C ON A.tbl_services_id=C.id
+								LEFT JOIN tbl_services D ON C.pid=D.id
+								LEFT JOIN tbl_services E ON D.pid=E.id
+						WHERE A.tbl_package_header_id=".$data["header"]['id_pack'];
+						$data["detil"]=$this->db->query($sql)->result_array();
+					}
+					return $data;
+				}	
+			break;
 			case "package_header":
 				if($balikan=='get'){$where .=" AND A.id=".$this->input->post('id');}
 				else {$where .=" AND A.tbl_services_id=".$this->input->post('id');}
@@ -520,6 +661,57 @@ class Mbackend extends CI_Model{
 				$this->db->delete($table, array('id' => $id));
 			break;
 		}
+		
+		if($this->db->trans_status() == false){
+			$this->db->trans_rollback();
+			return 'gagal';
+		}else{
+			 return $this->db->trans_commit();
+		}
+	}
+	function set_flag($p1,$data){
+		$this->db->trans_begin();
+		$id=$data['id'];
+		unset($data['id']);
+		switch($p1){
+			case "confirmation_pay":
+				$table="tbl_payment_confirm";
+				$sql="SELECT B.id as id_invoice
+						FROM tbl_payment_confirm A
+						LEFT JOIN tbl_header_transaction B ON A.tbl_transaction_id=B.id
+						WHERE A.flag_transaction='I' AND A.id='".$id."'";
+				$id_inv=$this->db->query($sql)->row_array();
+				if(isset($id_inv['id_invoice'])){
+					if($data['flag']=='C')$flag_inv='CP';
+					else {
+						$flag_inv='F';
+						$data['confirm_kode']=$this->lib->uniq_id();
+						$data['date_confirm']=date('Y-m-d H:i:s');
+					}
+					$sql="UPDATE tbl_header_transaction SET flag='".$flag_inv."' WHERE id=".$id_inv['id_invoice'];
+					$this->db->query($sql);
+				}
+			break;
+			case "confirmation_pay_pack":
+				$table="tbl_payment_confirm";
+				$sql="SELECT B.id as id_invoice
+						FROM tbl_payment_confirm A
+						LEFT JOIN tbl_transaction_package B ON A.tbl_transaction_id=B.id
+						WHERE A.flag_transaction='P' AND A.id='".$id."'";
+				$id_inv=$this->db->query($sql)->row_array();
+				if(isset($id_inv['id_invoice'])){
+					if($data['flag']=='C')$flag_inv='CP';
+					else {
+						$flag_inv='F';
+						$data['confirm_kode']=$this->lib->uniq_id();
+						$data['date_confirm']=date('Y-m-d H:i:s');
+					}
+					$sql="UPDATE tbl_transaction_package SET flag='".$flag_inv."' WHERE id=".$id_inv['id_invoice'];
+					$this->db->query($sql);
+				}
+			break;
+		}
+		$this->db->update($table,$data,array('id'=>$id));
 		
 		if($this->db->trans_status() == false){
 			$this->db->trans_rollback();

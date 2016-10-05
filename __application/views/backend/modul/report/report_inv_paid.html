@@ -1,0 +1,40 @@
+<div class="row-fluid">
+<table class="table table-striped table-bordered table-hover">
+	<thead>
+	<tr>
+		<th>No</th>
+		<th>Invoice No</th>
+		<th>Date Invoice</th>
+		<th>Owner</th>
+		<th>Property</th>
+		<th style="text-align:right;">Total</th>
+	</tr>
+	</thead>
+	<tbody>
+	{if !empty($data)}
+	{assign var=grand_tot value=0}
+	{foreach from=$data item=i name=x}
+	{assign var=grand_tot value=$grand_tot+$i.total_pay}
+	
+	<tr>
+		<td>{$smarty.foreach.x.iteration}</td>
+		<td>{$i.no_invoice|default:'-'}</td>
+		<td>{$i.date_invoice|default:'-'}</td>
+		<td>{$i.nama|default:'-'}</td>
+		<td>{$i.apartment_name|default:'-'}</td>
+		<td style="text-align:right;">{$i.total_pay|number_format:2:',':'.'|default:''}</td>
+	</tr>
+	{/foreach}
+	{else}
+	<tr>
+		<td colspan="6" style="text-align:center;">...No Data In Period....</td>
+	</tr>
+	{/if}
+	<tr style="background:#B2B0B0;font-weight:bold;">
+		<td>&nbsp;</td>
+		<td colspan="4">Grand Total</td>
+		<td style="text-align:right;">{$grand_tot|number_format:2:',':'.'|default:''}</td>
+	</tr>
+	</tbody>
+</table>
+</div>

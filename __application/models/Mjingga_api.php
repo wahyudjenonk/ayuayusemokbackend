@@ -11,6 +11,14 @@ class Mjingga_api extends CI_Model{
 		$msg=array();
 		$where =" WHERE 1=1 ";
 		switch($type){
+			case "profile":
+				$sql="SELECT CONCAT(B.title,' ',B.owner_name_first,' ',B.owner_name_last)as name,B.*,A.member_user,A.pwd
+					FROM tbl_member A
+					LEFT JOIN tbl_registration B ON A.tbl_registration_id=B.id
+					WHERE A.member_user='".$this->input->post('member_user')."'";
+				$data=$this->db->query($sql)->row_array();
+				return array('msg'=>'sukses','data'=>$data);
+			break;
 			case "package":
 				$data=array();
 				if($balikan=='detil'){$where .=" AND id=".$this->input->post('id');}
@@ -318,6 +326,29 @@ class Mjingga_api extends CI_Model{
 		}
 		
 		switch($table){
+			case "update_pwd":
+				$table="tbl_member";
+				$sql="SELECT * FROM tbl_member WHERE member_user='".$data['member_user']."'";
+				$ex=$this->db->query($sql)->row_array();
+				if(isset($ex['member_user'])){
+					$member_user=$data['member_user'];
+					$pwd_ex=$this->encrypt->decode($ex['pwd']);
+					$pwd_old=$data['pwd_old'];
+					$pwd_new=$data['pwd_new'];
+					if($pwd_ex==$pwd_old){
+						unset($data['pwd_new']);
+						unset($data['pwd_old']);
+						unset($data['member_user']);
+						$data['pwd']=$this->encrypt->encode($pwd_new);
+					}else{
+						$this->db->trans_rollback();
+						return array('msg'=>'gagal','pesan'=>'Your Old Password Not Same');
+					}
+				}else{
+					$this->db->trans_rollback();
+					return array('msg'=>'gagal','pesan'=>'Invalid Member User');
+				}
+			break;
 			case "invoice_package":
 				$table='tbl_transaction_package';
 				/*if(isset($data['listing_data'])){
@@ -551,7 +582,8 @@ class Mjingga_api extends CI_Model{
 									'flag_transaction'=>$flag_transaction[$i],
 									'start_date'=>'',
 									'end_date'=>'',
-									'rental_price'=>0
+									'rental_price'=>0,
+									'rental_price_monthly'=>0
 									
 							);
 							
@@ -561,6 +593,7 @@ class Mjingga_api extends CI_Model{
 										$services_id[$i]['start_date']=$listing['start_date'];
 										$services_id[$i]['end_date']=$listing['end_date'];
 										$services_id[$i]['rental_price']=$listing['rental_price'];
+										$services_id[$i]['rental_price_monthly']=$listing['rental_price_monthly'];
 										
 									}
 								}
@@ -661,8 +694,11 @@ class Mjingga_api extends CI_Model{
 						 $this->db->insert_batch('tbl_unit_photo', $photo_unit);
 					}
 				}else{
-					
-					$this->db->update($table, $data, array('id' => $id) );
+					if($table=='tbl_member'){
+						$this->db->update($table, $data, array('member_user' => $member_user) );
+					}else{
+						$this->db->update($table, $data, array('id' => $id) );
+					}
 					
 				}
 			break;

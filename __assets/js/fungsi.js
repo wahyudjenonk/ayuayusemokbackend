@@ -2,7 +2,13 @@ $(function() {
 	loadUrl(host+'beranda');
 });
 
-
+var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth()+1; //January is 0!
+var yyyy = today.getFullYear();
+if(dd<10){dd='0'+dd} 
+if(mm<10){mm='0'+mm}
+today = yyyy+'-'+mm+'-'+dd;
 function loadUrl(urls){
 	//$("#konten").empty();
     $("#konten").empty().addClass("loading");
@@ -126,6 +132,103 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 	var footer=false;
 	
 	switch(modnya){
+		case "confirm_independent":
+			judulnya = "";
+			urlnya = "confirmation_independent";
+			fitnya = true;
+			urlglobal = host+'backoffice-Data/'+urlnya;
+			frozen[modnya] = [	
+				{field:'id',title:'Action',width:120, halign:'center',align:'center',
+					formatter:function(value,rowData,rowIndex){
+						if(rowData.flag=='P'){
+							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Confirm & View</a>';
+						}else{
+							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">View Detail</a>';
+						}
+					}
+				},
+				{field:'flag',title:'Status',width:120, halign:'center',align:'left',
+					formatter:function(value,rowData,rowIndex){
+						if(value=='P'){return 'Waiting Confirmation';}
+						else if(value=='C'){return 'Conf. Canceled';}
+						else{return 'Confirmation Done';}
+					},
+					styler:function(value,rowData,rowIndex){
+						if(value=='P'){return 'background:yellow;color:navy;'}
+						else if(value=='C'){return 'background:red;color:#ffffff;'}
+					}
+				},
+				{field:'confirm_kode',title:'Confirm Code',width:120, halign:'center',align:'center'},
+				{field:'date_confirm',title:'Date Confirm',width:120, halign:'center',align:'center'},
+				{field:'date_transfer',title:'Transfer Date',width:150, halign:'center',align:'center'}
+			];
+			kolom[modnya] = [
+				
+				{field:'no_invoice',title:'No Invoice',width:120, halign:'center',align:'center'},
+				{field:'date_invoice',title:'Date Invoice',width:120, halign:'center',align:'center'},
+				{field:'nama',title:'Name',width:200, halign:'center',align:'left'},
+				{field:'apartment_name',title:'Property',width:250, halign:'center',align:'left'},
+				{field:'grand_total',title:'Total Invoice',width:120, halign:'center',align:'right',
+					formatter:function(value,rowData,rowIndex){
+						return NumberFormat(value);
+					},
+				},
+				{field:'total_pay',title:'Total Pay',width:120, halign:'center',align:'right',
+					formatter:function(value,rowData,rowIndex){
+						return NumberFormat(value);
+					},
+				}
+			]
+		break;
+		case "confirm_package":
+			judulnya = "";
+			urlnya = "confirmation_package";
+			fitnya = true;
+			urlglobal = host+'backoffice-Data/'+urlnya;
+			frozen[modnya] = [	
+				{field:'id',title:'Action',width:120, halign:'center',align:'center',
+					formatter:function(value,rowData,rowIndex){
+						if(rowData.flag=='P'){
+							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Confirm & View</a>';
+						}else{
+							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">View Detail</a>';
+						}
+					}
+				},
+				{field:'flag',title:'Status',width:120, halign:'center',align:'left',
+					formatter:function(value,rowData,rowIndex){
+						if(value=='P'){return 'Waiting Confirmation';}
+						else if(value=='C'){return 'Conf. Canceled';}
+						else{return 'Confirmation Done';}
+					},
+					styler:function(value,rowData,rowIndex){
+						if(value=='P'){return 'background:yellow;color:navy;'}
+						else if(value=='C'){return 'background:red;color:#ffffff;'}
+					}
+				},
+				{field:'confirm_kode',title:'Confirm Code',width:120, halign:'center',align:'center'},
+				{field:'date_confirm',title:'Date Confirm',width:120, halign:'center',align:'center'},
+				{field:'date_transfer',title:'Transfer Date',width:150, halign:'center',align:'center'}
+			];
+			kolom[modnya] = [
+				
+				{field:'no_invoice',title:'No Invoice',width:120, halign:'center',align:'center'},
+				{field:'date_invoice',title:'Date Invoice',width:120, halign:'center',align:'center'},
+				{field:'nama',title:'Name',width:200, halign:'center',align:'left'},
+				{field:'package_name',title:'Package',width:250, halign:'center',align:'left'},
+				{field:'apartment_name',title:'Property',width:250, halign:'center',align:'left'},
+				{field:'total',title:'Total Invoice',width:120, halign:'center',align:'right',
+					formatter:function(value,rowData,rowIndex){
+						return NumberFormat(value);
+					},
+				},
+				{field:'total_pay',title:'Total Pay',width:120, halign:'center',align:'right',
+					formatter:function(value,rowData,rowIndex){
+						return NumberFormat(value);
+					},
+				}
+			]
+		break;
 		case "registration":
 			judulnya = "";
 			urlnya = "registration";
@@ -270,12 +373,14 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 							if(value=='P')return 'Waiting Pay';
 							else if(value=='PL')return 'Planning Set';
 							else if(value=='C')return 'Cancel Invoice';
+							else if(value=='CP')return 'Cancel Payment';
 							else return 'Finish';
 						},
 						styler:function(value,rowData,rowIndex){
 							if(value=='P'){return 'background:green;color:yellow;'}
 							else if(value=='PL')return 'background:#6DBCED;color:#ffffff;';
 							else if(value=='C')return 'background:red;color:#ffffff;';
+							else if(value=='CP')return 'background:red;color:#ffffff;';
 						}
 					},
 					{field:'name',title:'Owner Name',width:220, halign:'center',align:'left'},
@@ -323,12 +428,14 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 								if(value=='P')return 'Waiting Pay';
 								else if(value=='PL')return 'Planning Set';
 								else if(value=='C')return 'Cancel Invoice';
+								else if(value=='CP')return 'Cancel Payment';
 								else return 'Finish';
 							},
 							styler:function(value,rowData,rowIndex){
 								if(value=='P'){return 'background:green;color:yellow;'}
 								else if(value=='PL')return 'background:#6DBCED;color:#ffffff;';
 								else if(value=='C')return 'background:red;color:#ffffff;';
+								else if(value=='CP')return 'background:red;color:#ffffff;';
 							}
 						},
 						{field:'package_name',title:'Package Name',width:220, halign:'center',align:'left'},
@@ -1173,4 +1280,77 @@ function formatDate(date) {
 		tgl='0'+tgl;
 	}
 	return date.getFullYear() + "-" + bulan + "-" + tgl;
-}		
+}	
+function set_flag(mod,msgr,id,msg,act){
+	var param={};
+	switch (mod){
+		case "flag_confirm":
+		case "flag_confirm_cancel":
+			if(mod=='flag_confirm_cancel')param['flag']='C';
+			else param['flag']='F';
+			param['id']=id;
+			mod="confirmation_pay";
+		break;
+		case "flag_confirm_pack":
+		case "flag_confirm_pack_cancel":
+			if(mod=='flag_confirm_pack_cancel')param['flag']='C';
+			else param['flag']='F';
+			param['id']=id;
+			mod="confirmation_pay_pack";
+		break;
+	}
+	if(msgr==true){
+		$.messager.confirm('Homtel Backoffice','Are You Sure ?',function(re){
+			if(re){
+				$.post(host+'Backoffice-Status/'+mod,param,function(r){
+					if(r==1){
+						$.messager.alert('Homtel Back-Office',msg,'info');
+						$('#'+act).trigger('click');
+						grid_nya.datagrid('reload');
+					}else{
+						$.messager.alert('Homtel Back-Office','Failed Update','error');
+					}
+				});
+			}
+		});
+	}else{
+		$.post(host+'Backoffice-Status/'+mod,param,function(r){
+			if(r==1){
+				$.messager.alert('Homtel Back-Office',msg,'info');
+				$('#'+act).trigger('click');
+				grid_nya.datagrid('reload');
+			}else{
+				$.messager.alert('Homtel Back-Office','Failed Update','error');
+			}
+		});
+	}
+}
+function get_report(mod,acak){
+	var param={};
+	switch (mod){
+		case "report_inv_paid":
+		case "report_inv_unpaid":
+			param['start_date']=$('#start_date_'+acak).datebox('getValue');
+			param['end_date']=$('#end_date_'+acak).datebox('getValue');
+			param['type_trans']=$('#type_transaction_'+acak).val();
+		break;
+	}
+	$('#isi_report_'+acak).addClass('loading').html('');
+	$.post(host+'Backoffice-Report/'+mod,param,function(r){
+		$('#isi_report_'+acak).removeClass('loading').html(r)
+	});
+	
+	
+}
+function myparser(s){
+    if (!s) return new Date();
+    var ss = (s.split('-'));
+    var y = parseInt(ss[0],10);
+    var m = parseInt(ss[1],10);
+    var d = parseInt(ss[2],10);
+    if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+        return new Date(y,m-1,d);
+    } else {
+        return new Date();
+    }
+}

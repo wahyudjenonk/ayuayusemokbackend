@@ -60,6 +60,17 @@
 						<span class="menu-text">Invoice Package</span>
 					</a>
 				</li>
+				
+				
+			</ul>
+		</li>
+		<li>
+			<a href="javascript:void(0);"  class="dropdown-toggle" >
+				<i class="icon-cogs"></i>
+				<span class="menu-text">Planning</span>
+				<b class="arrow icon-angle-down"></b>
+			</a>
+			<ul class="submenu">
 				<li>
 					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Grid/planning');$('#judul_kecil').html('Planning Services From Invoice')">
 						<i class="icon-double-angle-right"></i>
@@ -78,21 +89,61 @@
 						<span class="menu-text">Planning Host Services By Owner</span>
 					</a>
 				</li>
-				
 			</ul>
 		</li>
-		
 		<li>
-			<a href="javascript:void(0);" onclick="">
-				<i class="icon-laptop"></i>
+			<a href="javascript:void(0);"  class="dropdown-toggle" >
+				<i class="icon-cogs"></i>
 				<span class="menu-text">Payment</span>
+				<b class="arrow icon-angle-down"></b>
 			</a>
+			<ul class="submenu">
+				<li>
+					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Grid/confirm_independent');$('#judul_kecil').html('Confirm Payment Independent From Invoice')">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Confirmation Payment Independent</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Grid/confirm_package');$('#judul_kecil').html('Confirm Payment Package From Invoice')">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text">Confirmation Payment Package</span>
+					</a>
+				</li>
+			</ul>
 		</li>
 		<li>
-			<a href="javascript:void(0);" onclick="">
-				<i class="icon-laptop"></i>
+			<a href="javascript:void(0);"  class="dropdown-toggle" >
+				<i class="icon-cogs"></i>
 				<span class="menu-text">Report</span>
+				<b class="arrow icon-angle-down"></b>
 			</a>
+			<ul class="submenu">
+				<li>
+					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Report/inv_paid');$('#judul_kecil').html('Report Invoice Paid')">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text"> Report Invoice Paid</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Report/inv_unpaid');$('#judul_kecil').html('Report Invoice UnPaid')">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text"> Report Invoice UnPaid</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Report/unit');$('#judul_kecil').html('Report Property Owner List')">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text"> Report List Property</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0);" onclick="loadUrl('{$host}Backoffice-Report/registrasi');$('#judul_kecil').html('Report Owner Registration')">
+						<i class="icon-double-angle-right"></i>
+						<span class="menu-text"> Report Owner Registration</span>
+					</a>
+				</li>
+			</ul>
 		</li>
 		<li>
 			<a href="javascript:void(0);"  class="dropdown-toggle" >

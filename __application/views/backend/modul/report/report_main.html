@@ -1,0 +1,48 @@
+{if $mod eq 'inv_paid' || $mod eq 'inv_unpaid'}
+<div class="row-fluid">
+	<div class="span4">
+	<table class="table table-hover">
+		<tr>
+			<td>&nbsp;</td><td>Start Date</td><td>:</td>
+			<td style="font-weight:bold;"><input type="text" id="start_date_{$acak}" name="start_date" class="tgl" style="height:30px;"></td>
+		</tr>
+	</table>
+	</div>
+	<div class="span4">
+	<table class="table table-hover">
+		<tr>
+			<td>&nbsp;</td><td>End Date</td><td>:</td>
+			<td style="font-weight:bold;"><input type="text" id="end_date_{$acak}" name="end_date" class="tgl" style="height:30px;"></td>
+		</tr>
+	</table>
+	</div>
+	<div class="span4">
+	<table class="table table-hover">
+		<tr>
+			<td>&nbsp;</td><td>Transaction</td><td>:</td>
+			<td style="font-weight:bold;">
+				<select id="type_transaction_{$acak}">
+					<option value="I">Independent</option>
+					<option value="P">Package</option>
+				</select>
+			
+			</td>
+		</tr>
+	</table>
+	</div>
+</div>
+{/if}
+<div class="row-fluid">
+<center>
+{include file="backend/template/button_save.html" text="Get Report" click="get_report('report_{$mod}','{$acak}')" id_na="cancel" style_btn="btn-danger"  btn_goyz="true"}
+</center>
+</div>
+<hr>
+<div class="row-fluid">
+	<div id="isi_report_{$acak}"></div>
+</div>
+<script>
+$(".tgl").datebox({ formatter: formatDate,parser:myparser  }); 
+$('.tgl').datebox('setValue',today);
+get_report('report_{$mod}','{$acak}')
+</script>

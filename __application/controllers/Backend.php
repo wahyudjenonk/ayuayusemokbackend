@@ -137,6 +137,37 @@ class Backend extends JINGGA_Controller {
 			$this->nsmarty->display($temp);
 		}
 	}	
+	function get_report($mod){
+		$temp="backend/modul/report/".$mod.".html";
+		$this->nsmarty->assign('mod',$mod);
+		switch($mod){	
+			case "inv_paid":
+			case "inv_unpaid":
+			case "unit":
+			case "registrasi":
+				$temp="backend/modul/report/report_main.html";
+			break;
+			case "report_inv_paid":
+				$data=$this->mbackend->getdata('report_paid','result_array');
+				$this->nsmarty->assign('data',$data);
+			break;
+			case "report_inv_unpaid":
+				$data=$this->mbackend->getdata('report_unpaid','result_array');
+				$this->nsmarty->assign('data',$data);
+			break;
+			case "report_unit":
+				$data=$this->mbackend->getdata('report_unit','result_array');
+				$this->nsmarty->assign('data',$data);
+			break;
+			case "report_registrasi":
+				$data=$this->mbackend->getdata('report_registrasi','result_array');
+				$this->nsmarty->assign('data',$data);
+			break;
+		}
+		$this->nsmarty->assign('temp',$temp);
+		if(!file_exists($this->config->item('appl').APPPATH.'views/'.$temp)){$this->nsmarty->display('konstruksi.html');}
+		else{$this->nsmarty->display($temp);}
+	}
 	function get_konten($p1=""){
 		if($p1!="")$mod=$p1;
 		else $mod=$this->input->post('mod');
@@ -145,6 +176,15 @@ class Backend extends JINGGA_Controller {
 		$this->nsmarty->assign('mod',$mod);
 		$temp="backend/modul/".$mod.".html";
 		switch($mod){
+			
+			case "confirm_independent":
+				$data=$this->mbackend->getdata('confirmation_independent','get');
+				$this->nsmarty->assign('data',$data);
+			break;
+			case "confirm_package":
+				$data=$this->mbackend->getdata('confirmation_package','get');
+				$this->nsmarty->assign('data',$data);
+			break;
 			case "registration":
 				$data=$this->mbackend->getdata('registration','get');
 				$this->nsmarty->assign('data',$data);
@@ -365,4 +405,80 @@ class Backend extends JINGGA_Controller {
 		}
 		return $opt;
 	}
+	function set_flag($p1){
+		$post = array();
+        foreach($_POST as $k=>$v){
+			if($this->input->post($k)!=""){
+				$post[$k] = $this->input->post($k);
+			}
+			
+		}
+		echo $this->mbackend->set_flag($p1,$post);
+	}
+	function cetak(){
+		$mod=$this->input->post('mod');
+			switch($mod){
+				case "cetak_bast":
+					$data=$this->mbackend->getdata('get_bast');
+					$tgl=$this->konversi_tgl(date('Y-m-d'));
+					$file_name=$data['header']['konfirmasi_no'];
+					$this->hasil_output('pdf',$mod,$data,$file_name,'BERITA ACARA SERAH TERIMA BUKU',$data['header']['konfirmasi_no'],$tgl);
+				break;
+			}
+	}
+	function hasil_output($p1,$mod,$data,$file_name,$judul_header,$nomor="",$param=""){
+		switch($p1){
+			case "pdf":
+				$this->load->library('mlpdf');	
+				//$data=$this->mhome->getdata('cetak_voucher');
+				$pdf = $this->mlpdf->load();
+				$this->nsmarty->assign('param', $param);
+				$this->nsmarty->assign('judul_header', $judul_header);
+				$this->nsmarty->assign('nomor', $nomor);
+				$this->nsmarty->assign('data', $data);
+				$this->nsmarty->assign('mod', $mod);
+				
+				$htmlcontent = $this->nsmarty->fetch("backend/template/temp_pdf.html");
+				$htmlheader = $this->nsmarty->fetch("backend/template/header.html");
+				
+				//echo $htmlcontent;exit;
+				
+				$spdf = new mPDF('', 'A4', 0, '', 12.7, 12.7, 33, 20, 5, 2, 'P');
+				$spdf->ignore_invalid_utf8 = true;
+				// bukan sulap bukan sihir sim salabim jadi apa prok prok prok
+				$spdf->allow_charset_conversion = true;     // which is already true by default
+				$spdf->charset_in = 'iso-8859-1';  // set content encoding to iso
+				$spdf->SetDisplayMode('fullpage');		
+				$spdf->SetHTMLHeader($htmlheader);
+				//$spdf->keep_table_proportions = true;
+				$spdf->useSubstitutions=false;
+				$spdf->simpleTables=true;
+				
+				$spdf->SetHTMLFooter('
+					<div style="font-family:arial; font-size:8px; text-align:center; font-weight:bold;">
+						<table width="100%" style="font-family:arial; font-size:8px;">
+							<tr>
+								<td width="30%" align="left">
+									
+								</td>
+								<td width="40%" align="center">
+									
+								</td>
+								<td width="30%" align="right">
+									Hal. {PAGENO} dari {nbpg}
+								</td>
+							</tr>
+						</table>
+					</div>
+				');				
+				//$file_name = date('YmdHis');
+				$spdf->SetProtection(array('print'));				
+				$spdf->WriteHTML($htmlcontent); // write the HTML into the PDF
+				//$spdf->Output('repositories/Dokumen_LS/LS_PDF/'.$filename.'.pdf', 'F'); // save to file because we can
+				//$spdf->Output('repositories/Billing/'.$filename.'.pdf', 'F');
+				$spdf->Output($file_name.'.pdf', 'I'); // view file	
+			break;
+		}
+	}
+	
 }
