@@ -1,0 +1,33 @@
+	<fieldset>
+		<div style="width:100%">
+			<form id="form_{$acak}" method="post" url="{$host}backoffice-simpan/cl_compulsary_periodic_payment/{$sts}">
+			<input type="hidden" id="editStatus_{$acak}" name="editstatus" value="{$sts}">
+			<input type="hidden" id="id_{$acak}" name="id" value="{$data.id|default:''}">
+			
+			<table class="table table-hover">
+				{include file="backend/template/input_goyz.html" label="Compulsary Per. Payment" style_type="width:80%" type="text" id="compulsary_periodic_payment{$acak}" name="compulsary_periodic_payment" class="validasi" value="{$data.compulsary_periodic_payment|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Description" style_type="width:80%" type="textarea" id="description{$acak}" name="description" class="validasi" value="{$data.description|default:''}"}
+				<tr>
+					<td>&nbsp;</td><td>Status</td><td>:</td>
+					<td style="font-weight:bold;">
+							<input name="flag" type="checkbox" value="F" {if $sts eq 'edit'}{if $data.flag|default:'' eq 'F'}checked{/if}{else}checked{/if} >&nbsp;&nbsp;<span class="lbl" >Aktif</span>
+						</div>
+					</td>
+				</tr>
+			</table>
+			</form>
+		</div>
+		<div style="width:100%">
+			
+			{include file="backend/template/button_save.html" text="Save Data" id_na="save" style_btn="btn-success"  btn_goyz="true"}
+			{include file="backend/template/button_save.html" text="Cancel" click="$('#grid_nya_{$mod}').show();$('#detil_nya_{$mod}').hide();" id_na="cancel" style_btn="btn-danger"  btn_goyz="true"}
+		</div>
+	</fieldset>
+
+
+<script>
+	$(".validasi").validatebox({ required:true }); 
+	$('#save_{$acak}').bind('click',function(){
+		simpan_form('form_{$acak}','cancel_{$acak}','Data Was Saved');
+	});
+</script>

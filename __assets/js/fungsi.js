@@ -9,6 +9,116 @@ var yyyy = today.getFullYear();
 if(dd<10){dd='0'+dd} 
 if(mm<10){mm='0'+mm}
 today = yyyy+'-'+mm+'-'+dd;
+function chart_na(id_selector,type,title,subtitle,title_y,data_x,data_y,satuan){
+	switch(type){
+	case "column":
+	$('#'+id_selector).highcharts({
+			chart: {
+				type: type
+			},
+			title: {
+				text: title
+			},
+			subtitle: {
+				text: subtitle
+			},
+			xAxis: {
+				type: 'category'
+			},
+			yAxis: {
+				title: {
+					text: title_y
+				}
+
+			},
+			legend: {
+				enabled: false
+			},
+			plotOptions: {
+				series: {
+					borderWidth: 0,
+					dataLabels: {
+						enabled: true,
+						format: '{point.y:.1f}'
+					}
+				}
+			},
+
+			tooltip: {
+				headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+				pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}</b> of total<br/>'
+			},
+
+			series: data_x
+			
+			
+			
+        });
+		break;
+		case "line" :
+			$('#'+id_selector).highcharts({
+				title: {
+				text: title,
+				x: -20 //center
+				},
+				subtitle: {
+					text: subtitle,
+					x: -20
+				},
+				xAxis: {
+					categories: data_y
+					//categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+				},
+				yAxis: {
+					title: {
+						text: ''
+					},
+					plotLines: [{
+						value: 0,
+						width: 1,
+						color: '#808080'
+					}]
+				},
+				tooltip: {
+					valueSuffix: ''
+				},
+				
+				series: data_x
+				
+				/*[{
+					name: 'Tokyo',
+					data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+				}]*/
+			});
+		break;
+		case "pie":
+			 $('#'+id_selector).highcharts({
+				chart: {
+					plotBackgroundColor: null,
+					plotBorderWidth: null,
+					plotShadow: false
+				},
+				title: {
+					text: title
+				},
+				tooltip: {
+					pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+				},
+				plotOptions: {
+					pie: {
+						allowPointSelect: true,
+						cursor: 'pointer',
+						dataLabels: {
+							enabled: false
+						},
+						showInLegend: true
+					}
+				},
+				series: data_y
+			});
+		break;
+	}
+}
 function loadUrl(urls){
 	//$("#konten").empty();
     $("#konten").empty().addClass("loading");
@@ -132,6 +242,39 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 	var footer=false;
 	
 	switch(modnya){
+		case "cl_facility_unit":
+			judulnya = "";
+			urlnya = "cl_facility_unit";
+			fitnya = true;
+			urlglobal = host+'backoffice-Data/'+urlnya;
+			kolom[modnya] = [
+				{field:'facility_name',title:'Facility Name',width:250, halign:'center',align:'left'},
+				{field:'unit',title:'Unit',width:200, halign:'center',align:'left'},
+				{field:'create_date',title:'Create Date',width:150, halign:'center',align:'center'}
+			]
+		break;
+		case "cl_room_type":
+			judulnya = "";
+			urlnya = modnya;
+			fitnya = true;
+			urlglobal = host+'backoffice-Data/'+urlnya;
+			kolom[modnya] = [
+				{field:'room_type',title:'Room Type',width:350, halign:'center',align:'left'},
+				{field:'description',title:'Description',width:200, halign:'center',align:'left'},
+				{field:'create_date',title:'Create Date',width:150, halign:'center',align:'center'}
+			]
+		break;
+		case "cl_compulsary_periodic_payment":
+			judulnya = "";
+			urlnya = modnya;
+			fitnya = true;
+			urlglobal = host+'backoffice-Data/'+urlnya;
+			kolom[modnya] = [
+				{field:'compulsary_periodic_payment',title:'Compulsary Per. Payment',width:350, halign:'center',align:'left'},
+				{field:'description',title:'Description',width:200, halign:'center',align:'left'},
+				{field:'create_date',title:'Create Date',width:150, halign:'center',align:'center'}
+			]
+		break;
 		case "confirm_independent":
 			judulnya = "";
 			urlnya = "confirmation_independent";
@@ -597,40 +740,17 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 
 
 function genform(type, modulnya, submodulnya, stswindow, tabel){
-	var urlpost = host+'backend/get_form/'+submodulnya+'/form';
-	var urldelete = host+'backend/cruddata/'+submodulnya;
+	var urlpost = host+'backoffice-form/'+submodulnya;
+	var urldelete = host+'backoffice-simpan/'+submodulnya+'/delete';
 	var id_tambahan = "";
-	
-	switch(submodulnya){
-		case "wartakomisi":
+	var table = submodulnya;
+	/*switch(submodulnya){
+		case "cl_facility_unit":
 			table = "warkom";
 			urlpost = host+'backend/getdisplay/get-form/'+submodulnya;
 		break;
-		case "kebaktianminggu":
-			table = "kebming";
-			urlpost = host+'backend/getdisplay/get-form/'+submodulnya;
-		break;
-		case "renunganwarta":
-			table = "renwar";
-			urlpost = host+'backend/getdisplay/get-form/'+submodulnya;
-		break;
-		case "renunganharian":
-			table = "rema";
-			urlpost = host+'backend/getdisplay/get-form/'+submodulnya;
-		break;
-		case "artikelrohani":
-			table = "artiro";
-			urlpost = host+'backend/getdisplay/get-form/'+submodulnya;
-		break;
-		case "sliderberanda":
-			table = "sliben";
-			urlpost = host+'backend/getdisplay/get-form/'+submodulnya;
-		break;
-		case "komisikombas":
-			table = "kokom";
-			urlpost = host+'backend/getdisplay/get-form/'+submodulnya;
-		break;
-	}
+		
+	}*/
 	
 	switch(type){
 		case "add":
@@ -652,14 +772,14 @@ function genform(type, modulnya, submodulnya, stswindow, tabel){
 		case "edit":
 		case "delete":
 		
-			var row = $("#grid_"+submodulnya).datagrid('getSelected');
+			var row = grid_nya.datagrid('getSelected');
 			if(row){
 				if(type=='edit'){
 					if(stswindow == undefined){
 						$('#grid_nya_'+submodulnya).hide();
-						$('#detil_nya_'+submodulnya).show().addClass("loading");	
+						$('#detil_nya_'+submodulnya).empty().show().addClass("loading");	
 					}
-					$.post(urlpost, { 'editstatus':'edit', id:row.id, 'ts':table, 'submodul':submodulnya, 'bulan':row.bulan, 'tahun':row.tahun, 'id_tambahan':id_tambahan }, function(resp){
+					$.post(urlpost, { 'editstatus':'edit', id:row.id }, function(resp){
 						if(stswindow == 'windowform'){
 							windowForm(resp, judulwindow, lebar, tinggi);
 						}else if(stswindow == 'windowpanel'){
@@ -671,18 +791,18 @@ function genform(type, modulnya, submodulnya, stswindow, tabel){
 					});
 				}else if(type=='delete'){
 					//if(confirm("Anda Yakin Menghapus Data Ini ?")){
-					$.messager.confirm('JResto Soft','Anda Yakin Menghapus Data Ini ?',function(re){
+					$.messager.confirm('Homtel BackOfiice','Anda Yakin Menghapus Data Ini ?',function(re){
 						if(re){
 							loadingna();
 							$.post(urldelete, {id:row.id, 'sts_crud':'delete'}, function(r){
 								if(r==1){
 									winLoadingClose();
-									$.messager.alert('JResto Soft',"Data Terhapus",'info');
-									$('#grid_'+submodulnya).datagrid('reload');								
+									$.messager.alert('Homtel BackOfiice',"Data Terhapus",'info');
+									grid_nya.datagrid('reload');								
 								}else{
 									winLoadingClose();
 									console.log(r)
-									$.messager.alert('JResto Soft',"Gagal Menghapus Data",'error');
+									$.messager.alert('Homtel BackOfiice',"Gagal Menghapus Data",'error');
 								}
 							});	
 						}
@@ -1160,16 +1280,16 @@ function simpan_form(id_form,id_cancel,msg){
 		submit_form(id_form,function(r){
 			console.log(r)
 			if(r==1){
-				$.messager.alert('Aldeaz Back-Office',msg,'info');
+				$.messager.alert('Homtel Back-Office',msg,'info');
 				$('#'+id_cancel).trigger('click');
 				grid_nya.datagrid('reload');
 			}else{
 				console.log(r);
-				$.messager.alert('Aldeaz Back-Office',"Tdak Dapat Menyimpan Data",'error');
+				$.messager.alert('Homtel Back-Office',"Tdak Dapat Menyimpan Data",'error');
 			}
 		});
 	}else{
-		$.messager.alert('Aldeaz Back-Office',"Isi Data Yang Kosong ",'info');
+		$.messager.alert('Homtel Back-Office',"Isi Data Yang Kosong ",'info');
 	}
 }
 var div_id_plan_acak;

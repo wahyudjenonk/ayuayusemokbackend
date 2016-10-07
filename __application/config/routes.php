@@ -9,6 +9,7 @@ $route['backoffice'] = 'backend';
 $route['backoffice-masuk'] = 'login';
 $route['backoffice-keluar'] = 'login/logout';
 $route['Backoffice-Grid/(:any)'] = 'backend/get_grid/$1';
+$route['backoffice-GetDataChart'] = 'backend/get_chart';
 $route['Backoffice-Status/(:any)'] = 'backend/set_flag/$1';
 $route['backoffice-form/(:any)'] = 'backend/get_form/$1';
 $route['backoffice-Data/(:any)'] = 'backend/getdata/$1';

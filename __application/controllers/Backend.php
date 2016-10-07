@@ -262,6 +262,7 @@ class Backend extends JINGGA_Controller {
 		$sts=$this->input->post('editstatus');
 		$this->nsmarty->assign('sts',$sts);
 		switch($mod){
+			
 			case "services":
 				if($sts!='add_new'){
 					$data=$this->mbackend->getdata('services','row_array');
@@ -309,6 +310,13 @@ class Backend extends JINGGA_Controller {
 					$this->nsmarty->assign('data',$data);
 				}
 				$this->nsmarty->assign('tbl_package_header_id',$this->input->post("id_header"));
+			break;
+			default:
+				if($sts=='edit'){
+					$data=$this->mbackend->getdata($mod,'get');
+					$this->nsmarty->assign('data',$data);
+					//print_r($data);
+				}
 			break;
 		}
 		$this->nsmarty->assign('mod',$mod);
@@ -402,6 +410,18 @@ class Backend extends JINGGA_Controller {
 				$opt .="<option value='D.owner_name_first'>First Name</option>";
 				$opt .="<option value='D.owner_name_last'>Last Name</option>";
 			break;
+			case "cl_facility_unit":
+				$opt .="<option value='A.facility_name'>Facility Name</option>";
+				$opt .="<option value='A.unit'>Unit</option>";
+			break;
+			case "cl_compulsary_periodic_payment":
+				$opt .="<option value='A.compulsary_periodic_payment'>Comp. Per. Payment</option>";
+				$opt .="<option value='A.description'>Desc</option>";
+			break;
+			case "cl_room_type":
+				$opt .="<option value='A.room_type'>Room Type</option>";
+				$opt .="<option value='A.description'>Desc</option>";
+			break;
 		}
 		return $opt;
 	}
@@ -480,5 +500,69 @@ class Backend extends JINGGA_Controller {
 			break;
 		}
 	}
-	
+	function get_chart(){
+		$chart=array();
+		$x=array();
+		$y=array();
+		$mod=$this->input->post('mod');
+		
+		
+		
+		
+		//echo json_encode($tgl);exit;
+		//print_r($tgl);exit;
+		switch($mod){
+			case "penjualan_inde":
+				$tgl_akhir=date('Y-m-d');
+				$tgl_milai = date('Y-m-d', strtotime($tgl_akhir .' -7 day'));
+				$period = new DatePeriod(
+					 new DateTime($tgl_milai),
+					 new DateInterval('P1D'),
+					 new DateTime($tgl_akhir)
+				);
+				$data=$this->mbackend->getdata('d_penjualan_inde','result_array');
+				$idx=0;
+				$x['name']='Total ( * 1000 )';
+				$x['data']=array();
+				foreach($period as $time) {
+					$y[] = $time->format("Y-m-d");
+					$x['data'][$idx]=0;
+					foreach($data as $v=>$z){
+						if($time->format("Y-m-d")==$z['tgl'])$x['data'][$idx]=(float)($z['total']/1000);
+					}
+					$idx++;
+				}
+				$chart['x']=array($x);
+				$chart['y']=$y;
+				//echo "<pre>";
+				//print_r($chart);exit;
+			break;
+			case "penjualan_paket":
+				$tgl_akhir=date('Y-m-d');
+				$tgl_milai = date('Y-m-d', strtotime($tgl_akhir .' -7 day'));
+				$period = new DatePeriod(
+					 new DateTime($tgl_milai),
+					 new DateInterval('P1D'),
+					 new DateTime($tgl_akhir)
+				);
+				$data=$this->mbackend->getdata('d_penjualan_paket','result_array');
+				$idx=0;
+				$x['name']='Total ( * 1000 )';
+				$x['data']=array();
+				foreach($period as $time) {
+					$y[] = $time->format("Y-m-d");
+					$x['data'][$idx]=0;
+					foreach($data as $v=>$z){
+						if($time->format("Y-m-d")==$z['tgl'])$x['data'][$idx]=(float)($z['total']/1000);
+					}
+					$idx++;
+				}
+				$chart['x']=array($x);
+				$chart['y']=$y;
+				//echo "<pre>";
+				//print_r($chart);exit;
+			break;
+		}
+		echo json_encode($chart);
+	}
 }

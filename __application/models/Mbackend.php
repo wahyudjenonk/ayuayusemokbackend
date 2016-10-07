@@ -12,6 +12,16 @@ class Mbackend extends CI_Model{
 				$where .=" AND ".$this->input->post('kat')." like '%".$this->db->escape_str($this->input->post('key'))."%'";
 		}
 		switch($type){
+			case "d_penjualan_inde":
+				$sql="SELECT SUM(grand_total)as total,date(date_invoice) as tgl
+						FROM tbl_header_transaction 
+						GROUP BY date(date_invoice) ";
+			break;
+			case "d_penjualan_paket":
+				$sql="SELECT SUM(total)as total,date(date_invoice) as tgl
+						FROM tbl_transaction_package 
+						GROUP BY date(date_invoice) ";
+			break;
 			case "report_paid":
 				$start=$this->input->post('start_date');
 				$end=$this->input->post('end_date');
@@ -554,6 +564,11 @@ class Mbackend extends CI_Model{
 						//echo $sql;
 				}
 			break;
+			default:
+				if($balikan=='get'){$where .=" AND A.id=".$this->input->post('id');}
+				$sql="SELECT A.* FROM ".$type." A ".$where;
+				if($balikan=='get')return $this->db->query($sql)->row_array();
+			break;
 		}
 		
 		if($balikan == 'json'){
@@ -597,6 +612,7 @@ class Mbackend extends CI_Model{
 		}
 		
 		switch($table){
+			
 			case "planning":
 			case "planning_package":
 				if($table=='planning_package')$table='tbl_execution_transaction_package';
