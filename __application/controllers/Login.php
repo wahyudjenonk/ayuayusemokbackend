@@ -42,12 +42,12 @@ class Login extends JINGGA_Controller {
 	}
 	
 	function logout(){
-		$log = $this->db->update('tbl_user', array('last_log_date'=>date('Y-m-d')), array('nama_user'=>$this->auth['nama_user']) );
-		if($log){
+		//$log = $this->db->update('tbl_user', array('last_log_date'=>date('Y-m-d')), array('nama_user'=>$this->auth['nama_user']) );
+		//if($log){
 			$this->session->unset_userdata('44mpp3R4', 'limit');
 			$this->session->sess_destroy();
 			header("Location: " . $this->host ."backoffice");
-		}
+		//}
 	}
 	
 }

@@ -326,6 +326,9 @@ class Mjingga_api extends CI_Model{
 		}
 		
 		switch($table){
+			case "profil":
+				$table="tbl_registration";
+			break;
 			case "update_pwd":
 				$table="tbl_member";
 				$sql="SELECT * FROM tbl_member WHERE member_user='".$data['member_user']."'";
