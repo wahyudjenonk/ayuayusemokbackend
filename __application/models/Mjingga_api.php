@@ -391,8 +391,8 @@ class Mjingga_api extends CI_Model{
 				$table='tbl_registration';
 				$data['flag']='P';
 				if($sts_crud=='add'){
-					//$data['registration_code']=$this->lib->uniq_id();
-					$data['registration_code']=123456;
+					$data['registration_code']=$this->lib->uniq_id();
+					//$data['registration_code']=123456;
 					$ex=$this->db->get_where('tbl_registration',array('email'=>$data['email']))->row_array();
 					
 					/*$msg['data']=array('member_user'=>$this->lib->uniq_id(),
