@@ -18,7 +18,8 @@
 	</fieldset>
 
 <script>
-	$(".tgl").datebox({ formatter: formatDate  }); 
+	$(".tgl").datebox({ formatter: formatDate,parser:myparser  }); 
+	$('.tgl').datebox('setValue',today);
 	$('.waktu').timespinner();
 	$('#save_{$acak}').bind('click',function(){
 			submit_form('form_{$acak}',function(r){

@@ -1,0 +1,33 @@
+<div class="row-fluid">
+	<div class="span6">
+		<table class="table table-hover">
+			<tr>
+				<td>&nbsp;</td><td>Start Date</td><td>:</td>
+				<td style="font-weight:bold;">{$data.start_date|default:'-'}</td>
+			</tr>
+		</table>
+		</div>
+		<div class="span6">
+		<table class="table table-hover">
+			<tr>
+				<td>&nbsp;</td><td>End Date</td><td>:</td>
+				<td style="font-weight:bold;">{$data.end_date|default:'-'}</td>
+			</tr>
+		</table>
+		</div>
+</div>
+<div class="row-fluid">
+<center>
+{include file="backend/template/button_save.html" text="Add Reservasi" click="get_form('reservation','add',{$data.id},{$id_detil},{$data.tbl_package_header_id})" id_na="cancel" style_btn="btn-danger"  btn_goyz="true"}
+</center>
+</div>
+<div class="row-fluid">
+<div id="kalender_{$acak}"></div>
+</div>
+<script>
+	$.post(host+'backoffice-Data/{$mod}',{ 'id_detil':{$id_detil},'id_trans':{$id_trans} },function(r){
+		var js=JSON.parse(r);
+		console.log(js);
+		gen_kalender('kalender_{$acak}',380,js);
+	});
+</script>

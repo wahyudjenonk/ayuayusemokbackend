@@ -1,0 +1,50 @@
+	<fieldset>
+		<div style="width:100%">
+			<form id="form_{$acak}" method="post" url="{$host}backoffice-simpan/reservation/{$sts}">
+			<input type="hidden" id="editStatus_{$acak}" name="editstatus" value="{$sts}">
+			<input type="hidden" id="id_{$acak}" name="id" value="{$id|default:''}">
+			<input type="hidden" id="tbl_transaction_package_id{$acak}" name="tbl_transaction_package_id" value="{$tbl_transaction_package_id|default:''}">
+			<input type="hidden" id="tbl_package_header_id{$acak}" name="tbl_package_header_id" value="{$tbl_package_header_id|default:''}">
+			<input type="hidden" id="tbl_package_detil_id{$acak}" name="tbl_package_detil_id" value="{$tbl_package_detil_id|default:''}">
+			<table class="table table-hover">
+				{include file="backend/template/input_goyz.html" label="Costumer Name" style_type="width:80%" type="text" id="costumer_name{$acak}" name="costumer_name" class="validasi" value="{$data.costumer_name|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Email" style_type="width:40%" type="text" id="email_costumer{$acak}" name="email_costumer" class="validasi" value="{$data.email_costumer|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Phn. Mobile" style_type="width:30%" type="text" id="no_mobile{$acak}" name="no_mobile" class="validasi" value="{$data.no_mobile|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Phone" style_type="width:20%" type="text" id="no_telp{$acak}" name="no_telp" class="validasi" value="{$data.no_telp|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Address" style_type="width:80%" type="text" id="address{$acak}" name="address" value="{$data.address|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Check In" style_type="width:40%" type="text" id="check_in_date{$acak}" name="check_in_date" class="tgl" value="{$data.check_in_date|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Check Out" style_type="width:40%" type="text" id="check_out_date{$acak}" name="check_out_date" class="tgl" value="{$data.check_out_date|default:''}"}
+				{include file="backend/template/input_goyz.html" label="Rate (For Homtel)" style_type="width:20%" type="text" id="rate{$acak}" name="rate" class="angka" value="{$data.rate|default:''}"}
+				
+			</table>
+			</form>
+		</div>
+		<div style="width:100%">
+			{* {include file="backend/template/button_save.html" text="Send Notification To Activation" id_na="simpan" btn_goyz="true" } *}
+			{include file="backend/template/button_save.html" text="Save Reservation" id_na="save" style_btn="btn-danger"  btn_goyz="true"}
+		</div>
+	</fieldset>
+
+
+<script>
+	$(".validasi").validatebox({ required:true }); 
+	$(".tgl").datebox({ formatter: formatDate,parser:myparser  }); 
+	$('.tgl').datebox('setValue',today);
+	$(".angka").numberbox(); 
+	$('#save_{$acak}').bind('click',function(){
+		if ($('#form_{$acak}').form('validate')){
+			submit_form('form_{$acak}',function(r){
+				console.log(r);
+				if(r==1){
+					$.messager.alert('Homtel Back-Office',"Reservation Was Save ",'info');
+					get_kalender({$tbl_transaction_package_id|default:0},{$tbl_package_detil_id|default:0},acak_kalender);
+					closeWindow();
+				}else{
+					$.messager.alert('Homtel Back-Office',"Failed Save ",'error');
+				}
+			});
+		}else{
+			$.messager.alert('Homtel Back-Office',"Isi Data Yang Kosong ",'info');
+		}
+	});
+</script>

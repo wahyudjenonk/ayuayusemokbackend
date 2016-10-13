@@ -176,7 +176,18 @@ class Backend extends JINGGA_Controller {
 		$this->nsmarty->assign('mod',$mod);
 		$temp="backend/modul/".$mod.".html";
 		switch($mod){
-			
+			case "kalender_reservasi":
+				$id_trans=$this->input->post('id_trans');
+				$id_detil=$this->input->post('id_detil');
+				$this->nsmarty->assign('id_trans',$id_trans);
+				$this->nsmarty->assign('id_detil',$id_detil);
+				$data=$this->mbackend->getdata('data_inv','row_array');
+				$this->nsmarty->assign('data',$data);
+			break;
+			case "reservation":
+				$data=$this->mbackend->getdata('data_reservasi','result_array');
+				$this->nsmarty->assign('data',$data);
+			break;
 			case "confirm_independent":
 				$data=$this->mbackend->getdata('confirmation_independent','get');
 				$this->nsmarty->assign('data',$data);
@@ -262,7 +273,15 @@ class Backend extends JINGGA_Controller {
 		$sts=$this->input->post('editstatus');
 		$this->nsmarty->assign('sts',$sts);
 		switch($mod){
-			
+			case "reservation":
+				if($sts=='edit'){
+					$data=$this->mbackend->getdata('planning','get');
+					$this->nsmarty->assign('data',$data);
+				}
+				$this->nsmarty->assign('tbl_transaction_package_id',$this->input->post("id_trans"));
+				$this->nsmarty->assign('tbl_package_detil_id',$this->input->post("id_detil"));
+				$this->nsmarty->assign('tbl_package_header_id',$this->input->post("id_pack_header"));
+			break;
 			case "services":
 				if($sts!='add_new'){
 					$data=$this->mbackend->getdata('services','row_array');
@@ -405,10 +424,12 @@ class Backend extends JINGGA_Controller {
 			case "invoice":
 			case "planning":
 			case "planning_package":
+			case "reservation":
 				$opt .="<option value='A.no_invoice'>No Invoice</option>";
 				$opt .="<option value='B.method_payment'>Method Payment</option>";
 				$opt .="<option value='D.owner_name_first'>First Name</option>";
 				$opt .="<option value='D.owner_name_last'>Last Name</option>";
+				$opt .="<option value='E.apartment_name'>Unit Name</option>";
 			break;
 			case "cl_facility_unit":
 				$opt .="<option value='A.facility_name'>Facility Name</option>";

@@ -550,6 +550,22 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 				]				
 			}
 		break;
+		case "reservation":
+			urlnya = "invoice_package";
+			fitnya = true;
+			urlglobal = host+'backoffice-Data/'+urlnya;
+			kolom[modnya] = [	
+				{field:'id',title:'Reservation',width:150, halign:'center',align:'center',
+					formatter:function(value,rowData,rowIndex){
+						return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Set Reservation</a>';
+					}
+				},
+				{field:'apartment_name',title:'Unit Name',width:320, halign:'center',align:'left'},
+				{field:'name',title:'Owner Name',width:250, halign:'center',align:'left'},
+				{field:'no_invoice',title:'No Invoice',width:200, halign:'center',align:'center'}
+				
+			]
+		break;
 		case "invoice_package":
 		case "planning_package":
 		case "planning_package_own":
@@ -1023,6 +1039,7 @@ function fillCombo(url, SelID, value, value2, value3, value4){
 }
 
 function formatDate(date) {
+	console.log(date);
 	var y = date.getFullYear();
     var m = date.getMonth()+1;
     var d = date.getDate();
@@ -1321,17 +1338,20 @@ function get_form_plan(mod,id,jml_row,acak,par1){
 	});
 	console.log(id,jml_row)
 }
-function get_form(mod,sts,id,par1){
+function get_form(mod,sts,id,par1,par2){
 	param={};
 	if(sts=='edit_flag'){param['editstatus']='edit';}else{param['editstatus']=sts;}
+	var width_na=800;
+	var height_na=350;
 	switch(mod){
 		case "planning":
 		case "planning_package":
 			param['id']=id;
 			if(sts!='edit_flag'){
 				param['detil_id']=detil_id;
-				param['header_id']=header_id;
+				
 				param['total_row']=total_row_plan;
+				if(mod=='planning_package')param['header_id']=header_id;
 			}
 			else param['flag']='F';
 		break;
@@ -1343,6 +1363,14 @@ function get_form(mod,sts,id,par1){
 			//param['services_id']=par1;
 			param['id_header']=par1;
 			param['id']=id;
+		break;
+		case "reservation":
+			//param['services_id']=par1;
+			width_na=800;
+			height_na=550;
+			param['id_detil']=par1;
+			param['id_trans']=id;
+			param['id_pack_header']=par2;
 		break;
 	}
 	if(sts=='delete'){
@@ -1386,7 +1414,7 @@ function get_form(mod,sts,id,par1){
 		
 	}
 	$.post(host+'backoffice-form/'+mod,param,function(r){
-		windowForm(r,'HOMTEL Services',800,350);
+			windowForm(r,'HOMTEL Services',width_na,height_na);
 	});
 }
 function formatDate(date) {
@@ -1473,4 +1501,65 @@ function myparser(s){
     } else {
         return new Date();
     }
+}
+function get_kalender(id_trans,id_detil,acak){
+	$('#isi_tab_'+acak).html('').addClass('loading');
+	$.post(host+'backoffice-GetDetil',{ 'id_trans':id_trans,'id_detil':id_detil,mod:'kalender_reservasi' },function(r){
+		$('#isi_tab_'+acak).removeClass('loading').html(r);
+	});
+}
+function gen_kalender(id_div,height,data_kalender){
+	$('#'+id_div).fullCalendar({
+		height: height,
+        header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'month'
+			},
+			defaultDate: today,
+			navLinks: true, // can click day/week names to navigate views
+			selectable: true,
+			selectHelper: true,
+			/*select: function(start, end) {
+				var title = prompt('Event Title:');
+				var eventData;
+				if (title) {
+					eventData = {
+						title: title,
+						start: start,
+						end: end
+					};
+					$('#cek_in_{$acak}').fullCalendar('renderEvent', eventData, true); // stick? = true
+				}
+				$('#cek_in_{$acak}').fullCalendar('unselect');
+			},
+			*/
+			editable: true,
+			
+			eventLimit: true, // allow "more" link when too many events
+			events: data_kalender,
+			/*[
+				{
+					title: 'All Day Event',
+					start: '2016-09-01'
+				},
+				{
+					title: 'Long Event',
+					start: '2016-09-07',
+					end: '2016-09-10'
+				},
+				
+			],*/
+			eventClick: function(calEvent, jsEvent, view) {
+				console.log(calEvent.title);
+				/*alert('Event: ' + calEvent.title);
+				alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+				alert('View: ' + view.name);
+
+				// change the border color just for fun
+				$(this).css('border-color', 'red');
+				*/
+
+			}
+    })
 }

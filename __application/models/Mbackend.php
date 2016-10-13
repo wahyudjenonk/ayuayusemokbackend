@@ -12,6 +12,42 @@ class Mbackend extends CI_Model{
 				$where .=" AND ".$this->input->post('kat')." like '%".$this->db->escape_str($this->input->post('key'))."%'";
 		}
 		switch($type){
+			case "data_inv":
+				$id_trans=$this->input->post('id_trans');
+				$id_detil=$this->input->post('id_detil');
+				$data_inv=$this->db->get_where('tbl_transaction_package',array('id'=>$this->input->post('id_trans')))->row_array();
+				return $data_inv;
+			break;
+			case "kalender_reservasi":
+				$id_trans=$this->input->post('id_trans');
+				$id_detil=$this->input->post('id_detil');
+				$data_inv=$this->db->get_where('tbl_transaction_package',array('id'=>$this->input->post('id_trans')))->row_array();
+				$data_reser=$this->db->get_where('tbl_reservation',
+							array('tbl_transaction_package_id'=>$id_trans,
+								  'tbl_package_header_id'=>$data_inv['tbl_package_header_id'],
+								  'tbl_package_detil_id'=>$id_detil
+				))->result_array();
+				$js=array();
+				if(count($data_reser)>0){
+					foreach($data_reser as $v){
+						$js[]=array('title'=>$v['costumer_name'],'start'=>$v['check_in_date'],'end'=>$v['check_out_date']);
+					}
+				}
+				echo json_encode($js);exit;
+			break;
+			case "data_reservasi":
+				$data_inv=$this->db->get_where('tbl_transaction_package',array('id'=>$this->input->post('id')))->row_array();
+				$sql="SELECT A.*,D.services_name 
+						FROM tbl_package_detil A
+						LEFT JOIN tbl_package_header B ON A.tbl_package_header_id=B.id
+						LEFT JOIN tbl_transaction_package C ON C.tbl_package_header_id=B.id
+						LEFT JOIN tbl_services D ON A.tbl_services_id=D.id
+						WHERE C.id=".$this->input->post('id')." 
+						AND B.id=".$data_inv['tbl_package_header_id']."
+						AND D.flag_sum='N'";
+				$data=array('data_inv'=>$data_inv,'paket'=>$this->db->query($sql)->result_array());		
+				return $data;
+			break;
 			case "d_penjualan_inde":
 				$sql="SELECT SUM(grand_total)as total,date(date_invoice) as tgl
 						FROM tbl_header_transaction 
@@ -612,7 +648,9 @@ class Mbackend extends CI_Model{
 		}
 		
 		switch($table){
-			
+			case "reservation":
+				$table="tbl_reservation";
+			break;
 			case "planning":
 			case "planning_package":
 				if($table=='planning_package')$table='tbl_execution_transaction_package';
