@@ -1368,9 +1368,13 @@ function get_form(mod,sts,id,par1,par2){
 			//param['services_id']=par1;
 			width_na=800;
 			height_na=550;
-			param['id_detil']=par1;
-			param['id_trans']=id;
-			param['id_pack_header']=par2;
+			if(sts=='add'){
+				param['id_detil']=par1;
+				param['id_trans']=id;
+				param['id_pack_header']=par2;
+			}else{
+				param['id']=id;
+			}
 		break;
 	}
 	if(sts=='delete'){
@@ -1551,7 +1555,12 @@ function gen_kalender(id_div,height,data_kalender){
 				
 			],*/
 			eventClick: function(calEvent, jsEvent, view) {
-				console.log(calEvent.title);
+				console.log(calEvent);
+				get_form('reservation','edit',calEvent.id_na);
+				//console.log(jsEvent);
+				//console.log(view);
+				//console.log(calEvent.title);
+				
 				/*alert('Event: ' + calEvent.title);
 				alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
 				alert('View: ' + view.name);

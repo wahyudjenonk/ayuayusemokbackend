@@ -11,6 +11,50 @@ class Mjingga_api extends CI_Model{
 		$msg=array();
 		$where =" WHERE 1=1 ";
 		switch($type){
+			case "listing_reservation":
+				$data_inv=$this->db->get_where('tbl_transaction_package',array('id'=>$this->input->post('id_transaction')))->row_array();
+				$sql="SELECT A.*,D.services_name as listing_name
+						FROM tbl_package_detil A
+						LEFT JOIN tbl_package_header B ON A.tbl_package_header_id=B.id
+						LEFT JOIN tbl_transaction_package C ON C.tbl_package_header_id=B.id
+						LEFT JOIN tbl_services D ON A.tbl_services_id=D.id
+						WHERE C.id=".$this->input->post('id_transaction')." 
+						AND B.id=".$data_inv['tbl_package_header_id']."
+						AND D.flag_sum='N'";
+				$listing=$this->db->query($sql)->result_array();
+				$data=array();
+				if(count($listing)>0){
+					$data['listing']=array();
+					$idx=0;
+					foreach($listing as $v){
+						$data['listing'][$idx]['name']=$v['listing_name'];
+						$data_reser=$this->db->get_where('tbl_reservation',
+							array('tbl_transaction_package_id'=>$this->input->post('id_transaction'),
+								  'tbl_package_header_id'=>$v['tbl_package_header_id'],
+								  'tbl_package_detil_id'=>$v['id']
+						))->result_array();
+						if(count($data_reser)>0){
+							$data['listing'][$idx]['data_reservasi']=$data_reser;
+						}
+						$idx++;
+					}
+				}
+				
+				return array('msg'=>'sukses','data'=>$data); 
+			break;
+			case "listing_property":
+				$sql="SELECT E.apartment_name,A.id as id_transaction,A.tbl_package_header_id,A.start_date,A.end_date,
+						A.rental_price,A.rental_price_monthly
+						FROM tbl_transaction_package A
+						LEFT JOIN cl_method_payment B ON A.cl_method_payment_id=B.id
+						LEFT JOIN tbl_member C ON A.tbl_member_user=C.member_user
+						LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id 
+						LEFT JOIN tbl_unit_member E ON A.tbl_unit_member_id=E.id
+						LEFT JOIN tbl_package_header F ON A.tbl_package_header_id=F.id
+					WHERE A.tbl_member_user='".$this->input->post('member_user')."'";
+				$data=$this->db->query($sql)->result_array();
+				return array('msg'=>'sukses','data'=>$data);
+			break;
 			case "profile":
 				$sql="SELECT CONCAT(B.title,' ',B.owner_name_first,' ',B.owner_name_last)as name,B.*,A.member_user,A.pwd
 					FROM tbl_member A
@@ -354,6 +398,7 @@ class Mjingga_api extends CI_Model{
 			break;
 			case "invoice_package":
 				$table='tbl_transaction_package';
+				//return array($_POST);
 				/*if(isset($data['listing_data'])){
 					$data_listing=$data['listing_data'];
 					unset($data['listing_data']);

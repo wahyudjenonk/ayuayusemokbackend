@@ -12,6 +12,13 @@ class Mbackend extends CI_Model{
 				$where .=" AND ".$this->input->post('kat')." like '%".$this->db->escape_str($this->input->post('key'))."%'";
 		}
 		switch($type){
+			case "reservation":
+				$sql="SELECT * FROM tbl_reservation 
+					 WHERE id=".$this->input->post('id'); 
+					
+				//echo $sql;
+				return $this->db->query($sql)->row_array();
+			break;
 			case "data_inv":
 				$id_trans=$this->input->post('id_trans');
 				$id_detil=$this->input->post('id_detil');
@@ -30,7 +37,14 @@ class Mbackend extends CI_Model{
 				$js=array();
 				if(count($data_reser)>0){
 					foreach($data_reser as $v){
-						$js[]=array('title'=>$v['costumer_name'],'start'=>$v['check_in_date'],'end'=>$v['check_out_date']);
+						$js[]=array('title'=>$v['costumer_name'],
+									'start'=>$v['check_in_date'],
+									'end'=>$v['check_out_date'],
+									'id_trans'=>$v['tbl_transaction_package_id'],
+									'id_pack_header'=>$v['tbl_package_header_id'],
+									'id_detil'=>$v['tbl_package_detil_id'],
+									'id_na'=>$v['id'],
+									);
 					}
 				}
 				echo json_encode($js);exit;

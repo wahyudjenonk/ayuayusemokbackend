@@ -1,4 +1,4 @@
-{if $mod eq 'registration' || $mod eq 'member' || $mod eq 'property' || $mod eq 'invoice' || $mod eq 'planning' || $mod eq 'planning_package' || $mod eq 'planning_package_own' || $mod eq 'confirm_independent' || $mod eq 'confirm_package'}
+{if $mod eq 'registration' || $mod eq 'member' || $mod eq 'property' || $mod eq 'invoice' || $mod eq 'planning' || $mod eq 'planning_package' || $mod eq 'planning_package_own' || $mod eq 'confirm_independent' || $mod eq 'confirm_package' || $mod eq 'reservation'}
 	{include file="backend/template/grid.html" main={$mod} button="false" table={$table|default:''} filter_core="true"}
 {else if $mod eq 'services'}
 	{include file="backend/template/grid.html" main={$mod} button="false" button_tree="true" table={$table|default:''} filter_core="false"}

@@ -2,7 +2,7 @@
 		<div style="width:100%">
 			<form id="form_{$acak}" method="post" url="{$host}backoffice-simpan/reservation/{$sts}">
 			<input type="hidden" id="editStatus_{$acak}" name="editstatus" value="{$sts}">
-			<input type="hidden" id="id_{$acak}" name="id" value="{$id|default:''}">
+			<input type="hidden" id="id_{$acak}" name="id" value="{$data.id|default:''}">
 			<input type="hidden" id="tbl_transaction_package_id{$acak}" name="tbl_transaction_package_id" value="{$tbl_transaction_package_id|default:''}">
 			<input type="hidden" id="tbl_package_header_id{$acak}" name="tbl_package_header_id" value="{$tbl_package_header_id|default:''}">
 			<input type="hidden" id="tbl_package_detil_id{$acak}" name="tbl_package_detil_id" value="{$tbl_package_detil_id|default:''}">
@@ -21,7 +21,10 @@
 		</div>
 		<div style="width:100%">
 			{* {include file="backend/template/button_save.html" text="Send Notification To Activation" id_na="simpan" btn_goyz="true" } *}
-			{include file="backend/template/button_save.html" text="Save Reservation" id_na="save" style_btn="btn-danger"  btn_goyz="true"}
+			{include file="backend/template/button_save.html" text="Save Reservation" id_na="save" style_btn="btn-success"  btn_goyz="true"}
+			{if $sts eq 'edit'}
+			{include file="backend/template/button_save.html" text="Delete Reservation" id_na="hapus" style_btn="btn-danger"  btn_goyz="true"}
+			{/if}
 		</div>
 	</fieldset>
 
@@ -29,7 +32,7 @@
 <script>
 	$(".validasi").validatebox({ required:true }); 
 	$(".tgl").datebox({ formatter: formatDate,parser:myparser  }); 
-	$('.tgl').datebox('setValue',today);
+	{if $sts eq 'add'}$('.tgl').datebox('setValue',today);{/if}
 	$(".angka").numberbox(); 
 	$('#save_{$acak}').bind('click',function(){
 		if ($('#form_{$acak}').form('validate')){
@@ -46,5 +49,20 @@
 		}else{
 			$.messager.alert('Homtel Back-Office',"Isi Data Yang Kosong ",'info');
 		}
+	});
+	$('#hapus_{$acak}').bind('click',function(){
+		$.messager.confirm('Homtel Backoffice','Are You Sure Delete This Data?',function(re){
+			if(re){
+				$.post(host+'backoffice-simpan/reservation/delete',{ id:{$data.id|default:0} },function(r){
+					if(r==1){
+						$.messager.alert('Homtel Back-Office',"Data Was Deleted ",'info');
+						get_kalender({$tbl_transaction_package_id|default:0},{$tbl_package_detil_id|default:0},acak_kalender);
+						closeWindow();
+					}else{
+						$.messager.alert('Homtel Back-Office',"Failed Deleted ",'error');
+					}
+				});
+				}
+		});
 	});
 </script>

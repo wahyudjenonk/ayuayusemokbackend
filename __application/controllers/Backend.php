@@ -275,12 +275,16 @@ class Backend extends JINGGA_Controller {
 		switch($mod){
 			case "reservation":
 				if($sts=='edit'){
-					$data=$this->mbackend->getdata('planning','get');
+					$data=$this->mbackend->getdata('reservation','get');
 					$this->nsmarty->assign('data',$data);
+					$this->nsmarty->assign('tbl_transaction_package_id',$data['tbl_transaction_package_id']);
+					$this->nsmarty->assign('tbl_package_detil_id',$data['tbl_package_detil_id']);
+					$this->nsmarty->assign('tbl_package_header_id',$data['tbl_package_header_id']);
+				}else{
+					$this->nsmarty->assign('tbl_transaction_package_id',$this->input->post("id_trans"));
+					$this->nsmarty->assign('tbl_package_detil_id',$this->input->post("id_detil"));
+					$this->nsmarty->assign('tbl_package_header_id',$this->input->post("id_pack_header"));
 				}
-				$this->nsmarty->assign('tbl_transaction_package_id',$this->input->post("id_trans"));
-				$this->nsmarty->assign('tbl_package_detil_id',$this->input->post("id_detil"));
-				$this->nsmarty->assign('tbl_package_header_id',$this->input->post("id_pack_header"));
 			break;
 			case "services":
 				if($sts!='add_new'){
