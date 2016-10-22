@@ -11,35 +11,42 @@ class Mjingga_api extends CI_Model{
 		$msg=array();
 		$where =" WHERE 1=1 ";
 		switch($type){
+			case "reservation":
+				$sql="SELECT * FROM tbl_reservation WHERE id=".$this->input->post('id_reservasi');
+				$data=$this->db->query($sql)->row_array();
+				return array('msg'=>'sukses','data'=>$data); 
+			break;
 			case "listing_reservation":
-				$data_inv=$this->db->get_where('tbl_transaction_package',array('id'=>$this->input->post('id_transaction')))->row_array();
-				$sql="SELECT A.*,D.services_name as listing_name
-						FROM tbl_package_detil A
-						LEFT JOIN tbl_package_header B ON A.tbl_package_header_id=B.id
-						LEFT JOIN tbl_transaction_package C ON C.tbl_package_header_id=B.id
-						LEFT JOIN tbl_services D ON A.tbl_services_id=D.id
-						WHERE C.id=".$this->input->post('id_transaction')." 
-						AND B.id=".$data_inv['tbl_package_header_id']."
-						AND D.flag_sum='N'";
-				$listing=$this->db->query($sql)->result_array();
 				$data=array();
-				if(count($listing)>0){
-					$data['listing']=array();
-					$idx=0;
-					foreach($listing as $v){
-						$data['listing'][$idx]['name']=$v['listing_name'];
-						$data_reser=$this->db->get_where('tbl_reservation',
-							array('tbl_transaction_package_id'=>$this->input->post('id_transaction'),
-								  'tbl_package_header_id'=>$v['tbl_package_header_id'],
-								  'tbl_package_detil_id'=>$v['id']
-						))->result_array();
-						if(count($data_reser)>0){
-							$data['listing'][$idx]['data_reservasi']=$data_reser;
+				$data_inv=$this->db->get_where('tbl_transaction_package',array('id'=>$this->input->post('id_transaction')))->row_array();
+				if(isset($data_inv['tbl_package_header_id'])){
+					$sql="SELECT A.*,D.services_name as listing_name
+							FROM tbl_package_detil A
+							LEFT JOIN tbl_package_header B ON A.tbl_package_header_id=B.id
+							LEFT JOIN tbl_transaction_package C ON C.tbl_package_header_id=B.id
+							LEFT JOIN tbl_services D ON A.tbl_services_id=D.id
+							WHERE C.id=".$this->input->post('id_transaction')." 
+							AND B.id=".$data_inv['tbl_package_header_id']."
+							AND D.flag_sum='N'";
+					$listing=$this->db->query($sql)->result_array();
+					
+					if(count($listing)>0){
+						$data['listing']=array();
+						$idx=0;
+						foreach($listing as $v){
+							$data['listing'][$idx]['name']=$v['listing_name'];
+							$data_reser=$this->db->get_where('tbl_reservation',
+								array('tbl_transaction_package_id'=>$this->input->post('id_transaction'),
+									  'tbl_package_header_id'=>$v['tbl_package_header_id'],
+									  'tbl_package_detil_id'=>$v['id']
+							))->result_array();
+							if(count($data_reser)>0){
+								$data['listing'][$idx]['data_reservasi']=$data_reser;
+							}
+							$idx++;
 						}
-						$idx++;
 					}
 				}
-				
 				return array('msg'=>'sukses','data'=>$data); 
 			break;
 			case "listing_property":
@@ -370,6 +377,27 @@ class Mjingga_api extends CI_Model{
 		}
 		
 		switch($table){
+			case "konfirmasi":
+				$table="tbl_payment_confirm";
+				$sql="SELECT A.*,B.no_invoice FROM tbl_payment_confirm A 
+						LEFT JOIN tbl_header_transaction B ON A.tbl_transaction_id=B.id 
+						WHERE B.no_invoice='".$data['no_invoice']."'";
+				$ex_konf=$this->db->query($sql)->row_array();
+				if(isset($ex_konf['id'])){
+					return array('msg'=>'Gagal','Pesan'=>'Konfirmation Was Exist With No Invoice : '.$data['no_invoice']);
+				}else{
+					$sql="SELECT * FROM tbl_header_transaction WHERE no_invoice='".$data['no_invoice']."'";
+					$ex=$this->db->query($sql)->row_array();
+					if(isset($ex['no_invoice'])){
+						unset ($data['no_invoice']);
+						$data['tbl_transaction_id']=$ex['id'];
+						$data['flag']='P';
+					}else{
+						return array('msg'=>'Gagal','Pesan'=>'No Invoice Is Not Valid');
+					}
+				}
+			break;
+			
 			case "profil":
 				$table="tbl_registration";
 			break;
