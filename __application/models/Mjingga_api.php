@@ -72,6 +72,7 @@ class Mjingga_api extends CI_Model{
 			break;
 			case "package":
 				$data=array();
+				$where .=" AND tbl_services_id=".$this->input->post('services_id');
 				if($balikan=='detil'){$where .=" AND id=".$this->input->post('id');}
 				$sql="SELECT * FROM tbl_package_header ".$where." AND flag='F'";
 				$data['paket']=$this->db->query($sql)->result_array();
@@ -377,6 +378,9 @@ class Mjingga_api extends CI_Model{
 		}
 		
 		switch($table){
+			case "seting_reservasi":
+				$table="tbl_seting_reservation";
+			break;
 			case "konfirmasi":
 				$table="tbl_payment_confirm";
 				$sql="SELECT A.*,B.no_invoice FROM tbl_payment_confirm A 

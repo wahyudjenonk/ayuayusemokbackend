@@ -1512,18 +1512,23 @@ function get_kalender(id_trans,id_detil,acak){
 		$('#isi_tab_'+acak).removeClass('loading').html(r);
 	});
 }
-function gen_kalender(id_div,height,data_kalender){
+function gen_kalender(id_div,height,data_kalender,mulai){
 	$('#'+id_div).fullCalendar({
 		height: height,
         header: {
 				left: 'prev,next today',
 				center: 'title',
-				right: 'month'
+				right: 'month,listMonth'
 			},
-			defaultDate: today,
+			
+			defaultDate: mulai,
 			navLinks: true, // can click day/week names to navigate views
 			selectable: true,
 			selectHelper: true,
+			/*views: {
+				listDay: { buttonText: 'list day' },
+				listWeek: { buttonText: 'list week' }
+			},*/
 			/*select: function(start, end) {
 				var title = prompt('Event Title:');
 				var eventData;
@@ -1533,30 +1538,22 @@ function gen_kalender(id_div,height,data_kalender){
 						start: start,
 						end: end
 					};
-					$('#cek_in_{$acak}').fullCalendar('renderEvent', eventData, true); // stick? = true
+					//$('#cek_in_{$acak}').fullCalendar('renderEvent', eventData, true); // stick? = true
 				}
-				$('#cek_in_{$acak}').fullCalendar('unselect');
+				//$('#cek_in_{$acak}').fullCalendar('unselect');
 			},
 			*/
 			editable: true,
 			
 			eventLimit: true, // allow "more" link when too many events
 			events: data_kalender,
-			/*[
-				{
-					title: 'All Day Event',
-					start: '2016-09-01'
-				},
-				{
-					title: 'Long Event',
-					start: '2016-09-07',
-					end: '2016-09-10'
-				},
-				
-			],*/
 			eventClick: function(calEvent, jsEvent, view) {
 				console.log(calEvent);
-				get_form('reservation','edit',calEvent.id_na);
+				if(calEvent.flag_set=='on'){
+					get_form('reservation','edit',calEvent.id_na);
+				}else{
+					$.messager.alert('Homtel Back-Office','Not For Sale','info');
+				}
 				//console.log(jsEvent);
 				//console.log(view);
 				//console.log(calEvent.title);

@@ -28,6 +28,6 @@
 	$.post(host+'backoffice-Data/{$mod}',{ 'id_detil':{$id_detil},'id_trans':{$id_trans} },function(r){
 		var js=JSON.parse(r);
 		console.log(js);
-		gen_kalender('kalender_{$acak}',380,js);
+		gen_kalender('kalender_{$acak}',300,js,"{$data.start_date|default:'-'}");
 	});
 </script>

@@ -44,9 +44,31 @@ class Mbackend extends CI_Model{
 									'id_pack_header'=>$v['tbl_package_header_id'],
 									'id_detil'=>$v['tbl_package_detil_id'],
 									'id_na'=>$v['id'],
+									'flag_set'=>'on'
 									);
 					}
 				}
+				$data_set_reser=$this->db->get_where('tbl_seting_reservation',
+							array('tbl_transaction_package_id'=>$id_trans,
+								  'tbl_package_header_id'=>$data_inv['tbl_package_header_id'],
+								  'tbl_package_detil_id'=>$id_detil
+				))->result_array();
+				if(count($data_set_reser)>0){
+					foreach($data_set_reser as $v){
+						$js[]=array('title'=>'Not For Sale',
+									'start'=>$v['start_date'],
+									'end'=>$v['end_date'],
+									'overlap'=> false,
+									'id_trans'=>$v['tbl_transaction_package_id'],
+									'id_pack_header'=>$v['tbl_package_header_id'],
+									'id_detil'=>$v['tbl_package_detil_id'],
+									'id_na'=>$v['id'],
+									'color'=>'red',
+									'flag_set'=>'off'
+									);
+					}
+				}
+				
 				echo json_encode($js);exit;
 			break;
 			case "data_reservasi":
