@@ -11,10 +11,72 @@ class Mjingga_api extends CI_Model{
 		$msg=array();
 		$where =" WHERE 1=1 ";
 		switch($type){
+			case "property_all":
+				$sql="SELECT id,apartment_name FROM tbl_unit_member WHERE tbl_member_user='".$this->input->post('member_user')."'";
+				$data=$this->db->query($sql)->result_array();
+				//return array('msg'=>'sukses','data'=>$data); 
+				if(count($data)>0){
+					$i=0;
+					foreach($data as $v){
+						$data[$i]['services_name']='-';
+						$data[$i]['start_date']='-';
+						$data[$i]['end_date']='-';
+						$data[$i]['id_transaction']='-';
+						$data[$i]['flag_trans']='-';
+						$sql="SELECT A.id,A.tbl_unit_member_id,B.apartment_name,'Independent' as services_name,'-' as start_date,'-' as end_date
+								FROM tbl_header_transaction A
+								LEFT JOIN tbl_unit_member B ON A.tbl_unit_member_id=B.id
+								WHERE A.tbl_member_user='".$this->input->post('member_user')."'
+								AND A.tbl_unit_member_id=".$v['id']."
+								GROUP BY A.tbl_unit_member_id,B.apartment_name";
+						$inde=$this->db->query($sql)->row_array();
+						if(isset($inde['tbl_unit_member_id'])){
+							$data[$i]['services_name']='Independent';
+							$data[$i]['start_date']='-';
+							$data[$i]['end_date']='-';
+							$data[$i]['id_transaction']=$inde['id'];
+							$data[$i]['flag_trans']='INDEPENDENT';
+						}
+						$sql="SELECT A.id,A.tbl_unit_member_id,B.apartment_name,D.services_name,A.start_date,A.end_date
+								FROM tbl_transaction_package A
+								LEFT JOIN tbl_unit_member B ON A.tbl_unit_member_id=B.id
+								LEFT JOIN tbl_package_header C ON A.tbl_package_header_id=C.id
+								LEFT JOIN tbl_services D ON C.tbl_services_id=D.id
+								WHERE A.tbl_member_user='".$this->input->post('member_user')."'
+								AND A.tbl_unit_member_id=".$v['id']."
+								GROUP BY A.tbl_unit_member_id,B.apartment_name ";
+						$pkt=$this->db->query($sql)->row_array();
+						if(isset($pkt['tbl_unit_member_id'])){
+							$data[$i]['services_name']=$pkt['services_name'];
+							$data[$i]['start_date']=$pkt['start_date'];
+							$data[$i]['end_date']=$pkt['end_date'];
+							$data[$i]['id_transaction']=$pkt['id'];
+							$data[$i]['flag_trans']='PAKET';
+						}
+						
+						
+						$i++;
+					}
+				}
+				return array('msg'=>'sukses','data'=>$data);
+			break;
 			case "reservation":
 				$sql="SELECT * FROM tbl_reservation WHERE id=".$this->input->post('id_reservasi');
 				$data=$this->db->query($sql)->row_array();
 				return array('msg'=>'sukses','data'=>$data); 
+			break;
+			case "non_listing_property":
+				$sql="SELECT E.apartment_name,A.id as id_transaction,A.tbl_package_header_id,A.start_date,A.end_date,
+						A.rental_price,A.rental_price_monthly
+						FROM tbl_transaction_package A
+						LEFT JOIN cl_method_payment B ON A.cl_method_payment_id=B.id
+						LEFT JOIN tbl_member C ON A.tbl_member_user=C.member_user
+						LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id 
+						LEFT JOIN tbl_unit_member E ON A.tbl_unit_member_id=E.id
+						LEFT JOIN tbl_package_header F ON A.tbl_package_header_id=F.id
+					WHERE A.tbl_member_user='".$this->input->post('member_user')."'";
+				$data=$this->db->query($sql)->result_array();
+				return array('msg'=>'sukses','data'=>$data);
 			break;
 			case "listing_reservation":
 				$data=array();
