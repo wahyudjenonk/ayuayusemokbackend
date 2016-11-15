@@ -31,7 +31,7 @@ class Mjingga_api extends CI_Model{
 								GROUP BY A.tbl_unit_member_id,B.apartment_name";
 						$inde=$this->db->query($sql)->row_array();
 						if(isset($inde['tbl_unit_member_id'])){
-							$data[$i]['services_name']='Independent';
+							$data[$i]['services_name']='Pre Hosting';
 							$data[$i]['start_date']='-';
 							$data[$i]['end_date']='-';
 							$data[$i]['id_transaction']=$inde['id'];
@@ -96,6 +96,7 @@ class Mjingga_api extends CI_Model{
 						$data['listing']=array();
 						$idx=0;
 						foreach($listing as $v){
+							$data['listing'][$idx]['idx']=$v['id'];
 							$data['listing'][$idx]['name']=$v['listing_name'];
 							$data_reser=$this->db->get_where('tbl_reservation',
 								array('tbl_transaction_package_id'=>$this->input->post('id_transaction'),
@@ -134,8 +135,8 @@ class Mjingga_api extends CI_Model{
 			break;
 			case "package":
 				$data=array();
-				$where .=" AND tbl_services_id=".$this->input->post('services_id');
 				if($balikan=='detil'){$where .=" AND id=".$this->input->post('id');}
+				else $where .=" AND tbl_services_id=".$this->input->post('services_id');
 				$sql="SELECT * FROM tbl_package_header ".$where." AND flag='F'";
 				$data['paket']=$this->db->query($sql)->result_array();
 				if($balikan=='detil'){
@@ -458,6 +459,7 @@ class Mjingga_api extends CI_Model{
 						unset ($data['no_invoice']);
 						$data['tbl_transaction_id']=$ex['id'];
 						$data['flag']='P';
+						$data['flag_transaction']='I';
 					}else{
 						return array('msg'=>'Gagal','Pesan'=>'No Invoice Is Not Valid');
 					}
@@ -789,6 +791,7 @@ class Mjingga_api extends CI_Model{
 			break;
 			case "edit":
 				if($table=='tbl_unit_member'){
+					unset($data['flag']);
 					$this->db->update($table, $data, array('id' => $id) );
 					if(count($cl_compulsary_id)>0){
 						$this->db->delete('tbl_unit_compulsary_periodic_payment',array('tbl_unit_member_id'=>$id));
