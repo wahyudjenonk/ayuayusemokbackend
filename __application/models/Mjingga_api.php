@@ -11,6 +11,50 @@ class Mjingga_api extends CI_Model{
 		$msg=array();
 		$where =" WHERE 1=1 ";
 		switch($type){
+			case "property_service":
+				$data=array();
+					$sql="SELECT A.id,A.tbl_unit_member_id,B.apartment_name,'Independent' as services_name,'-' as start_date,'-' as end_date
+								FROM tbl_header_transaction A
+								LEFT JOIN tbl_unit_member B ON A.tbl_unit_member_id=B.id
+								WHERE A.tbl_member_user='".$this->input->post('member_user')."'
+								GROUP BY A.tbl_unit_member_id,B.apartment_name";
+						$inde=$this->db->query($sql)->result_array();
+						//return $sql;
+						if(count($inde)>0){
+							$i=0;
+							foreach($inde as $x){
+								$data[$i]['unit_name']=$x['apartment_name'];
+								$data[$i]['services_name']='Pre Hosting';
+								$data[$i]['start_date']='-';
+								$data[$i]['end_date']='-';
+								$data[$i]['id_transaction']=$x['id'];
+								$data[$i]['flag_trans']='INDEPENDENT';
+								$i++;
+							}
+													}
+						$sql="SELECT A.id,A.tbl_unit_member_id,B.apartment_name,D.services_name,A.start_date,A.end_date
+								FROM tbl_transaction_package A
+								LEFT JOIN tbl_unit_member B ON A.tbl_unit_member_id=B.id
+								LEFT JOIN tbl_package_header C ON A.tbl_package_header_id=C.id
+								LEFT JOIN tbl_services D ON C.tbl_services_id=D.id
+								WHERE A.tbl_member_user='".$this->input->post('member_user')."'
+								
+								GROUP BY A.tbl_unit_member_id,B.apartment_name ";
+						$pkt=$this->db->query($sql)->result_array();
+						if(count($pkt)>0){
+							$x=count($inde);
+							foreach($pkt as $y){
+								$data[$x]['unit_name']=$y['apartment_name'];
+								$data[$x]['services_name']=$y['services_name'];
+								$data[$x]['start_date']=$y['start_date'];
+								$data[$x]['end_date']=$y['end_date'];
+								$data[$i]['id_transaction']=$y['id'];
+								$data[$x]['flag_trans']='PAKET';
+								$x++;
+							}
+						}
+				return array('msg'=>'sukses','data'=>$data);
+			break;
 			case "property_all":
 				$sql="SELECT id,apartment_name FROM tbl_unit_member WHERE tbl_member_user='".$this->input->post('member_user')."'";
 				$data=$this->db->query($sql)->result_array();
@@ -19,10 +63,11 @@ class Mjingga_api extends CI_Model{
 					$i=0;
 					foreach($data as $v){
 						$data[$i]['services_name']='-';
-						$data[$i]['start_date']='-';
-						$data[$i]['end_date']='-';
+						//$data[$i]['start_date']='-';
+						//$data[$i]['end_date']='-';
 						$data[$i]['id_transaction']='-';
-						$data[$i]['flag_trans']='-';
+						$data[$i]['status']='No Service';
+						//$data[$i]['flag_trans']='-';
 						$sql="SELECT A.id,A.tbl_unit_member_id,B.apartment_name,'Independent' as services_name,'-' as start_date,'-' as end_date
 								FROM tbl_header_transaction A
 								LEFT JOIN tbl_unit_member B ON A.tbl_unit_member_id=B.id
@@ -32,10 +77,11 @@ class Mjingga_api extends CI_Model{
 						$inde=$this->db->query($sql)->row_array();
 						if(isset($inde['tbl_unit_member_id'])){
 							$data[$i]['services_name']='Pre Hosting';
-							$data[$i]['start_date']='-';
-							$data[$i]['end_date']='-';
+							//$data[$i]['start_date']='-';
+							//$data[$i]['end_date']='-';
 							$data[$i]['id_transaction']=$inde['id'];
-							$data[$i]['flag_trans']='INDEPENDENT';
+							$data[$i]['status']='On Service';
+							//$data[$i]['flag_trans']='INDEPENDENT';
 						}
 						$sql="SELECT A.id,A.tbl_unit_member_id,B.apartment_name,D.services_name,A.start_date,A.end_date
 								FROM tbl_transaction_package A
@@ -48,10 +94,11 @@ class Mjingga_api extends CI_Model{
 						$pkt=$this->db->query($sql)->row_array();
 						if(isset($pkt['tbl_unit_member_id'])){
 							$data[$i]['services_name']=$pkt['services_name'];
-							$data[$i]['start_date']=$pkt['start_date'];
-							$data[$i]['end_date']=$pkt['end_date'];
+							//$data[$i]['start_date']=$pkt['start_date'];
+							//$data[$i]['end_date']=$pkt['end_date'];
+							$data[$i]['status']='On Service';
 							$data[$i]['id_transaction']=$pkt['id'];
-							$data[$i]['flag_trans']='PAKET';
+							//$data[$i]['flag_trans']='PAKET';
 						}
 						
 						
