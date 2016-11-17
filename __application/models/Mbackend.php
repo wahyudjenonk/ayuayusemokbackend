@@ -8,10 +8,22 @@ class Mbackend extends CI_Model{
 	
 	function getdata($type="", $balikan="", $p1="", $p2="",$p3="",$p4=""){
 		$where = " WHERE 1=1 ";
-		if($this->input->post('key')){
+		if($this->input->post('kat')){
 				$where .=" AND ".$this->input->post('kat')." like '%".$this->db->escape_str($this->input->post('key'))."%'";
 		}
 		switch($type){
+			case "reservation_data":
+				if($this->input->post('key'))$where .=" AND A.costumer_name like '%".$this->input->post('key')."%' ";
+				$sql="SELECT A.*,
+						CONCAT(A.reservation_start_date,' to ',A.reservation_end_date)as reservation_date,
+						CONCAT(A.confirm_start_date,' to ',A.confirm_end_date)as confirm_date,
+						CONCAT(A.check_in_date,' to ',A.check_out_date)as checkin_date
+						FROM tbl_reservation A 
+						".$where." 
+						AND tbl_transaction_package_id=".$this->input->post('id_trans')." 
+						AND tbl_package_header_id=".$this->input->post('id_paket')." 
+						AND tbl_package_detil_id=".$this->input->post('id_detil');
+			break;
 			case "reservation":
 				$sql="SELECT * FROM tbl_reservation 
 					 WHERE id=".$this->input->post('id'); 
@@ -29,21 +41,40 @@ class Mbackend extends CI_Model{
 				$id_trans=$this->input->post('id_trans');
 				$id_detil=$this->input->post('id_detil');
 				$data_inv=$this->db->get_where('tbl_transaction_package',array('id'=>$this->input->post('id_trans')))->row_array();
-				$data_reser=$this->db->get_where('tbl_reservation',
-							array('tbl_transaction_package_id'=>$id_trans,
-								  'tbl_package_header_id'=>$data_inv['tbl_package_header_id'],
-								  'tbl_package_detil_id'=>$id_detil
-				))->result_array();
+				$sql="SELECT * FROM tbl_reservation 
+				WHERE tbl_transaction_package_id=".$id_trans." 
+				AND tbl_package_header_id=".$data_inv['tbl_package_header_id']." 
+				AND tbl_package_detil_id=".$id_detil." 
+				AND flag <> 'C'";
+				$data_reser=$this->db->query($sql)->result_array();
 				$js=array();
 				if(count($data_reser)>0){
 					foreach($data_reser as $v){
+						if($v['flag']=='R'){
+							$start=$v['reservation_start_date'];
+							$end=$v['reservation_end_date'];
+							$warna='#91C57A';
+						}else if($v['flag']=='CN'){
+							$start=$v['confirm_start_date'];
+							$end=$v['confirm_end_date'];
+							$warna='#F7F442';
+						}else if($v['flag']=='CI'){
+							$start=$v['confirm_start_date'];
+							$end=$v['confirm_end_date'];
+							$warna='#0C19CE';
+						}else{
+							$start=$v['check_in_date'];
+							$end=$v['check_out_date'];
+							$warna='#4F7DFF';
+						}
 						$js[]=array('title'=>$v['costumer_name'],
-									'start'=>$v['check_in_date'],
-									'end'=>$v['check_out_date'],
+									'start'=>$start,
+									'end'=>$end,
 									'id_trans'=>$v['tbl_transaction_package_id'],
 									'id_pack_header'=>$v['tbl_package_header_id'],
 									'id_detil'=>$v['tbl_package_detil_id'],
 									'id_na'=>$v['id'],
+									'color'=>$warna,
 									'flag_set'=>'on'
 									);
 					}
@@ -764,6 +795,10 @@ class Mbackend extends CI_Model{
 		$id=$data['id'];
 		unset($data['id']);
 		switch($p1){
+			case "reservasi":
+				$table="tbl_reservation";
+				$data['cancel_date']=date('Y-m-d H:i:s');
+			break;
 			case "confirmation_pay":
 				$table="tbl_payment_confirm";
 				$sql="SELECT B.id as id_invoice

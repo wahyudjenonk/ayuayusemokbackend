@@ -219,10 +219,10 @@ function getClientWidth(){
 
 function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 	if(lebarnya == undefined){
-		lebarnya = getClientWidth-250;
+		lebarnya = getClientWidth()-250;
 	}
 	if(tingginya == undefined){
-		tingginya = getClientHeight-300
+		tingginya = getClientHeight()-300
 	}
 
 	var kolom ={};
@@ -240,8 +240,64 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 	var singleSelek = true;
 	var nowrap_nya = true;
 	var footer=false;
+	var row_number=true;
 	
 	switch(modnya){
+		case "reservasi_data":
+			judulnya = "Data Reservation";
+			urlnya = "reservation_data";
+			fitnya = true;
+			param=par1;
+			row_number=false;
+			urlglobal = host+'backoffice-Data/'+urlnya;
+			kolom[modnya] = [
+				{field:'flag',title:'Status',width:100, halign:'center',align:'center',
+					formatter:function(value,rowData,rowIndex){
+						if(rowData.flag=='R'){
+							return 'Reservation';
+						}else if(rowData.flag=='CN'){
+							return 'Confirmation';
+						}else if(rowData.flag=='CI'){
+							return 'Checkin';
+						}else if(rowData.flag=='C'){
+							return 'Cancel';
+						}
+						else{
+							return 'Checkout';
+						}
+					},
+					styler:function(value,rowData,rowIndex){
+						if(rowData.flag=='C'){return 'background:red;color:navy;'}
+					}
+				},
+				{field:'id',title:'Set',width:100, halign:'center',align:'center',
+					formatter:function(value,rowData,rowIndex){
+						var modnya="reservation";
+						var sts="edit";
+						if(rowData.flag=='R'){
+							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_form(\''+modnya+'\',\''+sts+'\',\''+rowData.id+'\')">Set Confirm</a>';
+						}else if(rowData.flag=='CN'){
+							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Set CheckIn</a>';
+						}else if(rowData.flag=='CI'){
+							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Set CheckOut</a>';
+						}else if(rowData.flag=='C'){
+							return 'Was Canceled';
+						}
+						else{
+							return 'Checkout';
+						}
+					},
+					styler:function(value,rowData,rowIndex){
+						if(rowData.flag=='C'){return 'background:red;color:navy;'}
+					}
+				},
+				{field:'costumer_name',title:'Costumer',width:150, halign:'center',align:'left'},
+				{field:'address',title:'Address',width:250, halign:'center',align:'left'},
+				{field:'reservation_date',title:'Reserv. Date',width:150, halign:'center',align:'center'},
+				{field:'confirm_date',title:'Confirm Date',width:150, halign:'center',align:'center'},
+				{field:'check_in_date',title:'Check In Date',width:150, halign:'center',align:'center'}
+			]
+		break;
 		case "cl_facility_unit":
 			judulnya = "";
 			urlnya = "cl_facility_unit";
@@ -464,6 +520,16 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 						
 					}
 				},
+				{field:'longi',title:'Verification',width:100, halign:'center',align:'center',
+					formatter:function(value,rowData,rowIndex){
+						if(rowData.flag=='F'){
+							return "<img src='"+host+"__assets/easyui/themes/icons/ok.png'";
+						}else{
+							return "<img src='"+host+"__assets/easyui/themes/icons/cancel.png'";
+						}
+						
+					}
+				},
 				{field:'nama',title:'Name',width:150, halign:'center',align:'left'},
 				{field:'apartment_name',title:'Apartment Name',width:200, halign:'center',align:'left'},
 				{field:'apartment_address',title:'Apartment Address',width:250, halign:'center',align:'left'},
@@ -641,7 +707,7 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 			title:judulnya,
 			height:tingginya,
 			width:lebarnya,
-			rownumbers:true,
+			rownumbers:row_number,
 			iconCls:'database',
 			fit:fitnya,
 			striped:true,
@@ -700,7 +766,7 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 			title:judulnya,
 			height:tingginya,
 			width:lebarnya,
-			rownumbers:true,
+			rownumbers:row_number,
 			iconCls:'database',
 			fit:fitnya,
 			striped:true,

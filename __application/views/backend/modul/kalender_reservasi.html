@@ -1,4 +1,4 @@
-<div class="row-fluid">
+{*<div class="row-fluid">
 	<div class="span6">
 		<table class="table table-hover">
 			<tr>
@@ -16,18 +16,67 @@
 		</table>
 		</div>
 </div>
+*}
+{*
 <div class="row-fluid">
 <center>
 {include file="backend/template/button_save.html" text="Add Reservasi" click="get_form('reservation','add',{$data.id},{$id_detil},{$data.tbl_package_header_id})" id_na="cancel" style_btn="btn-danger"  btn_goyz="true"}
 </center>
 </div>
-<div class="row-fluid">
-<div id="kalender_{$acak}"></div>
+*}
+<div id="acc_na_{$acak}" class="easyui-accordion" style="width:100%;">
+    <div title="Editing Data Reservation" data-options="iconCls:'icon-save'" style="padding:10px;">
+        <div style="height:350px;">
+			<div id='tb_reservasi_data' style="padding:5px;height:28px;">
+				<div style="float:left; width:50%;">
+					
+					<input type="text" name="key_{$acak}" id="key_{$acak}" style="width:40%;" placeholder="Find Costumer Name">
+					&nbsp;&nbsp;&nbsp;
+					<a href="javascript:void(0)" style='margin-top:-10px' id="cari_cus_{$acak}" class="l-btn l-btn-small l-btn-plain" group="" id="" >
+						<span class="l-btn-left l-btn-icon-left">
+							<span class="l-btn-text">Find</span><span class="l-btn-icon icon-search">&nbsp;</span>
+						</span>
+					</a>	
+				</div>
+				<a href="javascript:void(0)" style='float:right;' class="l-btn l-btn-small l-btn-plain" group="" id="" onClick="get_form('reservation','add',{$data.id},{$id_detil},{$data.tbl_package_header_id})">
+					<span class="l-btn-left l-btn-icon-left">
+						<span class="l-btn-text">Add Reservation</span><span class="l-btn-icon icon-add">&nbsp;</span>
+					</span>
+				</a>
+				
+			</div>
+			<div id="data_reservasi_{$acak}" ></div>
+		</div>
+    </div>
+    <div title="Calender Reservation" data-options="iconCls:'icon-calender', selected:true" style="padding:10px;">
+		<div >
+			<div id="kalender_{$acak}" ></div>
+		</div>
+    </div>
+</div>
+<div style="float:left;width:100%">
+	
+	
 </div>
 <script>
-	$.post(host+'backoffice-Data/{$mod}',{ 'id_detil':{$id_detil},'id_trans':{$id_trans} },function(r){
-		var js=JSON.parse(r);
-		console.log(js);
-		gen_kalender('kalender_{$acak}',300,js,"{$data.start_date|default:'-'}");
+	$('#acc_na_{$acak}').accordion({
+        animate:true
+    });
+	var param={};
+	param['id_paket']={$data.tbl_package_header_id};
+	param['id_detil']={$id_detil};
+	param['id_trans']={$id_trans};
+	var st=0;
+	$('#cari_cus_{$acak}').bind('click',function(){
+		param['key']=$('#key_{$acak}').val();
+		grid_nya.datagrid('reload',param);
 	});
+	$.post(host+'backoffice-Data/{$mod}',{ 'id_detil':{$id_detil},'id_trans':{$id_trans} },function(r){
+			var js=JSON.parse(r);
+			console.log(js);
+			gen_kalender('kalender_{$acak}',350,js,"{$data.start_date|default:'-'}");
+			
+	});
+	genGrid('reservasi_data', 'data_reservasi_{$acak}','',400,param);
+	
 </script>
