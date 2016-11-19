@@ -277,9 +277,9 @@ function genGrid(modnya, divnya, lebarnya, tingginya, par1){
 						if(rowData.flag=='R'){
 							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_form(\''+modnya+'\',\''+sts+'\',\''+rowData.id+'\')">Set Confirm</a>';
 						}else if(rowData.flag=='CN'){
-							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Set CheckIn</a>';
+							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_form(\''+modnya+'\',\''+sts+'\',\''+rowData.id+'\')">Set CheckIn</a>';
 						}else if(rowData.flag=='CI'){
-							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_detil(\''+modnya+'\','+value+')">Set CheckOut</a>';
+							return '<a href="javascript:void(0);" class="btn btn-small btn-info no-radius" onclick="get_form(\''+modnya+'\',\''+sts+'\',\''+rowData.id+'\')">Set CheckOut</a>';
 						}else if(rowData.flag=='C'){
 							return 'Was Canceled';
 						}

@@ -10,7 +10,32 @@ class Mjingga_api extends CI_Model{
 	function get_data($type="", $balikan="", $p1=""){
 		$msg=array();
 		$where =" WHERE 1=1 ";
+		$data=array();
 		switch($type){
+			case "dashboard_atas":
+				$data=array();
+				$sql="SELECT COUNT(id)as total  
+					FROM tbl_unit_member 
+					WHERE tbl_member_user='".$this->input->post('member_user')."'";
+				$data['reg_listing']=$this->db->query($sql)->row('total');
+				$data['prepare_listing']=$this->db->query($sql." AND flag='P'")->row('total');
+				$data['active_listing']=$this->db->query($sql." AND flag='F'")->row('total');
+				$data['unlisted_listing']=((int)$data['reg_listing'] - (int)$data['active_listing']);
+				return array('msg'=>'sukses','data'=>$data);
+			break;
+			case "dashboard_bawah":
+				$sql="SELECT COUNT(A.id) as total
+						FROM tbl_reservation A 
+						LEFT JOIN tbl_transaction_package B ON A.tbl_transaction_package_id=B.id
+						WHERE B.tbl_member_user='".$this->input->post('member_user')."'
+						AND A.reservation_start_date BETWEEN CURRENT_DATE AND ADDDATE(CURRENT_DATE, INTERVAL 1 WEEK) ";
+				$data['upcoming_reservasi']=$this->db->query($sql." AND A.flag='R'")->row('total');
+				$data['confirm_reservasi']=$this->db->query($sql." AND A.flag='CN'")->row('total');
+				$data['cekin_reservasi']=$this->db->query($sql." AND A.flag='CI'")->row('total');
+				$data['total_reservasi']=$this->db->query($sql)->row('total');
+				return array('msg'=>'sukses','data'=>$data);
+			break;
+			
 			case "property_service":
 				$data=array();
 					$sql="SELECT A.id,A.tbl_unit_member_id,B.apartment_name,'Independent' as services_name,'-' as start_date,'-' as end_date
