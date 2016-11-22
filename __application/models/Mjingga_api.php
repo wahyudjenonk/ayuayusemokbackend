@@ -12,6 +12,16 @@ class Mjingga_api extends CI_Model{
 		$where =" WHERE 1=1 ";
 		$data=array();
 		switch($type){
+			case "property_ready":
+				$sql="SELECT DISTINCT A.id,A.apartment_name as text
+						FROM tbl_unit_member A
+						LEFT OUTER JOIN tbl_header_transaction B ON B.tbl_unit_member_id=A.id
+						LEFT OUTER JOIN tbl_transaction_package C ON C.tbl_unit_member_id=A.id
+						WHERE ( B.tbl_unit_member_id IS NULL AND C.tbl_unit_member_id IS NULL ) 
+						AND A.tbl_member_user='".$this->input->post('member_user')."'";
+				$data=$this->db->query($sql)->result_array();
+				return array('msg'=>'sukses','data'=>$data); 
+			break;
 			case "dashboard_atas":
 				$data=array();
 				$sql="SELECT COUNT(id)as total  
@@ -38,7 +48,7 @@ class Mjingga_api extends CI_Model{
 			
 			case "property_service":
 				$data=array();
-					$sql="SELECT A.id,A.tbl_unit_member_id,B.apartment_name,'Independent' as services_name,'-' as start_date,'-' as end_date
+					$sql="SELECT A.id,A.tbl_unit_member_id,B.id as id_unit,B.apartment_name,'Independent' as services_name,'-' as start_date,'-' as end_date
 								FROM tbl_header_transaction A
 								LEFT JOIN tbl_unit_member B ON A.tbl_unit_member_id=B.id
 								WHERE A.tbl_member_user='".$this->input->post('member_user')."'
@@ -48,6 +58,7 @@ class Mjingga_api extends CI_Model{
 						if(count($inde)>0){
 							$i=0;
 							foreach($inde as $x){
+								$data[$i]['id_unit']=$x['id_unit'];
 								$data[$i]['unit_name']=$x['apartment_name'];
 								$data[$i]['services_name']='Pre Hosting';
 								$data[$i]['start_date']='-';
@@ -57,7 +68,7 @@ class Mjingga_api extends CI_Model{
 								$i++;
 							}
 													}
-						$sql="SELECT A.id,A.tbl_unit_member_id,B.apartment_name,D.services_name,A.start_date,A.end_date
+						$sql="SELECT A.id,A.tbl_unit_member_id,B.id as id_unit,B.apartment_name,D.services_name,A.start_date,A.end_date
 								FROM tbl_transaction_package A
 								LEFT JOIN tbl_unit_member B ON A.tbl_unit_member_id=B.id
 								LEFT JOIN tbl_package_header C ON A.tbl_package_header_id=C.id
@@ -69,6 +80,7 @@ class Mjingga_api extends CI_Model{
 						if(count($pkt)>0){
 							$x=count($inde);
 							foreach($pkt as $y){
+								$data[$i]['id_unit']=$y['id_unit'];
 								$data[$x]['unit_name']=$y['apartment_name'];
 								$data[$x]['services_name']=$y['services_name'];
 								$data[$x]['start_date']=$y['start_date'];
@@ -81,7 +93,7 @@ class Mjingga_api extends CI_Model{
 				return array('msg'=>'sukses','data'=>$data);
 			break;
 			case "property_all":
-				$sql="SELECT id,apartment_name FROM tbl_unit_member WHERE tbl_member_user='".$this->input->post('member_user')."'";
+				$sql="SELECT * FROM tbl_unit_member WHERE tbl_member_user='".$this->input->post('member_user')."'";
 				$data=$this->db->query($sql)->result_array();
 				//return array('msg'=>'sukses','data'=>$data); 
 				if(count($data)>0){
