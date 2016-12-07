@@ -48,7 +48,7 @@ class Mjingga_api extends CI_Model{
 			
 			case "property_service":
 				$data=array();
-					$sql="SELECT A.id,A.tbl_unit_member_id,B.id as id_unit,B.apartment_name,'Independent' as services_name,'-' as start_date,'-' as end_date
+					$sql="SELECT A.id,A.no_invoice,A.tbl_unit_member_id,B.id as id_unit,B.apartment_name,'Independent' as services_name,'-' as start_date,'-' as end_date
 								FROM tbl_header_transaction A
 								LEFT JOIN tbl_unit_member B ON A.tbl_unit_member_id=B.id
 								WHERE A.tbl_member_user='".$this->input->post('member_user')."'
@@ -59,6 +59,7 @@ class Mjingga_api extends CI_Model{
 							$i=0;
 							foreach($inde as $x){
 								$data[$i]['id_unit']=$x['id_unit'];
+								$data[$i]['no_invoice']=$x['no_invoice'];
 								$data[$i]['unit_name']=$x['apartment_name'];
 								$data[$i]['services_name']='Pre Hosting';
 								$data[$i]['start_date']='-';
@@ -319,7 +320,11 @@ class Mjingga_api extends CI_Model{
 			break;
 			case "data_login":
 				$balikan="row_array";
-				$sql="SELECT * FROM tbl_member where member_user='".$p1."' OR email_address='".$p1."'";
+				$sql="
+					SELECT A.*, CONCAT(B.title,' ',B.owner_name_first,' ',B.owner_name_last)as name
+					FROM tbl_member A
+					LEFT JOIN tbl_registration B ON B.id = A.tbl_registration_id
+					where A.member_user='".$p1."' OR A.email_address='".$p1."'";
 				$data= $this->db->query($sql)->row_array();
 				return $data;
 			break;
@@ -499,6 +504,52 @@ class Mjingga_api extends CI_Model{
 							WHERE A.id IN (".join(',',$pilih).") ";
 					$msg=array('msg'=>'sukses','data'=>$this->db->query($sql)->result_array());		
 					return $msg;
+				}
+			break;
+
+			case "planning_independent":
+				$id_transaction = $this->input->post('id_transaction');
+				if($id_transaction){
+					$data = array();
+					$sql = "
+						SELECT A.*,C.services_name,B.of_unit,B.of_area_item,B.percen,B.rate,
+								CASE 
+								WHEN A.flag_transaction='H' THEN 'Hourly'
+								WHEN A.flag_transaction='M' THEN 'Weekly'
+								ELSE 'Monthly'
+								END as type_serv
+						FROM tbl_detail_transaction A
+						LEFT JOIN tbl_pricing_services B ON A.tbl_pricing_services_id=B.id
+						LEFT JOIN tbl_services C ON B.tbl_services_id=C.id
+						WHERE A.tbl_header_transaction_id = '".$id_transaction."'
+					";
+					$query = $this->db->query($sql)->result_array();
+					
+					foreach($query as $k => $v) {
+						$data[$k]['id'] = $v['id'];
+						$data[$k]['nama_service'] = $v['services_name'];
+						$data[$k]['qty'] = $v['qty'];
+						$data[$k]['detail_log'] = array();
+
+						$sqldetail = "
+							SELECT A.*,CASE WHEN A.flag='P' THEN 'Planned' ELSE 'Finish' END as flag_desc 
+							FROM tbl_execution_transaction A
+							WHERE A.tbl_detail_transaction_id = '".$v['id']."'
+						";
+						$querydetail = $this->db->query($sqldetail)->result_array();
+						$totallog = 0;
+						if($querydetail){
+							foreach($querydetail as $c => $b) {
+								$data[$k]['detail_log'][$c]['planned_date'] = $b['planned_date'];
+								$data[$k]['detail_log'][$c]['planned_time'] = $b['planned_time'];
+								$data[$k]['detail_log'][$c]['finish_date'] = $b['finish_date'];
+								$data[$k]['detail_log'][$c]['flag'] = $b['flag_desc'];
+								$totallog++;
+							}
+						}
+						$data[$k]['sisa'] = ($v['qty'] - $totallog);
+					}
+					return $msg=array('msg'=>'sukses','data'=>$data);
 				}
 			break;
 			
