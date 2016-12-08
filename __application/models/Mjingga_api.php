@@ -69,7 +69,7 @@ class Mjingga_api extends CI_Model{
 								$i++;
 							}
 													}
-						$sql="SELECT A.id,A.tbl_unit_member_id,B.id as id_unit,B.apartment_name,D.services_name,A.start_date,A.end_date
+						$sql="SELECT A.id,A.no_invoice,A.tbl_unit_member_id,B.id as id_unit,B.apartment_name,D.services_name,A.start_date,A.end_date
 								FROM tbl_transaction_package A
 								LEFT JOIN tbl_unit_member B ON A.tbl_unit_member_id=B.id
 								LEFT JOIN tbl_package_header C ON A.tbl_package_header_id=C.id
@@ -82,6 +82,7 @@ class Mjingga_api extends CI_Model{
 							$x=count($inde);
 							foreach($pkt as $y){
 								$data[$i]['id_unit']=$y['id_unit'];
+								$data[$i]['no_invoice']=$y['no_invoice'];
 								$data[$x]['unit_name']=$y['apartment_name'];
 								$data[$x]['services_name']=$y['services_name'];
 								$data[$x]['start_date']=$y['start_date'];
