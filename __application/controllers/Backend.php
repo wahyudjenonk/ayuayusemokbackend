@@ -380,7 +380,8 @@ class Backend extends JINGGA_Controller {
 			'services_name' => 'Basic Housekeeping Service',
 			'code'=> 'A.1',
 			'desc_services_eng' => 'Basic Housekeeping Service is when host is providing the cleaning tools as mentioned in Terms & Conditions'
-		);
+		);	
+			
 		$b=array
 		(
 			'id_price' => 1,
