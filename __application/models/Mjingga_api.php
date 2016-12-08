@@ -82,12 +82,12 @@ class Mjingga_api extends CI_Model{
 							$x=count($inde);
 							foreach($pkt as $y){
 								$data[$i]['id_unit']=$y['id_unit'];
-								$data[$i]['no_invoice']=$y['no_invoice'];
+								$data[$x]['no_invoice']=$y['no_invoice'];
 								$data[$x]['unit_name']=$y['apartment_name'];
 								$data[$x]['services_name']=$y['services_name'];
 								$data[$x]['start_date']=$y['start_date'];
 								$data[$x]['end_date']=$y['end_date'];
-								$data[$i]['id_transaction']=$y['id'];
+								$data[$x]['id_transaction']=$y['id'];
 								$data[$x]['flag_trans']='PAKET';
 								$x++;
 							}
