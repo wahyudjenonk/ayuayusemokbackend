@@ -37,8 +37,10 @@ class Jingga_api extends REST_Controller
 				$post[$k] = $this->db->escape_str($this->input->post($k));
 			}
 		}
+
 		//$msg=array('data'=>$_POST);
-	//	$this->set_response($msg, REST_Controller::HTTP_OK);
+		//$this->set_response($msg, REST_Controller::HTTP_OK);exit;
+
 		unset($post['method']);unset($post['modul']);unset($post['sub_modul']);
 		$msg=$this->mjingga_api->simpandata($p1, $post, $editstatus);
 		$this->set_response($msg, REST_Controller::HTTP_OK);
