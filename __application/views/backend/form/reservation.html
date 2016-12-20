@@ -140,7 +140,8 @@
 				$.post(host+'backend/set_flag/reservasi',{ flag:'C',id:{$data.id|default:0} },function(r){
 					if(r==1){
 						$.messager.alert('Homtel Back-Office',"Data Was Canceled ",'info');
-						get_kalender({$tbl_transaction_package_id|default:0},{$tbl_package_detil_id|default:0},acak_kalender);
+						//get_kalender({$tbl_transaction_package_id|default:0},{$tbl_package_detil_id|default:0},acak_kalender);
+						get_detil('reservation',{$tbl_transaction_package_id|default:0});
 						closeWindow();
 					}else{
 						$.messager.alert('Homtel Back-Office',"Failed Canceled ",'error');
@@ -155,7 +156,8 @@
 				console.log(r);
 				if(r==1){
 					$.messager.alert('Homtel Back-Office',"Reservation Was Save ",'info');
-					get_kalender({$tbl_transaction_package_id|default:0},{$tbl_package_detil_id|default:0},acak_kalender);
+					//get_kalender({$tbl_transaction_package_id|default:0},{$tbl_package_detil_id|default:0},acak_kalender);
+					get_detil('reservation',{$tbl_transaction_package_id|default:0});
 					closeWindow();
 				}else{
 					$.messager.alert('Homtel Back-Office',"Failed Save ",'error');
@@ -171,7 +173,8 @@
 				$.post(host+'backoffice-simpan/reservation/delete',{ id:{$data.id|default:0} },function(r){
 					if(r==1){
 						$.messager.alert('Homtel Back-Office',"Data Was Deleted ",'info');
-						get_kalender({$tbl_transaction_package_id|default:0},{$tbl_package_detil_id|default:0},acak_kalender);
+						//get_kalender({$tbl_transaction_package_id|default:0},{$tbl_package_detil_id|default:0},acak_kalender);
+						get_detil('reservation',{$tbl_transaction_package_id|default:0});
 						closeWindow();
 					}else{
 						$.messager.alert('Homtel Back-Office',"Failed Deleted ",'error');

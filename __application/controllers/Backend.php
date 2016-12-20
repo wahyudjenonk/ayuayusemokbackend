@@ -177,17 +177,25 @@ class Backend extends JINGGA_Controller {
 		$temp="backend/modul/".$mod.".html";
 		switch($mod){
 			case "kalender_reservasi":
-				$id_trans=$this->input->post('id_trans');
-				$id_detil=$this->input->post('id_detil');
-				$this->nsmarty->assign('id_trans',$id_trans);
-				$this->nsmarty->assign('id_detil',$id_detil);
-				$data=$this->mbackend->getdata('data_inv','row_array');
-				$this->nsmarty->assign('data',$data);
-			break;
 			case "reservation":
+				$mod='kalender_reservasi';
+				$this->nsmarty->assign('mod',$mod);
+				$temp="backend/modul/kalender_reservasi.html";
+				$data=$this->mbackend->getdata('data_reservasi','result_array');
+				$id_trans=$data['data_inv']['id'];
+				//$id_trans=$this->input->post('id_trans');
+				//$id_detil=$this->input->post('id_detil');
+				$this->nsmarty->assign('id_trans',$id_trans);
+				//$this->nsmarty->assign('id_detil',$id_detil);
+				//$data=$this->mbackend->getdata('data_inv','row_array');
+				$this->nsmarty->assign('data',$data);
+				
+			break;
+			/*case "reservation":
 				$data=$this->mbackend->getdata('data_reservasi','result_array');
 				$this->nsmarty->assign('data',$data);
 			break;
+			*/
 			case "confirm_independent":
 				$data=$this->mbackend->getdata('confirmation_independent','get');
 				$this->nsmarty->assign('data',$data);
@@ -278,12 +286,12 @@ class Backend extends JINGGA_Controller {
 					$data=$this->mbackend->getdata('reservation','get');
 					$this->nsmarty->assign('data',$data);
 					$this->nsmarty->assign('tbl_transaction_package_id',$data['tbl_transaction_package_id']);
-					$this->nsmarty->assign('tbl_package_detil_id',$data['tbl_package_detil_id']);
-					$this->nsmarty->assign('tbl_package_header_id',$data['tbl_package_header_id']);
+					//$this->nsmarty->assign('tbl_package_detil_id',$data['tbl_package_detil_id']);
+					//$this->nsmarty->assign('tbl_package_header_id',$data['tbl_package_header_id']);
 				}else{
 					$this->nsmarty->assign('tbl_transaction_package_id',$this->input->post("id_trans"));
-					$this->nsmarty->assign('tbl_package_detil_id',$this->input->post("id_detil"));
-					$this->nsmarty->assign('tbl_package_header_id',$this->input->post("id_pack_header"));
+					//$this->nsmarty->assign('tbl_package_detil_id',$this->input->post("id_detil"));
+					//$this->nsmarty->assign('tbl_package_header_id',$this->input->post("id_pack_header"));
 				}
 			break;
 			case "services":

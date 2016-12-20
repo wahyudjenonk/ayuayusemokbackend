@@ -20,9 +20,11 @@ class Mbackend extends CI_Model{
 						CONCAT(A.check_in_date,' to ',A.check_out_date)as checkin_date
 						FROM tbl_reservation A 
 						".$where." 
-						AND tbl_transaction_package_id=".$this->input->post('id_trans')." 
+						AND tbl_transaction_package_id=".$this->input->post('id_trans');
+						/*
 						AND tbl_package_header_id=".$this->input->post('id_paket')." 
 						AND tbl_package_detil_id=".$this->input->post('id_detil');
+						*/
 			break;
 			case "reservation":
 				$sql="SELECT * FROM tbl_reservation 
@@ -39,13 +41,14 @@ class Mbackend extends CI_Model{
 			break;
 			case "kalender_reservasi":
 				$id_trans=$this->input->post('id_trans');
-				$id_detil=$this->input->post('id_detil');
+				//$id_detil=$this->input->post('id_detil');
 				$data_inv=$this->db->get_where('tbl_transaction_package',array('id'=>$this->input->post('id_trans')))->row_array();
 				$sql="SELECT * FROM tbl_reservation 
-				WHERE tbl_transaction_package_id=".$id_trans." 
-				AND tbl_package_header_id=".$data_inv['tbl_package_header_id']." 
+				WHERE tbl_transaction_package_id=".$id_trans." AND flag <> 'C' ";
+				/*AND tbl_package_header_id=".$data_inv['tbl_package_header_id']." 
 				AND tbl_package_detil_id=".$id_detil." 
-				AND flag <> 'C'";
+				";
+				*/
 				$data_reser=$this->db->query($sql)->result_array();
 				$js=array();
 				if(count($data_reser)>0){
@@ -71,8 +74,8 @@ class Mbackend extends CI_Model{
 									'start'=>$start,
 									'end'=>$end,
 									'id_trans'=>$v['tbl_transaction_package_id'],
-									'id_pack_header'=>$v['tbl_package_header_id'],
-									'id_detil'=>$v['tbl_package_detil_id'],
+									//'id_pack_header'=>$v['tbl_package_header_id'],
+									//'id_detil'=>$v['tbl_package_detil_id'],
 									'id_na'=>$v['id'],
 									'color'=>$warna,
 									'flag_set'=>'on'
@@ -80,9 +83,11 @@ class Mbackend extends CI_Model{
 					}
 				}
 				$data_set_reser=$this->db->get_where('tbl_seting_reservation',
-							array('tbl_transaction_package_id'=>$id_trans,
+							array('tbl_transaction_package_id'=>$id_trans
+							/*,
 								  'tbl_package_header_id'=>$data_inv['tbl_package_header_id'],
 								  'tbl_package_detil_id'=>$id_detil
+							*/
 				))->result_array();
 				if(count($data_set_reser)>0){
 					foreach($data_set_reser as $v){
@@ -91,8 +96,8 @@ class Mbackend extends CI_Model{
 									'end'=>$v['end_date'],
 									'overlap'=> false,
 									'id_trans'=>$v['tbl_transaction_package_id'],
-									'id_pack_header'=>$v['tbl_package_header_id'],
-									'id_detil'=>$v['tbl_package_detil_id'],
+									//'id_pack_header'=>$v['tbl_package_header_id'],
+									//'id_detil'=>$v['tbl_package_detil_id'],
 									'id_na'=>$v['id'],
 									'color'=>'red',
 									'flag_set'=>'off'
