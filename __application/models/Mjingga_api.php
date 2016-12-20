@@ -99,7 +99,7 @@ class Mjingga_api extends CI_Model{
 				$data['confirm_reservasi']=$this->db->query($sql." AND A.confirm_start_date BETWEEN CURRENT_DATE AND ADDDATE(CURRENT_DATE, INTERVAL 1 WEEK)  AND A.flag='CN'")->row('total');
 				$data['cekin_reservasi']=$this->db->query($sql." AND A.check_in_date BETWEEN CURRENT_DATE AND ADDDATE(CURRENT_DATE, INTERVAL 1 WEEK)  AND A.flag='CI'")->row('total');
 				$data['total_reservasi']=(int)$data['upcoming_reservasi']+(int)$data['confirm_reservasi']+(int)$data['cekin_reservasi'];//$this->db->query($sql)->row('total');
-				return array('msg'=>'sukses','data'=>$data);
+				return array('msg'=>'sukses','data'=>$data,'xx'=>$sql);
 			break;
 			
 			case "property_service":
