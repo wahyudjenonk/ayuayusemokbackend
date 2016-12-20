@@ -12,6 +12,63 @@ class Mjingga_api extends CI_Model{
 		$where =" WHERE 1=1 ";
 		$data=array();
 		switch($type){
+			case "data_on_off":
+				$sql="SELECT A.*,B.rental_price 
+						FROM tbl_seting_reservation A
+						LEFT JOIN tbl_transaction_package B ON A.tbl_transaction_package_id=B.id 
+						WHERE B.tbl_member_user='".$this->input->post('member_user')."'
+						AND A.flag='off' 
+						AND B.tbl_unit_member_id=".$this->input->post('tbl_unit_member_id');
+				$data=$this->db->query($sql)->result_array();
+				return array('msg'=>'sukses','data'=>$data);
+			break;
+			case "list_reservasi_unit":
+				$sql="SELECT A.*,
+						CASE WHEN A.flag='R' THEN 'Reservasi'
+						WHEN A.flag='CN' THEN 'Confirm Reservation'
+						WHEN A.flag='CI' THEN 'Check In'
+						ELSE 'Cek Out'
+						END as status
+						FROM tbl_reservation A
+						LEFT JOIN tbl_transaction_package B ON A.tbl_transaction_package_id=B.id
+						WHERE B.tbl_member_user='".$this->input->post('member_user')."' 
+						AND B.tbl_unit_member_id=".$this->input->post('tbl_unit_member_id')." 
+						ORDER BY A.create_date DESC 
+						limit 0,5 ";
+				$data=$this->db->query($sql)->result_array();
+				return array('msg'=>'sukses','data'=>$data);
+			break;
+			case "okupansi":
+				for($i=1;$i<=12;$i++){
+					$sql="SELECT COUNT(A.id)as total,B.tbl_unit_member_id
+						FROM tbl_reservation A
+						LEFT JOIN tbl_transaction_package B ON A.tbl_transaction_package_id=B.id
+						WHERE A.flag='CI' 
+						AND MONTH(A.check_in_date)=".$i." 
+						AND B.tbl_unit_member_id=".$this->input->post('tbl_unit_member_id')."
+						AND B.tbl_member_user='".$this->input->post('member_user')."' 
+						GROUP BY B.tbl_unit_member_id ";
+					$res=$this->db->query($sql)->row_array();
+					$tot_hari=cal_days_in_month(CAL_GREGORIAN, $i, date('Y'));
+					if($res['total']!=0)$persen=((int)$res['total']/(int)$tot_hari) * 100;
+					else $persen=0;
+					$data[$i]=number_format($persen,2);
+				}
+				return array('msg'=>'sukses','data'=>$data); 
+			break;
+			case "confirm_data":
+				$sql="SELECT COUNT(A.id) as total
+						FROM tbl_reservation A 
+						LEFT JOIN tbl_transaction_package B ON A.tbl_transaction_package_id=B.id
+						WHERE B.tbl_member_user='".$this->input->post('member_user')."'
+						AND B.tbl_unit_member_id=".$this->input->post('tbl_unit_member_id')." 
+						AND A.reservation_start_date BETWEEN CURRENT_DATE AND ADDDATE(CURRENT_DATE, INTERVAL 1 WEEK) ";
+				$data['upcoming_reservasi']=$this->db->query($sql." AND A.flag='R'")->row('total');
+				$data['confirm_reservasi']=$this->db->query($sql." AND A.flag='CN'")->row('total');
+				$data['cekin_reservasi']=$this->db->query($sql." AND A.flag='CI'")->row('total');
+				$data['total_reservasi']=$this->db->query($sql)->row('total');
+				return array('msg'=>'sukses','data'=>$data);
+			break;
 			case "property_ready":
 				$sql="SELECT DISTINCT A.id,A.apartment_name as text
 						FROM tbl_unit_member A
@@ -764,7 +821,8 @@ class Mjingga_api extends CI_Model{
 				//return $msg['msg'] =$_POST;
 				$table="tbl_header_transaction";
 				//return array('msg'=>$data);
-				
+				if($this->input->post('kode'))$kode='EXT';
+				else $kode='INV';
 				
 				$tbl_services_id=array();
 				$listing=array();
@@ -780,7 +838,7 @@ class Mjingga_api extends CI_Model{
 				if($id<100 && $id >=10){$id_baru='000'.$id;}
 				if($id<1000 && $id >=100){$id_baru='00'.$id;}
 				if($id<10000 && $id >=1000){$id_baru='0'.$id;}
-				$no_inv='INV-'.$data['tbl_member_user'].'-'.$id_baru;
+				$no_inv=$kode.'-'.$data['tbl_member_user'].'-'.$id_baru;
 				$data['no_invoice']=$no_inv;
 				$data['date_invoice']=date('Y-m-d H:i:s');
 				
