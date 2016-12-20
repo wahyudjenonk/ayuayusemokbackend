@@ -61,8 +61,8 @@ class Mjingga_api extends CI_Model{
 						FROM tbl_reservation A 
 						LEFT JOIN tbl_transaction_package B ON A.tbl_transaction_package_id=B.id
 						WHERE B.tbl_member_user='".$this->input->post('member_user')."'
-						AND B.tbl_unit_member_id=".$this->input->post('tbl_unit_member_id')." 
-						AND A.reservation_start_date BETWEEN CURRENT_DATE AND ADDDATE(CURRENT_DATE, INTERVAL 1 WEEK) ";
+						AND B.tbl_unit_member_id=".$this->input->post('tbl_unit_member_id');
+						
 				$data['upcoming_reservasi']=$this->db->query($sql." AND A.flag='R'")->row('total');
 				$data['confirm_reservasi']=$this->db->query($sql." AND A.flag='CN'")->row('total');
 				$data['cekin_reservasi']=$this->db->query($sql." AND A.flag='CI'")->row('total');
@@ -94,12 +94,11 @@ class Mjingga_api extends CI_Model{
 				$sql="SELECT COUNT(A.id) as total
 						FROM tbl_reservation A 
 						LEFT JOIN tbl_transaction_package B ON A.tbl_transaction_package_id=B.id
-						WHERE B.tbl_member_user='".$this->input->post('member_user')."'
-						AND A.reservation_start_date BETWEEN CURRENT_DATE AND ADDDATE(CURRENT_DATE, INTERVAL 1 WEEK) ";
-				$data['upcoming_reservasi']=$this->db->query($sql." AND A.flag='R'")->row('total');
-				$data['confirm_reservasi']=$this->db->query($sql." AND A.flag='CN'")->row('total');
-				$data['cekin_reservasi']=$this->db->query($sql." AND A.flag='CI'")->row('total');
-				$data['total_reservasi']=$this->db->query($sql)->row('total');
+						WHERE B.tbl_member_user='".$this->input->post('member_user')."'";
+				$data['upcoming_reservasi']=$this->db->query($sql." AND A.reservation_start_date BETWEEN CURRENT_DATE AND ADDDATE(CURRENT_DATE, INTERVAL 1 WEEK)  AND A.flag='R'")->row('total');
+				$data['confirm_reservasi']=$this->db->query($sql." AND A.confirm_start_date BETWEEN CURRENT_DATE AND ADDDATE(CURRENT_DATE, INTERVAL 1 WEEK)  AND A.flag='CN'")->row('total');
+				$data['cekin_reservasi']=$this->db->query($sql." AND A.check_in_date BETWEEN CURRENT_DATE AND ADDDATE(CURRENT_DATE, INTERVAL 1 WEEK)  AND A.flag='CI'")->row('total');
+				$data['total_reservasi']=(int)$data['upcoming_reservasi']+(int)$data['confirm_reservasi']+(int)$data['cekin_reservasi'];//$this->db->query($sql)->row('total');
 				return array('msg'=>'sukses','data'=>$data);
 			break;
 			
