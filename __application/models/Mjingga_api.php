@@ -12,12 +12,21 @@ class Mjingga_api extends CI_Model{
 		$where =" WHERE 1=1 ";
 		$data=array();
 		switch($type){
+			case "get_harga_kamar":
+				$sql = "
+					SELECT rental_price
+					FROM tbl_transaction_package
+					WHERE id = '".$this->input->post('id_transaction')."' 
+				";
+				$data=$this->db->query($sql)->result_array();
+				return array('msg'=>'sukses','data'=>$data);
+			break;
 			case "data_on_off":
 				$sql="SELECT A.*,B.rental_price 
 						FROM tbl_seting_reservation A
 						LEFT JOIN tbl_transaction_package B ON A.tbl_transaction_package_id=B.id 
 						WHERE B.tbl_member_user='".$this->input->post('member_user')."'
-						AND A.flag='off' 
+						AND A.flag='of' 
 						AND B.tbl_unit_member_id=".$this->input->post('tbl_unit_member_id');
 				$data=$this->db->query($sql)->result_array();
 				return array('msg'=>'sukses','data'=>$data);
@@ -348,14 +357,15 @@ class Mjingga_api extends CI_Model{
 						LEFT JOIN tbl_member C ON A.tbl_member_user=C.member_user
 						LEFT JOIN tbl_registration D ON C.tbl_registration_id=D.id 
 						LEFT JOIN tbl_unit_member E ON A.tbl_unit_member_id=E.id
+						WHERE A.tbl_member_user = '".$this->input->post('member_user')."'
 						";
 				if($balikan=='detil'){
 					$data=array();
-					$sql .=" WHERE A.id=".$this->input->post('id');
+					$sql .=" AND A.id=".$this->input->post('id');
 					$sql .=" ORDER BY A.date_invoice DESC";
 					//return $msg=array('msg'=>'sukses','data'=>$sql);
 					$data['header']=$this->db->query($sql)->row_array();
-					$sql="SELECT A.*,C.services_name,B.of_unit,B.of_area_item,B.percen,B.rate,
+					$sql = "SELECT A.*,C.services_name,B.of_unit,B.of_area_item,B.percen,B.rate,
 								CASE 
 								WHEN A.flag_transaction='H' THEN 'Hourly'
 								WHEN A.flag_transaction='M' THEN 'Weekly'
@@ -378,7 +388,8 @@ class Mjingga_api extends CI_Model{
 			case "data_login":
 				$balikan="row_array";
 				$sql="
-					SELECT A.*, CONCAT(B.title,' ',B.owner_name_first,' ',B.owner_name_last)as name
+					SELECT A.*, CONCAT(B.title,' ',B.owner_name_first,' ',B.owner_name_last)as name,
+						B.flag_complete_reg, B.flag_ver_sms, B.registration_code
 					FROM tbl_member A
 					LEFT JOIN tbl_registration B ON B.id = A.tbl_registration_id
 					where A.member_user='".$p1."' OR A.email_address='".$p1."'";
@@ -626,6 +637,7 @@ class Mjingga_api extends CI_Model{
 	}
 	function simpandata($table,$data,$sts_crud){ //$sts_crud --> STATUS NYEE INSERT, UPDATE, DELETE
 		$this->db->trans_begin();
+		$array_balik = array();
 		$msg=array();
 		if(isset($data['id'])){
 			$id = $data['id'];
@@ -633,8 +645,54 @@ class Mjingga_api extends CI_Model{
 		}
 		
 		switch($table){
+			case "registrasi_awal":
+				$table = "tbl_registrasi_awal";
+				$form_number = "FRMREG-".strtoupper($this->lib->randomString(8));
+				$registration_code =$this->lib->uniq_id();
+				$array_tbl_registrasi = array(
+					"form_number" => $form_number,
+					"registration_date" => date('Y-m-d H:i:s'),
+					"email" => $data['email_address'],
+					"phone_mobile" => $data['phone_mobile'],
+					"owner_name_first" => $data['first_name'],
+					"owner_name_last" => $data['last_name'],
+					"flag" => "P",
+					"registration_code" => $registration_code,
+					"flag_complete_reg" => 0,
+					"flag_ver_sms" => 0
+				);
+				$insert_tbl_registrasi = $this->db->insert('tbl_registration', $array_tbl_registrasi);
+				
+				if($insert_tbl_registrasi){
+					$tbl_registrasi_id = $this->db->get_where('tbl_registration', array("registration_code" => $registration_code) )->row_array();
+					$password = $this->lib->uniq_id();
+					$member_user = $this->lib->uniq_id();
+					$array_tbl_member = array(
+						"member_user" => $member_user,
+						"email_address" => $data['email_address'],
+						"pwd" => $this->encrypt->encode($password),
+						"tbl_registration_id" => $tbl_registrasi_id['id'],
+						'create_date'=>date('Y-m-d H:i:s'),
+						'create_by'=>'SYS',
+						'flag'=>1
+					);
+					$insert_tbl_member = $this->db->insert("tbl_member", $array_tbl_member);
+					if($insert_tbl_member){
+						$array_balik['email_address'] = $data['email_address'];
+						$array_balik['password'] = $password;
+					}
+				}
+				//*/
+			break;
+		
 			case "seting_reservasi":
 				$table="tbl_seting_reservation";
+				if($sts_crud == 'add'){
+					$cek_setting = $this->db->get_where($table, array('tbl_transaction_package_id'=>$data['tbl_transaction_package_id'], 'start_date'=>$data['start_date']) )->row_array();
+					if($cek_setting){
+						return array('msg'=>'Gagal','Pesan'=>'Data Exist');
+					}
+				}
 			break;
 			case "konfirmasi":
 				$table="tbl_payment_confirm";
@@ -660,6 +718,7 @@ class Mjingga_api extends CI_Model{
 			
 			case "profil":
 				$table="tbl_registration";
+				//$array_balik = $data;
 			break;
 			case "update_pwd":
 				$table="tbl_member";
@@ -820,8 +879,12 @@ class Mjingga_api extends CI_Model{
 				//return $msg['msg'] =$_POST;
 				$table="tbl_header_transaction";
 				//return array('msg'=>$data);
-				if($this->input->post('kode'))$kode='EXT';
-				else $kode='INV';
+				if(isset($data['kode'])){
+					$kode = 'EXT';
+					unset($data['kode']);
+				}else{ 
+					$kode = 'INV';
+				}
 				
 				$tbl_services_id=array();
 				$listing=array();
@@ -850,7 +913,6 @@ class Mjingga_api extends CI_Model{
 				if(isset($data['listing_management'])){
 					$listing=$data['listing_management'];unset($data['listing_management']);
 				}
-				
 			break;
 		}
 		
@@ -978,7 +1040,9 @@ class Mjingga_api extends CI_Model{
 						
 					}
 				}*/
-				else{
+				elseif($table == "tbl_registrasi_awal"){
+					continue;
+				}else{
 					$this->db->insert($table,$data);
 				}
 			break;
@@ -1058,11 +1122,13 @@ class Mjingga_api extends CI_Model{
 			$this->db->trans_rollback();
 			$msg['msg']='gagal';
 			$msg['pesan']='System Failure, Please Try Again Later.';
+			$msg['data'] = $array_balik;
 			//return 'gagal';
 		}else{
 			 $this->db->trans_commit();
 			 $msg['msg'] = 'sukses';
 			 $msg['pesan'] = '';
+			 $msg['data'] = $array_balik;
 			// return 'sukses';
 		}
 		

@@ -162,4 +162,14 @@ class Frontend extends JINGGA_Controller {
 		echo "test";
 	}
 	
+	function getgetan(){
+		$this->load->library('encrypt');
+		$data = $this->db->get('tbl_member')->result_array();
+		foreach($data as $k => $v){
+			$data[$k]['password_asli'] = $this->encrypt->decode($v['pwd']);
+		}
+		echo "<pre>";
+		print_r($data);
+	}
+
 }

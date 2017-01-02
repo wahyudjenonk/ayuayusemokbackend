@@ -599,4 +599,5 @@ class Backend extends JINGGA_Controller {
 		}
 		echo json_encode($chart);
 	}
+	
 }

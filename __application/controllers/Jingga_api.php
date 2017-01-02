@@ -35,6 +35,8 @@ class Jingga_api extends REST_Controller
         foreach($_POST as $k=>$v){
 			if($this->input->post($k)!=""){
 				$post[$k] = $this->db->escape_str($this->input->post($k));
+			}else{
+				$post[$k] = null;
 			}
 		}
 
