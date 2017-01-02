@@ -5,10 +5,11 @@ class Jingga_api extends REST_Controller
 {
      
     function jingga_post(){
+		//$this->set_response(array('data'=>$this->post('modul')), REST_Controller::HTTP_OK);
 		$method=$this->post('method');
 		$modul=$this->post('modul');
 		$sub_modul=$this->post('submodul');
-		//$this->set_response($sub_modul, REST_Controller::HTTP_OK);
+		//$this->set_response($modul, REST_Controller::HTTP_OK);
 		//$msg=array('data'=>$_POST);
 		//$this->set_response($msg, REST_Controller::HTTP_OK);
 		
@@ -43,20 +44,27 @@ class Jingga_api extends REST_Controller
 		//$msg=array('data'=>$_POST);
 		//$this->set_response($msg, REST_Controller::HTTP_OK);exit;
 
-		unset($post['method']);unset($post['modul']);unset($post['sub_modul']);
+		unset($post['method']);unset($post['modul']);unset($post['submodul']);
 		$msg=$this->mjingga_api->simpandata($p1, $post, $editstatus);
 		$this->set_response($msg, REST_Controller::HTTP_OK);
 	}
 	public function login(){
+		
 		$this->load->library(array('encrypt'));
 		$user = $this->db->escape_str($this->input->post('member_user'));
 		$email = $this->db->escape_str($this->input->post('email_address'));
 		$pass = $this->db->escape_str($this->input->post('pwd'));
+		
+		
 		if($user==''){$user=$email;}
 		$resp=array();
+		
+		
+		
 		if($user && $pass){
-			
+			$this->set_response(array('data'=>$_POST), REST_Controller::HTTP_OK);
 			$cek_user = $this->mjingga_api->get_data('data_login', 'row_array', $user);
+			
 			//$this->set_response(array('data'=>$cek_user), REST_Controller::HTTP_OK);
 			if(count($cek_user)>0){
 				if(isset($cek_user['flag']) && $cek_user['flag']==1){

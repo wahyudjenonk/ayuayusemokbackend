@@ -645,6 +645,10 @@ class Mjingga_api extends CI_Model{
 		}
 		
 		switch($table){
+			case "update_registrasi":
+				$table='tbl_registration';
+				//return $data;
+			break;
 			case "registrasi_awal":
 				$table = "tbl_registrasi_awal";
 				$form_number = "FRMREG-".strtoupper($this->lib->randomString(8));
@@ -1096,11 +1100,18 @@ class Mjingga_api extends CI_Model{
 						 $this->db->insert_batch('tbl_unit_photo', $photo_unit);
 					}
 				}else{
+					
 					if($table=='tbl_member'){
 						$this->db->update($table, $data, array('member_user' => $member_user) );
 					}else{
 						$this->db->update($table, $data, array('id' => $id) );
+						
 					}
+					/*
+					return array('data'=>$data,'table'=>$table,'id'=>$id);
+					$this->db->update($table, $data, array('id' => $id) );
+					return $this->db->last_query();
+					*/
 					
 				}
 			break;
