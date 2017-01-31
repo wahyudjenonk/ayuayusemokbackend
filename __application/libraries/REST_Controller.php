@@ -1964,8 +1964,9 @@ abstract class REST_Controller extends CI_Controller {
         {
             $password = $this->input->server('PHP_AUTH_PW');
         }
-        elseif ($http_auth !== NULL)
+        /*elseif ($http_auth !== NULL)
         {
+			echo $this->input->server('HTTP_AUTHENTICATION');exit;
             // If the authentication header is set as basic, then extract the username and password from
             // HTTP_AUTHORIZATION e.g. my_username:my_password. This is passed in the .htaccess file
             if (strpos(strtolower($http_auth), 'basic') === 0)
@@ -1974,7 +1975,16 @@ abstract class REST_Controller extends CI_Controller {
                 list($username, $password) = explode(':', base64_decode(substr($this->input->server('HTTP_AUTHORIZATION'), 6)));
             }
         }
+		*/
+		elseif ( $this->input->server('HTTP_AUTHENTICATION') || $this->input->server('REDIRECT_REMOTE_USER') )
+		{
+			$HTTP_SERVER_AUTH = ($this->input->server('HTTP_AUTHENTICATION')) ? $this->input->server('HTTP_AUTHENTICATION') : $this->input->server('REDIRECT_REMOTE_USER'); 
 
+			if (strpos(strtolower($HTTP_SERVER_AUTH),'basic') === 0)
+			{
+				list($username,$password) = explode(':',base64_decode(substr($HTTP_SERVER_AUTH, 6)));
+			}
+		} 
         // Check if the user is logged into the system
         if ($this->_check_login($username, $password) === FALSE)
         {
